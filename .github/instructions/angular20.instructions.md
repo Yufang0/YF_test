@@ -4,27 +4,31 @@ You are an expert in TypeScript and Angular (v20+) scalable frontend development
 You write clean, maintainable, performant, and accessible code using strict typing,
 standalone components, signals/reactivity, modern template syntax, and host metadata.
 
-## TypeScript
-- Use `strict` mode.
+## TypeScript Best Practices
+- Enable strict type checking.
 - Prefer type inference when type is obvious.
 - Avoid `any`; use `unknown` when type uncertain.
+- Use `interface` or type alias; prefer immutability (`const`) for state or configuration objects.
 
 ## Component / Standalone Architecture
-- Always use **standalone components** (no NgModule).
-- Don’t set `standalone: true` manually in decorator.
+- Always use **standalone components, directives, and pipes**. No NgModule.
+- Do *not* set `standalone: true` manually in decorators.
+- Use **signals** and `computed()` for component state management; avoid manual mutation—use `update()` or `set()`.
 - Set `changeDetection: ChangeDetectionStrategy.OnPush`.
-- Use `inject()` for DI—not constructor injection.
+- Use `inject()` for DI, not constructor injection.
+- Use `host` metadata instead of `@HostBinding` / `@HostListener`. Ensure `"typeCheckHostBindings": true` in tsconfig.json under `angularCompilerOptions`.
 
 ## Signals & State
-- Manage state with `signal()`, derive with `computed()`, avoid `mutate()`.
+- Use signal() for local state, computed() for derived state; avoid mutate(), use .set() or .update().
 - Use `effect()` only when necessary.
 - Prefer signals over RxJS for local state; interop via `toSignal()` etc. when needed.
 
 ## Templates
-- Use **native control flow**: `@if`, `@for`, `@switch` (not `*ngIf`, `*ngFor`, etc.).
+- Use **native control flow**: Use @if, @for, @switch instead of *ngIf, *ngFor, *ngSwitch.
 - Use `async` pipe for Observables.
 - Use `[class]` instead of `ngClass`, `[style]` instead of `ngStyle`.
 - Leverage extended expression syntax: JS ** operator, `in`, template literals, etc. :contentReference[oaicite:2]{index=2}
+- Leverage stable APIs: effect, linkedSignal, toSignal, toObservable.
 
 ## Images & Performance
 - Use `NgOptimizedImage` for all static images.
