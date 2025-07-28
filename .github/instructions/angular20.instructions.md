@@ -1,128 +1,302 @@
 ---
-applyTo: "**"
-description: Complete Angular 19+ Coding, Structure, and Naming Guidelines (LLM/AI, Team Onboarding, Maintenance, Testing)
----
 
-> **🚨 重要提醒**: 本專案採用共用服務架構，請務必使用 `HttpErrorHandlerService` 進行 HTTP 錯誤處理，不要建立私有的 `handleError` 方法。
-> **Adapted from angular.dev/llms-full.txt, engineering best practices, and detailed team structure/naming guidelines for scalable, modern Angular projects.**
+applyTo: "\*\*"
+description: Complete Angular 20+ Coding, Structure, and Naming Guidelines (LLM/AI, Team Onboarding, Maintenance, Testing)
 
 ---
 
-## 🎯 核心架構原則
+# 🟢 Angular 20+ Coding, Structure & Naming Unified Guide
 
-### Shared Services Pattern (共用服務模式)
-本專案實作了統一的共用服務模式，以提升程式碼的可重用性和維護性：
+**Adapted from angular.dev/llms-full.txt, engineering best practices, and the latest v20+ architectural, naming, and code structure guidelines for large-scale Angular projects.**
 
-- **HttpErrorHandlerService**: 統一的 HTTP 錯誤處理服務
-- **位置**: `src/app/core/services/http-error-handler.service.ts`
-- **用途**: 為所有 HTTP 請求提供一致的錯誤處理和使用者友善的錯誤訊息
-- **必須使用**: 所有服務的 HTTP 請求都必須使用此共用服務
+---
 
-```typescript
-// ✅ 正確使用方式
-constructor(
-  private http: HttpClient,
-  private errorHandler: HttpErrorHandlerService
-) {}
+## 1. Top-Level Project Structure
 
-return this.http.get<DataType>('/api/endpoint')
-  .pipe(catchError(this.errorHandler.createErrorHandler('操作說明')));
+* `src/app/core/`
+  * Global infrastructure and non-business utilities (layouts, authentication, interceptors, guards, shared services, error handling, utils)
+    
+* `src/app/features/`
+  * Each business domain/feature in a separate folder: contains pages, components, services, store (signals), types, routes, etc.
 
-// ❌ 避免這種做法
-private handleError(error: HttpErrorResponse) { ... }
+* `src/app/shared/`
+  * **Only** dumb UI components, shared pipes, and utilities; **no business logic allowed**
+
+* `src/environments/`
+  * Environment config files: `environment.ts`, `environment.prod.ts`, etc.
+
+* `src/assets/`
+  * Static resources (images, icons, fonts, SVGs, i18n, media, etc.)
+
+**Example:**
+
+```plaintext
+src/
+├── app/
+│   ├── core/                    # 全站共用：服務、攔截器、路由守衛、工具函式
+│   │   ├── services/            # 共用服務（如：HttpErrorHandlerService）
+│   │   ├── interceptors/        # HTTP 攔截器（如：AuthInterceptor）
+│   │   ├── guards/              # 路由守衛（如：AuthGuard）
+│   │   ├── system-parameter.ts  # 系統參數（如：API 基礎 URL）
+│   │   └── util.ts              # 工具函式（如：日期格式化）
+│   │
+│   ├── shared/                  # 可重用的 UI 元件、指令、管道
+│   │   ├── components/          # 像是「搜尋欄」、「表格」、「按鈕組」等元件
+│   │   ├── directives/          # 自訂指令，像是 appFocus 自動聚焦輸入框
+│   │   └── pipes/               # 管道，像是把日期轉成 2025/07/22 格式
+│   │
+│   ├── features/                # 功能模組：auth、employee、department 等
+│   │   ├── auth/                # 登入、註冊、登出等功能
+│   │   │   ├── components/      # 該功能內的畫面元件
+│   │   │   ├── services/        # 該功能自己的 API 或資料處理服務
+│   │   │   ├── store/           # 狀態管理服務（如：AuthStoreService）
+│   │   │   ├── pages/           # 該功能的頁面元件
+│   │   │   ├── models/          # 該功能的資料模型（（像 EmployeeDto, DepartmentModel）
+│   │   │   └── xxx.routes.ts    # 該功能的路由設定
+│   │   ├── employee/            # 員工管理功能
+│   │   ├── department/          # 部門管理功能
+│   │   ├── dialog-demo/         # Dialog 示範頁面
+│   │   └── ...                  # 其他功能模組
+│   │
+│   ├── layouts/                 # 主畫面與登入畫面的版型
+│   │   ├── main-layout/         # 主畫面版型（包含側邊選單、頂部導航）
+│   │   │   ├── main-layout.component.ts
+│   │   │   ├── main-layout.component.html
+│   │   │   └── main-layout.component.scss
+│   │   ├── auth-layout/         # 登入畫面版型（簡單的登入表單）
+│   │   └── ...
+│   │
+│   ├── app.config.ts            # 全站設定
+│   ├── app.routes.ts            # 整個網站的路由設定入口
+│   ├── app.component.ts         # 網站的根元件（通常是外框）
+│   └── main.ts                  # Angular 程式進入點
+│   
+├── assets/                      # 靜態資源：圖片、樣式、JSON、翻譯
+│   ├── images/                  # 圖片資源
+│   ├── styles/                  # 全站樣式（如：變數、混合、全局樣式）
+│   │   └── theme.scss           # 主題樣式
+│   ├── icons/                   # 圖示資源（如：SVG 圖示）
+│   ├── fonts/                   # 字型資源
+│   ├── i18n/                    # 翻譯檔案（如：zh.json、en.json）
+│   └── data/                    # 模擬資料（如：employees.json、city-codes.json）
+│   
+└── environments/                # 環境設定檔（開發與正式）
+    ├── environment.ts           # 開發環境設定
+    └── environment.prod.ts      # 正式環境設定
 ```
 
-# System Instructions for Copilot in Angular v20+ projects
-You are an expert in TypeScript and Angular (v20+), writing scalable, maintainable, accessible, and AI‑aware frontend code using Angular’s most modern APIs and conventions.
+---
 
-## ✅ TypeScript Best Practices
-* Enable strict type checking.
-* Prefer type inference when the type is obvious.
-* Avoid `any`; use `unknown` when type uncertain.
-* Use `interface` or type alias; prefer immutability (`const`) for state or configuration objects.
+## 2. Component File Separation Principle
+**Standalone First**: Create components as standalone by default
+**Naming**: Use kebab-case for component selectors (e.g., `app-user-list`)
+* Each component **must** be split into three files:
+  * `component-name.component.ts` — Logic
+  * `component-name.component.html` — Template
+  * `component-name.component.scss` — Styles
+* Inline templates/styles are **prohibited** (except rare cases)
+* No style attributes or inline CSS in templates unless truly necessary
+* Do not use class/id in HTML to override SCSS; all overrides go in stylesheets
+* HTML should be clean, semantic, and only for structure
+* **Shared Components**: Place reusable UI components in `shared/components/`
+* **Feature Components**: Place feature-specific components in `features/{feature}/components/`
+* **Data Conversion**: Always handle snake_case ↔ camelCase conversion in components
 
-## ✅ Angular Core Guidelines
-* Always use **standalone components, directives, and pipes**. No NgModule.
-* Do *not* set `standalone: true` manually in decorators.
-* Use **signals** and `computed()` for component state management; avoid manual mutation—use `update()` or `set()`. 
-* Use `inject()` for DI, not constructor injection.
-* Set `changeDetection: ChangeDetectionStrategy.OnPush`.
-* Use `host` metadata instead of `@HostBinding` / `@HostListener`. Ensure `"typeCheckHostBindings": true` in tsconfig.json under `angularCompilerOptions`.
-* Use reactive forms (FormGroup/FormControl) over template‑driven forms.
-* Use class bindings (`[class]`) instead of `ngClass`, and style bindings (`[style]`) instead of `ngStyle`.
+  ```typescript
+  // ✅ Correct Component Pattern with Data Conversion
+  export class DepartmentQueryComponent {
+    performSearch(): void {
+      // 1. Build camelCase query object
+      const queryDto: DepartmentQueryDto = {
+        deptCode: this.queryForm.value.deptCode,
+        deptName: this.queryForm.value.deptName,
+        isActive: this.queryForm.value.isActive,
+        firstIndexInPage: firstIndex,
+        lastIndexInPage: lastIndex
+      };
 
-## ✅ Reactivity & State Management
-* Use signal() for local state, computed() for derived state; avoid mutate(), use .set() or .update().
-* Leverage extended expression syntax: JS ** operator, `in`, template literals, etc.
-* Leverage stable APIs: effect, linkedSignal, toSignal, toObservable.
-* Use @if, @for, @switch instead of *ngIf, *ngFor, *ngSwitch.
-* Use `async` pipe to subscribe to Observables in templates.
-* Use `effect()` only when necessary.
-* Prefer signals over RxJS for local state; interop via `toSignal()` etc. when needed.
-* Use `input()` / `output()` functions in components rather than decorator inputs/outputs.
+      // 2. Convert to snake_case for API request
+      const requestData = objectToSnakeCase(queryDto);
 
-## ✅ Component & Folder Structure
-- Use **kebab-case** file names (e.g. `course-list.component.ts`, `course.service.ts`).
-- One component = one file triplet: `.ts`, `.html`, `.css` with shared base name.
-- Organize as:
-  """
-  src/
-  app/
-  core/
-  services/
-  guards/
-  shared/
-  components/
-  features/
-  course-management/
-  course-list.ts
-  course-list.html
-  course-list.css
-  app.ts
+      // 3. Make API call
+      this.departmentService.searchDepartments(requestData)
+        .subscribe(response => {
+          if (response.code === 1000 && response.data) {
+            // 4. Convert response back to camelCase
+            const convertedResponse = objectToCamelCase<any>(response);
+            const data = convertedResponse.data;
+            
+            // 5. Use camelCase data in component
+            this.results = {
+              dataList: data.dataList,
+              totalRecords: data.totalRecords,
+              firstIndex: data.firstIndexInPage
+            };
+          }
+        });
+    }
+  }
+  ```
 
-markdown
-複製程式碼
+---
 
-  """
+## 3. Layouts Directory
+* All layout components go in `core/layout/`
+* Examples: `main-layout/`, `admin-layout/`, `auth-layout/`
+* Layouts also use the three-file split rule
 
-## ✅ CLI & Migration Tools
-* Use CLI generators like:
-  - ng generate @angular/core:control‑flow
-  - ng generate @angular/core:signal‑input‑migration
-  - cleanup‑unused‑import, self‑closing‑tag
-* Use incremental hydration and @defer for SSR; hydrate controls; use placeholder blocks.
+```plaintext
+core/
+  └── layout/
+        ├── main-layout/
+        ├── admin-layout/
+        └── auth-layout/
+```
 
-## ✅ Naming & Folder Structure
-* No suffix on filenames or class names for components/directives/services (e.g. user-profile.ts not user-profile.component.ts).
-* Pipes, guards, interceptors use hyphen suffix: auth-guard.ts, currency-pipe.ts.
-* Filenames use kebab-case; test files end in .spec.ts.
-* Organize by domain features: core/, domains/, shared/, etc with one concept per file.
-* File names in kebab‑case: e.g. `course-list.ts`, `course-list.html`, `course-list.css`. Test files end in `.spec.ts`.
-* Organize by feature area, group related files in folder, one concept per file.
+---
 
-## ✅ Forms, HTTP & Performance
-* Use Reactive Forms (FormGroup/FormControl).
-* Services single responsibility with providedIn: 'root'; inject in components via `inject()`.
-* Use `NgOptimizedImage` for all static images.
-* In @for loops include trackBy(). rely on built-in diagnostics for missing `track` invocation.
-* Use pure pipes for heavy computation; defer non-critical UI.
+## 4. Assets & Environments
+### Assets
+* All static files (images, SVGs, fonts, i18n, etc.) go under `assets/` in proper subfolders
+* CLI/Vite will automatically process and bundle assets
 
-## ✅ Lazy Loading & Routing
-* Implement lazy-loaded feature modules (though using standalone components).
-* Use signals and standalone components for feature routes and route-level state management.
+### Environments
+* Environment variables/settings must be placed in `environments/` and referenced from there—never hardcoded
+* **All environment variables must be retrieved via these files – never hardcode in code**
 
-## ✅ Accessibility & Security
-* Use semantic HTML and ARIA attributes.
-* Avoid innerHTML; rely on Angular sanitization.
-* Enable CLI autoCsp for production builds.
+---
 
-## ✅ Testing
-* Tests follow Arrange–Act–Assert.
-* test files end in .spec.ts.
-* Prefer Vitest + jsdom in Angular v20 if feasible.
-* Use signal-based APIs in test code.
+## 5. Naming Conventions
+* Component, Service, Directive: Filename **must** use `.component.ts`, `.service.ts`, `.directive.ts`
+* All folder and file names use **kebab-case**
+* Components/services/directives/types/etc: **no suffix** (e.g. `user-profile.ts` rather than `user-profile.component.ts`).
+  Only pipes/guards/interceptors use a hyphenated suffix, e.g. `auth-guard.ts`
+* Types, classes, and components: **PascalCase** (e.g. `UserProfile`)
+* Variables and functions: **camelCase**
+* Constants: **UPPER\_SNAKE\_CASE**
+* Test files: `.spec.ts`, placed next to their source files
 
-## ✅ AI Context & Code Generation
-* Include llms.txt in root with links to official docs, code recipes.
-* System prompts align with Angular official style guide and “Develop with AI” conventions; avoid legacy APIs (NgModule, structural directives, ZoneJS).
-* Use only Angular v20+ APIs—no legacy NgModule, no structural directives like `*ngIf`, etc.
+---
+
+## 6. Feature-First & Standalone Principles
+* Every feature/domain folder is fully self-contained (pages, components, services, signals/store, types, routes, etc.)
+* Use **standalone components/directives/pipes** exclusively—no NgModules
+* Routing, DI, and state are all handled via standalone APIs
+
+---
+
+## 7. State Management & Signals
+* Use `signal()`, `computed()`, and `effect()` for all local state (never use class properties for state)
+* Use `input()`, `input.required()` instead of `@Input()`
+* Use `output()` instead of `@Output()`
+* Use `linkedSignal()` for two-way binding if needed
+* Feature folders should always use signals/store for state
+
+---
+
+## 8. Dependency Injection
+* **Always use the `inject()` function** for all DI (Angular services, ActivatedRoute, ChangeDetectorRef, etc.); never use constructor injection
+
+---
+
+## 9. Routing
+* Use `loadComponent()` for lazy routes (**no NgModule-based routing**)
+* Place route files inside each feature folder
+* Use signal-based `input()` for route params
+
+---
+
+## 10. HttpClient & Resource API
+* Use `resource()` / `httpResource()` for data fetching and reactive flows (Angular 20+)
+* Each resource should define `request()` and `loader()`; provide input via signals
+* Never use `subscribe()` inside components; always use reactive patterns
+
+---
+
+## 11. Testing & Test Files
+* Test files are placed next to source, always named `.spec.ts`
+* Tests should cover components, services, pipes, guards, etc.
+* Use Vitest + jsdom (recommended for Angular 20+; replaces Karma)
+* Arrange–Act–Assert structure for all tests
+* Use signal-based APIs for testing component behavior
+
+---
+
+## 12. Coding Style & Control Flow
+* Use new native control flow: `@if`, `@for`, `@defer` (never use `*ngIf`, `*ngFor`)
+* Always set `ChangeDetectionStrategy.OnPush`
+* Never use `ngClass`/`ngStyle`; always use `[class]`/`[style]`
+* Use Reactive Forms; do not use template-driven forms
+* Folder structure should be flat and clear—no excessive nesting
+
+---
+
+## 13. Images & Optimization
+* Always use `NgOptimizedImage` for static images (never plain `<img>`)
+* All static assets must be managed under `assets/`
+
+---
+
+## 14. Practices to Avoid
+* **Do not** create technology-first root folders (`components/`, `services/`, etc.); always organize by feature
+* **Do not** put any business logic in `shared/`; only UI, pipes, or utilities allowed
+* Avoid NgModule, template-driven forms, class property state, inline styles, direct subscribe()
+* Do not hardcode environment variables in code
+
+---
+
+## 15. Additional Recommendations
+* **Always** use Angular CLI/Vite generators (schematics) to create files
+* Regularly refactor and clean up unused files/components
+* Add a short `README.md` in each major folder to document its purpose if possible
+
+## 16. ReadMe Markdown
+For every major folder (such as core/, domains/, features/, shared/), you must include a detailed README.md file.
+* This README should be written in simple, beginner-friendly language.
+* It must clearly explain:
+  - The overall purpose of the folder (why it exists and its role in the application)
+  - What kinds of files/components/resources are inside
+  - Any important coding or usage conventions that apply to this folder
+  - How someone new to the project should use or extend this folder (with practical examples if possible)
+* The goal: Anyone, even without prior experience on this project, should be able to read this file and immediately understand what this part of the codebase is for, and how to work with it.
+* Prefer clear, step-by-step explanations, diagrams, or file tree samples where helpful.
+
+---
+
+## 17. Do's and Don'ts Summary Table
+
+| ✅ Do                             | ❌ Don't                                  |
+| -------------------------------- | ---------------------------------------- |
+| signals, input()/output()        | class properties, @Input(), @Output()    |
+| inject()                         | constructor injection                    |
+| loadComponent()                  | loadChildren()                           |
+| resource()/httpResource()        | subscribe() in components                |
+| @if/@for/@defer                  | \*ngIf/\*ngFor                           |
+| NgOptimizedImage                 | plain <img> (no optimization)            |
+| Reactive Forms                   | template-driven forms                    |
+| Small, focused components        | Large, monolithic components             |
+| Consistent naming                | Inconsistent naming                      |
+| Three-file component separation  | Inline templates/styles (except trivial) |
+| Use assets/ for all static files | Scatter static files in app/             |
+| Feature-first folder structure   | Technology-first root folders            |
+| Use CLI/Vite generators          | Manual file creation, inconsistent style |
+
+---
+
+## 18. Official References
+
+* [Angular LLM Guidelines](https://angular.dev/llms)
+* [Angular Signals](https://angular.dev/guide/signals)
+* [Angular Routing](https://angular.dev/guide/router)
+* [HttpClient Resource API](https://angular.dev/api/common/http/httpResource)
+* [Angular 20 Standalone Best Practices](https://blog.angular.dev/announcing-angular-v20-b5c9c06cf301?utm_source=chatgpt.com)
+
+---
+
+## 19. Notes
+
+* Applies to all Angular 20+ projects, team onboarding, and LLM/Copilot scenarios
+* Special rules may be added in feature folders as needed
+* This guide merges all v19 principles that are still compatible with v20+ and adds new v20+ specifics (Standalone Components, Signals, Resource API, Native Control Flow, new naming conventions)
+
+---
