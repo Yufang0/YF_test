@@ -1,6 +1,6 @@
 ---
 
-applyTo: "\*\*"
+applyTo: "**"
 description: Complete Angular 20+ Coding, Structure, and Naming Guidelines (LLM/AI, Team Onboarding, Maintenance, Testing)
 
 ---
