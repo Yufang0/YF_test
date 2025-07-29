@@ -1,0 +1,106 @@
+<div class="dashboard-container">
+  <!-- 頁面標題 -->
+  <div class="page-header">
+    <h1>儀表板</h1>
+    <p class="page-description">歡迎使用員工課程註冊 ERP 系統</p>
+  </div>
+
+  <!-- 統計卡片區域 -->
+  <div class="stats-section">
+    <div class="stats-grid">
+      @for (card of statCards(); track card.title) {
+        <a [routerLink]="card.path" class="stat-card" [class]="'stat-card-' + card.color">
+          <div class="stat-icon">{{ card.icon }}</div>
+          <div class="stat-content">
+            <div class="stat-value">{{ card.value }}</div>
+            <div class="stat-title">{{ card.title }}</div>
+          </div>
+          <div class="stat-arrow">→</div>
+        </a>
+      }
+    </div>
+  </div>
+
+  <!-- 主要內容區域 -->
+  <div class="main-content-grid">
+    <!-- 快速操作區域 -->
+    <div class="quick-actions-section">
+      <div class="section-card">
+        <div class="section-header">
+          <h2>快速操作</h2>
+          <p>常用功能快速存取</p>
+        </div>
+        <div class="quick-links-grid">
+          @for (link of quickLinks(); track link.title) {
+            <a [routerLink]="link.path" class="quick-link" [class]="'quick-link-' + link.color">
+              <div class="quick-link-icon">{{ link.icon }}</div>
+              <div class="quick-link-content">
+                <h3>{{ link.title }}</h3>
+                <p>{{ link.description }}</p>
+              </div>
+              <div class="quick-link-arrow">→</div>
+            </a>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- 最近活動區域 -->
+    <div class="recent-activities-section">
+      <div class="section-card">
+        <div class="section-header">
+          <h2>最近活動</h2>
+          <p>系統近期操作記錄</p>
+        </div>
+        <div class="activities-list">
+          @if (recentActivities().length === 0) {
+            <div class="empty-state">
+              <div class="empty-icon">📝</div>
+              <p>暫無最近活動</p>
+            </div>
+          } @else {
+            @for (activity of recentActivities(); track activity.id) {
+              <div class="activity-item">
+                <div class="activity-icon">{{ activity.icon }}</div>
+                <div class="activity-content">
+                  <div class="activity-action">{{ activity.action }}</div>
+                  <div class="activity-target">{{ activity.target }}</div>
+                </div>
+                <div class="activity-time">{{ activity.time }}</div>
+              </div>
+            }
+          }
+        </div>
+        <div class="section-footer">
+          <a href="#" class="view-all-link">檢視所有活動 →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 系統資訊區域 -->
+  <div class="system-info-section">
+    <div class="info-grid">
+      <div class="info-card">
+        <h3>系統狀態</h3>
+        <div class="status-indicator">
+          <span class="status-dot status-healthy"></span>
+          <span>正常運行</span>
+        </div>
+      </div>
+      <div class="info-card">
+        <h3>資料庫狀態</h3>
+        <div class="status-indicator">
+          <span class="status-dot status-healthy"></span>
+          <span>連線正常</span>
+        </div>
+      </div>
+      <div class="info-card">
+        <h3>最後更新</h3>
+        <div class="last-update">
+          {{ getCurrentDate() }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

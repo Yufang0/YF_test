@@ -1,0 +1,118 @@
+/* Swiss International Style - Typography */
+
+/* Base Typography Settings */
+html {
+  font-size: 16px; /* Base font size for rem calculations */
+}
+
+body {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+  background-color: var(--color-background-primary);
+  text-align: left; /* Swiss style - left alignment by default */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Headings - Swiss Typography Hierarchy */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-primary);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-4);
+  margin-top: 0;
+}
+
+h1 { 
+  font-size: var(--font-size-3xl);
+  margin-bottom: var(--spacing-6);
+}
+h2 { 
+  font-size: var(--font-size-2xl);
+  margin-bottom: var(--spacing-5);
+}
+h3 { 
+  font-size: var(--font-size-xl);
+  margin-bottom: var(--spacing-4);
+}
+h4 { 
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--spacing-3);
+}
+h5 { 
+  font-size: var(--font-size-base);
+  margin-bottom: var(--spacing-3);
+}
+h6 { 
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-2);
+}
+
+/* Paragraphs and Body Text */
+p {
+  margin-bottom: var(--spacing-4);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-primary);
+}
+
+/* Lists with Proper Spacing */
+ul, ol {
+  margin-left: var(--spacing-6);
+  margin-bottom: var(--spacing-4);
+  margin-top: 0;
+  padding-left: 0;
+}
+
+li {
+  margin-bottom: var(--spacing-2);
+  line-height: var(--line-height-normal);
+}
+
+/* Typography Utility Classes */
+.text-xs { 
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-normal);
+}
+.text-sm { 
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+}
+.text-base { 
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+}
+.text-lg { 
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-normal);
+}
+.text-xl { 
+  font-size: var(--font-size-xl);
+  line-height: var(--line-height-tight);
+}
+.text-2xl { 
+  font-size: var(--font-size-2xl);
+  line-height: var(--line-height-tight);
+}
+.text-3xl { 
+  font-size: var(--font-size-3xl);
+  line-height: var(--line-height-tight);
+}
+
+.font-light { font-weight: var(--font-weight-light); }
+.font-normal { font-weight: var(--font-weight-normal); }
+.font-medium { font-weight: var(--font-weight-medium); }
+.font-semibold { font-weight: var(--font-weight-semibold); }
+.font-bold { font-weight: var(--font-weight-bold); }
+
+.text-primary { color: var(--color-text-primary); }
+.text-secondary { color: var(--color-text-secondary); }
+.text-muted { color: var(--color-text-muted); }
+
+/* Line Height Utilities */
+.leading-tight { line-height: var(--line-height-tight); }
+.leading-normal { line-height: var(--line-height-normal); }
+.leading-relaxed { line-height: var(--line-height-relaxed); }

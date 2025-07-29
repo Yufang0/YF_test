@@ -1,0 +1,451 @@
+/* Swiss International Style - Dashboard */
+
+.dashboard-container {
+  padding: 0;
+  background-color: var(--color-background-primary);
+  min-height: 100vh;
+}
+
+/* 頁面標題 - 瑞士風格 */
+.page-header {
+  margin-bottom: var(--spacing-8);
+  padding-bottom: var(--spacing-4);
+  border-bottom: var(--border);
+
+  h1 {
+    margin: 0 0 var(--spacing-2) 0;
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-tight);
+  }
+
+  .page-description {
+    margin: 0;
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-base);
+    color: var(--color-text-muted);
+    line-height: var(--line-height-normal);
+  }
+}
+
+/* 統計卡片區域 */
+.stats-section {
+  margin-bottom: var(--spacing-10);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--spacing-6);
+}
+
+.stat-card {
+  background-color: var(--color-background-primary);
+  border: var(--border);
+  padding: var(--spacing-6);
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  transition: all 0.15s ease;
+
+  &:hover {
+    background-color: var(--color-background-secondary);
+    border-bottom: none;
+  }
+
+  &:focus {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  .stat-icon {
+    font-size: var(--font-size-2xl);
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-background-tertiary);
+    color: var(--color-text-primary);
+  }
+
+  .stat-content {
+    flex: 1;
+
+    .stat-value {
+      font-family: var(--font-family-primary);
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--spacing-1);
+      line-height: var(--line-height-tight);
+    }
+
+    .stat-title {
+      font-family: var(--font-family-primary);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      font-weight: var(--font-weight-medium);
+      line-height: var(--line-height-normal);
+    }
+  }
+
+  .stat-arrow {
+    font-size: var(--font-size-base);
+    color: var(--color-text-muted);
+    transition: all 0.15s ease;
+  }
+
+  &:hover .stat-arrow {
+    transform: translateX(4px);
+    color: var(--color-text-secondary);
+  }
+}
+
+/* 主要內容網格 */
+.main-content-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--spacing-6);
+  margin-bottom: var(--spacing-8);
+}
+
+/* 區域卡片 */
+.section-card {
+  background-color: var(--color-background-primary);
+  border: var(--border);
+  overflow: hidden;
+}
+
+.section-header {
+  padding: var(--spacing-6) var(--spacing-6) 0 var(--spacing-6);
+  margin-bottom: var(--spacing-4);
+
+  h2 {
+    margin: 0 0 var(--spacing-1) 0;
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-tight);
+  }
+
+  p {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-normal);
+  }
+}
+
+.section-footer {
+  padding: var(--spacing-4) var(--spacing-6) var(--spacing-6) var(--spacing-6);
+  border-top: var(--border);
+
+  .view-all-link {
+    color: var(--color-text-primary);
+    text-decoration: none;
+    font-family: var(--font-family-primary);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-sm);
+    transition: all 0.15s ease;
+    border-bottom: 1px solid transparent;
+
+    &:hover {
+      border-bottom-color: var(--color-text-primary);
+    }
+  }
+}
+
+/* 快速操作區域 */
+.quick-links-grid {
+  display: grid;
+  gap: var(--spacing-3);
+  padding: 0 var(--spacing-6);
+}
+
+.quick-link {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  padding: var(--spacing-4);
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.15s ease;
+  border: var(--border);
+
+  &:hover {
+    background-color: var(--color-background-secondary);
+    border-bottom: none;
+  }
+
+  &:focus {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  .quick-link-icon {
+    font-size: var(--font-size-xl);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-background-tertiary);
+    color: var(--color-text-primary);
+  }
+
+  .quick-link-content {
+    flex: 1;
+
+    h3 {
+      margin: 0 0 var(--spacing-1) 0;
+      font-family: var(--font-family-primary);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-primary);
+      line-height: var(--line-height-tight);
+    }
+
+    p {
+      margin: 0;
+      font-family: var(--font-family-primary);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      line-height: var(--line-height-normal);
+    }
+  }
+
+  .quick-link-arrow {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+    transition: all 0.15s ease;
+  }
+
+  &:hover .quick-link-arrow {
+    transform: translateX(4px);
+    color: var(--color-text-secondary);
+  }
+}
+
+/* 最近活動區域 */
+.activities-list {
+  padding: 0 var(--spacing-6);
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-3) 0;
+  border-bottom: var(--border);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  .activity-icon {
+    font-size: var(--font-size-base);
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-background-tertiary);
+    color: var(--color-text-primary);
+  }
+
+  .activity-content {
+    flex: 1;
+
+    .activity-action {
+      font-family: var(--font-family-primary);
+      font-weight: var(--font-weight-medium);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-primary);
+      margin-bottom: var(--spacing-1);
+      line-height: var(--line-height-tight);
+    }
+
+    .activity-target {
+      font-family: var(--font-family-primary);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+      line-height: var(--line-height-normal);
+    }
+  }
+
+  .activity-time {
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    white-space: nowrap;
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-10) var(--spacing-4);
+
+  .empty-icon {
+    font-size: var(--font-size-3xl);
+    margin-bottom: var(--spacing-3);
+    color: var(--color-text-muted);
+  }
+
+  p {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-normal);
+  }
+}
+
+/* 系統資訊區域 */
+.system-info-section {
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-4);
+  }
+
+  .info-card {
+    background-color: var(--color-background-primary);
+    border: var(--border);
+    padding: var(--spacing-5);
+
+    h3 {
+      margin: 0 0 var(--spacing-3) 0;
+      font-family: var(--font-family-primary);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      line-height: var(--line-height-tight);
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-2);
+      font-family: var(--font-family-primary);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--spacing-2);
+
+      .status-dot {
+        width: 6px;
+        height: 6px;
+
+        &.status-healthy {
+          background-color: var(--color-text-primary);
+        }
+
+        &.status-warning {
+          background-color: var(--color-accent);
+        }
+
+        &.status-error {
+          background-color: var(--color-accent);
+        }
+      }
+    }
+
+    .last-update {
+      font-family: var(--font-family-primary);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      font-weight: var(--font-weight-medium);
+      line-height: var(--line-height-normal);
+    }
+  }
+}
+
+/* 響應式設計 */
+@media (max-width: 1024px) {
+  .main-content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    margin-bottom: var(--spacing-6);
+
+    h1 {
+      font-size: var(--font-size-2xl);
+    }
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
+  }
+
+  .stat-card {
+    padding: var(--spacing-5);
+
+    .stat-icon {
+      font-size: var(--font-size-xl);
+      width: 40px;
+      height: 40px;
+    }
+
+    .stat-content .stat-value {
+      font-size: var(--font-size-xl);
+    }
+  }
+
+  .section-header {
+    padding: var(--spacing-5) var(--spacing-5) 0 var(--spacing-5);
+
+    h2 {
+      font-size: var(--font-size-lg);
+    }
+  }
+
+  .quick-links-grid {
+    padding: 0 var(--spacing-5);
+  }
+
+  .activities-list {
+    padding: 0 var(--spacing-5);
+  }
+
+  .section-footer {
+    padding: var(--spacing-3) var(--spacing-5) var(--spacing-5) var(--spacing-5);
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content-grid {
+    gap: var(--spacing-4);
+  }
+
+  .section-header {
+    padding: var(--spacing-4) var(--spacing-4) 0 var(--spacing-4);
+  }
+
+  .quick-links-grid {
+    padding: 0 var(--spacing-4);
+  }
+
+  .activities-list {
+    padding: 0 var(--spacing-4);
+  }
+
+  .section-footer {
+    padding: var(--spacing-3) var(--spacing-4) var(--spacing-4) var(--spacing-4);
+  }
+}

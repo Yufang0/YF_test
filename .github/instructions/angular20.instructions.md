@@ -123,22 +123,20 @@ src/
       const requestData = objectToSnakeCase(queryDto);
 
       // 3. Make API call
-      this.departmentService
-        .searchDepartments(requestData)
-        .subscribe((response) => {
-          if (response.code === 1000 && response.data) {
-            // 4. Convert response back to camelCase
-            const convertedResponse = objectToCamelCase<any>(response);
-            const data = convertedResponse.data;
+      this.departmentService.searchDepartments(requestData).subscribe((response) => {
+        if (response.code === 1000 && response.data) {
+          // 4. Convert response back to camelCase
+          const convertedResponse = objectToCamelCase<any>(response);
+          const data = convertedResponse.data;
 
-            // 5. Use camelCase data in component
-            this.results = {
-              dataList: data.dataList,
-              totalRecords: data.totalRecords,
-              firstIndex: data.firstIndexInPage,
-            };
-          }
-        });
+          // 5. Use camelCase data in component
+          this.results = {
+            dataList: data.dataList,
+            totalRecords: data.totalRecords,
+            firstIndex: data.firstIndexInPage,
+          };
+        }
+      });
     }
   }
   ```
@@ -395,3 +393,16 @@ For new contributors and Copilot-assisted development:
 All commit messages must follow [Conventional Commits](https://www.conventionalcommits.org/).
 Example: `feat(employee): add profile picture upload`
 This helps Copilot/AI generate correct changelogs and PR descriptions.
+
+---
+
+## 23. Copilot Change Log Standard
+
+Every time Copilot/AI makes changes to the codebase, it must generate a single markdown file `CHANGELOG_LATEST.md` in the root directory. This file should:
+
+- List all modified files.
+- Describe the changes made in each file.
+- Explain the reason for the changes if possible.
+- Always be overwritten with the latest change summary (do not append).
+
+No code or file content should be output after the changelog file.

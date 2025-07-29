@@ -1,0 +1,71 @@
+<div class="main-layout">
+  <!-- 側邊欄 -->
+  <aside class="sidebar">
+    <!-- Logo 區域 -->
+    <div class="sidebar-header">
+      <div class="logo">
+        <h2>ERP 系統</h2>
+      </div>
+    </div>
+
+    <!-- 導航選單 -->
+    <nav class="sidebar-nav">
+      <ul class="nav-list">
+        @for (item of navigationItems; track item.path) {
+          <li class="nav-item">
+            <a 
+              [routerLink]="item.path" 
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: item.path === '/dashboard' }"
+              class="nav-link"
+            >
+              <span class="nav-icon">{{ item.icon }}</span>
+              <span class="nav-label">{{ item.label }}</span>
+            </a>
+          </li>
+        }
+      </ul>
+    </nav>
+
+    <!-- 底部資訊 -->
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar">👤</div>
+        <div class="user-details">
+          <div class="user-name">管理員</div>
+          <div class="user-role">系統管理員</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- 主要內容區域 -->
+  <main class="main-content">
+    <!-- 頂部導航列 -->
+    <header class="top-header">
+      <div class="header-left">
+        <button type="button" class="menu-toggle" aria-label="切換選單">
+          ☰
+        </button>
+        <div class="breadcrumb">
+          <!-- 麵包屑導航可以在這裡擴展 -->
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="header-actions">
+          <button type="button" class="header-btn" title="通知">
+            🔔
+          </button>
+          <button type="button" class="header-btn" title="設定">
+            ⚙️
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- 頁面內容 -->
+    <div class="content-wrapper">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>

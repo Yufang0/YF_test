@@ -1,0 +1,354 @@
+/* Swiss International Style - Employee Form */
+
+.employee-form-container {
+  padding: 0;
+  background-color: var(--color-background-primary);
+}
+
+/* 頁面標題 */
+.page-header {
+  margin-bottom: var(--spacing-8);
+  padding-bottom: var(--spacing-4);
+  border-bottom: var(--border);
+
+  h1 {
+    margin: 0;
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-tight);
+  }
+
+  .breadcrumb {
+    margin-top: var(--spacing-2);
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+
+    a {
+      color: var(--color-text-primary);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+
+      &:hover {
+        border-bottom-color: var(--color-text-primary);
+      }
+    }
+
+    .separator {
+      margin: 0 var(--spacing-2);
+      color: var(--color-text-muted);
+    }
+  }
+}
+
+/* 表單區域 */
+.form-section {
+  background-color: var(--color-background-primary);
+  border: var(--border);
+  padding: var(--spacing-8);
+}
+
+.employee-form {
+  max-width: 600px;
+  
+  .form-grid {
+    display: grid;
+    gap: var(--spacing-6);
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-4);
+
+    &.single-column {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+
+    label {
+      font-family: var(--font-family-primary);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-primary);
+      margin-bottom: var(--spacing-2);
+      line-height: var(--line-height-normal);
+
+      .required {
+        color: var(--color-accent);
+        margin-left: var(--spacing-1);
+      }
+    }
+
+    input, select, textarea {
+      padding: var(--spacing-3);
+      font-family: var(--font-family-primary);
+      font-size: var(--font-size-base);
+      color: var(--color-text-primary);
+      background-color: var(--color-background-primary);
+      border: var(--border);
+      transition: all 0.15s ease;
+
+      &:focus {
+        outline: 2px solid var(--color-accent);
+        outline-offset: 2px;
+        border-color: var(--color-text-primary);
+      }
+
+      &::placeholder {
+        color: var(--color-text-muted);
+        font-style: normal;
+      }
+
+      &:disabled {
+        background-color: var(--color-background-secondary);
+        color: var(--color-text-muted);
+        cursor: not-allowed;
+      }
+
+      &.invalid {
+        border-color: var(--color-accent);
+      }
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .form-help {
+      font-family: var(--font-family-primary);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+      margin-top: var(--spacing-1);
+      line-height: var(--line-height-normal);
+    }
+
+    .form-error {
+      font-family: var(--font-family-primary);
+      font-size: var(--font-size-xs);
+      color: var(--color-accent);
+      margin-top: var(--spacing-1);
+      line-height: var(--line-height-normal);
+    }
+  }
+
+  .checkbox-group {
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-2);
+      margin-bottom: var(--spacing-3);
+
+      input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        margin: 0;
+        accent-color: var(--color-text-primary);
+      }
+
+      label {
+        margin: 0;
+        font-size: var(--font-size-sm);
+        cursor: pointer;
+      }
+    }
+  }
+
+  .radio-group {
+    display: flex;
+    gap: var(--spacing-6);
+
+    .radio-item {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-2);
+
+      input[type="radio"] {
+        width: 16px;
+        height: 16px;
+        margin: 0;
+        accent-color: var(--color-text-primary);
+      }
+
+      label {
+        margin: 0;
+        font-size: var(--font-size-sm);
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+/* 表單操作按鈕 */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-3);
+  margin-top: var(--spacing-8);
+  padding-top: var(--spacing-6);
+  border-top: var(--border);
+
+  .btn {
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    padding: var(--spacing-3) var(--spacing-6);
+    border: var(--border);
+    background-color: var(--color-background-primary);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+
+    &:hover {
+      background-color: var(--color-background-secondary);
+      border-bottom: none;
+    }
+
+    &:focus {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 2px;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    &.btn-primary {
+      background-color: var(--color-text-primary);
+      color: var(--color-background-primary);
+      border-color: var(--color-text-primary);
+
+      &:hover:not(:disabled) {
+        background-color: var(--color-text-secondary);
+        border-color: var(--color-text-secondary);
+      }
+    }
+
+    &.btn-secondary {
+      background-color: var(--color-background-secondary);
+      color: var(--color-text-secondary);
+      border-color: var(--color-gray-300);
+
+      &:hover {
+        background-color: var(--color-background-tertiary);
+      }
+    }
+
+    &.btn-danger {
+      border-color: var(--color-accent);
+      color: var(--color-accent);
+
+      &:hover {
+        background-color: var(--color-accent);
+        color: var(--color-background-primary);
+      }
+    }
+  }
+}
+
+/* 載入狀態 */
+.loading-section {
+  text-align: center;
+  padding: var(--spacing-10);
+
+  .loading-spinner {
+    font-size: var(--font-size-2xl);
+    color: var(--color-text-muted);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .loading-text {
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-base);
+    color: var(--color-text-muted);
+    line-height: var(--line-height-normal);
+  }
+}
+
+/* 錯誤狀態 */
+.error-section {
+  text-align: center;
+  padding: var(--spacing-10);
+
+  .error-icon {
+    font-size: var(--font-size-3xl);
+    color: var(--color-accent);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .error-title {
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-2);
+    line-height: var(--line-height-tight);
+  }
+
+  .error-description {
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-base);
+    color: var(--color-text-muted);
+    line-height: var(--line-height-normal);
+  }
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .form-section {
+    padding: var(--spacing-6);
+  }
+
+  .employee-form {
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+
+    .radio-group {
+      flex-direction: column;
+      gap: var(--spacing-3);
+    }
+  }
+
+  .form-actions {
+    flex-direction: column;
+    align-items: stretch;
+
+    .btn {
+      justify-content: center;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .form-section {
+    padding: var(--spacing-4);
+  }
+
+  .page-header {
+    h1 {
+      font-size: var(--font-size-2xl);
+    }
+  }
+
+  .employee-form .form-grid {
+    gap: var(--spacing-4);
+  }
+
+  .form-actions {
+    margin-top: var(--spacing-6);
+    padding-top: var(--spacing-4);
+  }
+}

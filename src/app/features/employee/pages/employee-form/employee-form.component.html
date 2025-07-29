@@ -1,0 +1,135 @@
+<div class="employee-form-container">
+  <!-- 載入狀態 -->
+  @if (loading()) {
+    <div class="loading-overlay">
+      <div class="loading-spinner-large"></div>
+      <p>載入中...</p>
+    </div>
+  } @else {
+    <div class="form-content">
+      <!-- 頁面標題 -->
+      <div class="page-header">
+        <div class="header-left">
+          <a 
+            [routerLink]="isEditMode() ? ['/employees', employee()?.id] : ['/employees']" 
+            class="back-link"
+          >
+            <span class="back-icon">←</span>
+            @if (isEditMode()) {
+              返回員工詳細資訊
+            } @else {
+              員工列表
+            }
+          </a>
+          <h1>
+            @if (isEditMode()) {
+              編輯員工資訊
+            } @else {
+              新增員工
+            }
+          </h1>
+        </div>
+      </div>
+
+      <!-- 錯誤訊息 -->
+      @if (error()) {
+        <div class="error-alert">
+          <div class="error-icon">⚠️</div>
+          <div class="error-message">{{ error() }}</div>
+        </div>
+      }
+
+      <!-- 表單 -->
+      <div class="form-card">
+        <div class="card-header">
+          <h2>基本資訊</h2>
+        </div>
+        <div class="card-content">
+          <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()" novalidate>
+            <div class="form-grid">
+              <!-- 員工姓名 -->
+              <div class="form-group">
+                <label for="name" class="form-label required">
+                  員工姓名
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  formControlName="name"
+                  class="form-control"
+                  [class.error]="hasFieldError('name')"
+                  placeholder="請輸入員工姓名"
+                  maxlength="50"
+                >
+                @if (hasFieldError('name')) {
+                  <div class="field-error">
+                    {{ getFieldErrorMessage('name') }}
+                  </div>
+                }
+              </div>
+
+              <!-- 部門 -->
+              <div class="form-group">
+                <label for="departmentId" class="form-label required">
+                  部門
+                </label>
+                <select
+                  id="departmentId"
+                  formControlName="departmentId"
+                  class="form-control"
+                  [class.error]="hasFieldError('departmentId')"
+                >
+                  <option value="">請選擇部門</option>
+                  @for (department of departments(); track department.id) {
+                    <option [value]="department.id">{{ department.name }}</option>
+                  }
+                </select>
+                @if (hasFieldError('departmentId')) {
+                  <div class="field-error">
+                    {{ getFieldErrorMessage('departmentId') }}
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- 表單按鈕 -->
+            <div class="form-actions">
+              <button 
+                type="submit" 
+                class="btn btn-primary"
+                [disabled]="loading() || employeeForm.invalid"
+              >
+                @if (loading()) {
+                  <span class="loading-spinner"></span>
+                }
+                @if (isEditMode()) {
+                  更新員工
+                } @else {
+                  建立員工
+                }
+              </button>
+              <button 
+                type="button" 
+                class="btn btn-secondary"
+                (click)="cancel()"
+                [disabled]="loading()"
+              >
+                取消
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- 表單說明 -->
+      <div class="form-hints">
+        <h3>填寫說明</h3>
+        <ul>
+          <li>員工姓名：必填，長度為 2-50 個字元</li>
+          <li>部門：必填，請從下拉選單中選擇</li>
+          <li>所有必填欄位都標有紅色星號 *</li>
+        </ul>
+      </div>
+    </div>
+  }
+</div>

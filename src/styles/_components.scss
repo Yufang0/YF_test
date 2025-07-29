@@ -1,0 +1,222 @@
+/* Swiss International Style - Base Components */
+
+/* Links - Swiss Style */
+a {
+  color: var(--color-text-primary);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: var(--transition-fast);
+  line-height: inherit;
+}
+
+a:hover {
+  border-bottom-color: var(--color-text-primary);
+}
+
+a:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Buttons - Swiss Style */
+button, .btn {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-normal);
+  cursor: pointer;
+  border: var(--border);
+  background: var(--color-background-primary);
+  color: var(--color-text-primary);
+  padding: var(--spacing-3) var(--spacing-6);
+  text-align: left;
+  transition: var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  margin: 0;
+
+  &:hover {
+    background-color: var(--color-background-secondary);
+  }
+
+  &:focus {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &.btn-primary {
+    background-color: var(--color-text-primary);
+    color: var(--color-background-primary);
+    border-color: var(--color-text-primary);
+
+    &:hover:not(:disabled) {
+      background-color: var(--color-text-secondary);
+      border-color: var(--color-text-secondary);
+    }
+  }
+
+  &.btn-secondary {
+    background-color: var(--color-background-secondary);
+    color: var(--color-text-secondary);
+    border-color: var(--color-gray-300);
+
+    &:hover {
+      background-color: var(--color-background-tertiary);
+    }
+  }
+
+  &.btn-danger {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+
+    &:hover {
+      background-color: var(--color-accent);
+      color: var(--color-background-primary);
+    }
+  }
+
+  &.btn-sm {
+    padding: var(--spacing-2) var(--spacing-4);
+    font-size: var(--font-size-xs);
+  }
+}
+
+/* Form Elements - Swiss Style */
+input, select, textarea {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+  background-color: var(--color-background-primary);
+  border: var(--border);
+  padding: var(--spacing-3);
+  width: 100%;
+  margin: 0;
+  transition: var(--transition-fast);
+
+  &:focus {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-color: var(--color-text-primary);
+  }
+
+  &::placeholder {
+    color: var(--color-text-muted);
+    font-style: normal;
+  }
+
+  &:disabled {
+    background-color: var(--color-background-secondary);
+    color: var(--color-text-muted);
+    cursor: not-allowed;
+  }
+
+  &.invalid {
+    border-color: var(--color-accent);
+  }
+}
+
+textarea {
+  min-height: 80px;
+  resize: vertical;
+  line-height: var(--line-height-relaxed);
+}
+
+/* Form Groups */
+.form-group {
+  margin-bottom: var(--spacing-5);
+
+  label {
+    display: block;
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-2);
+    line-height: var(--line-height-normal);
+
+    .required {
+      color: var(--color-accent);
+      margin-left: var(--spacing-1);
+    }
+  }
+
+  .form-help {
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    margin-top: var(--spacing-1);
+    line-height: var(--line-height-normal);
+  }
+
+  .form-error {
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-xs);
+    color: var(--color-accent);
+    margin-top: var(--spacing-1);
+    line-height: var(--line-height-normal);
+  }
+}
+
+/* Tables - Swiss Grid Style */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-6);
+}
+
+th, td {
+  text-align: left;
+  padding: var(--spacing-3) var(--spacing-4);
+  border-bottom: var(--border);
+  line-height: var(--line-height-normal);
+  vertical-align: top;
+}
+
+th {
+  font-weight: var(--font-weight-semibold);
+  background-color: var(--color-background-secondary);
+  color: var(--color-text-primary);
+}
+
+tr:hover {
+  background-color: var(--color-background-secondary);
+}
+
+/* Cards and Sections */
+.card, .section {
+  background-color: var(--color-background-primary);
+  border: var(--border);
+  margin-bottom: var(--spacing-6);
+}
+
+.card-header, .section-header {
+  padding: var(--spacing-6);
+  border-bottom: var(--border);
+
+  h1, h2, h3, h4, h5, h6 {
+    margin-bottom: var(--spacing-2);
+  }
+
+  p {
+    margin-bottom: 0;
+    color: var(--color-text-muted);
+  }
+}
+
+.card-body, .section-body {
+  padding: var(--spacing-6);
+}
+
+.card-footer, .section-footer {
+  padding: var(--spacing-4) var(--spacing-6);
+  border-top: var(--border);
+  background-color: var(--color-background-secondary);
+}
