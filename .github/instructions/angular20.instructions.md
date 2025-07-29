@@ -169,14 +169,41 @@ core/
 ---
 
 ## 5. Naming Conventions
-* Component, Service, Directive: Filename **must** use `.component.ts`, `.service.ts`, `.directive.ts`
-* All folder and file names use **kebab-case**
-* Components/services/directives/types/etc: **no suffix** (e.g. `user-profile.ts` rather than `user-profile.component.ts`).
-  Only pipes/guards/interceptors use a hyphenated suffix, e.g. `auth-guard.ts`
-* Types, classes, and components: **PascalCase** (e.g. `UserProfile`)
-* Variables and functions: **camelCase**
-* Constants: **UPPER\_SNAKE\_CASE**
-* Test files: `.spec.ts`, placed next to their source files
+當然，以下是你描述的**命名慣例，第 5 點的英語版 instructions 條文**，格式可直接替換原本文件的第 5 點。
+
+---
+
+## 5. Naming Conventions
+* **Feature-related files must include a clear functional suffix:**
+  * `xxx.component.ts`: Component file
+  * `xxx.service.ts`: Service file
+  * `xxx.directive.ts`: Directive file
+  * `xxx.pipe.ts`: Pipe file
+  * `xxx.guard.ts`: Guard file
+
+* **Domain types and utility files do not use functional suffixes. Name them according to their content, using kebab-case:**
+  * Examples:
+    * `department.model.ts`
+    * `date-util.ts`
+    * `api.dto.ts`
+    * `status.enum.ts`
+
+* **All folder and file names should use kebab-case** (e.g., `employee-list`, `department-management`).
+
+* **All test files must end with `.spec.ts` and be placed next to their corresponding source files:**
+  * Examples:
+    * `employee.service.spec.ts`
+    * `user-form.component.spec.ts`
+
+* **Class, interface, and type names:** Use PascalCase (e.g., `EmployeeListComponent`, `DepartmentDto`).
+
+* **Variable and function names:** Use camelCase (e.g., `employeeList`, `getEmployee()`).
+
+* **Constant names:** Use UPPER\_SNAKE\_CASE (e.g., `DEFAULT_PAGE_SIZE`).
+
+> **Recommendation:**
+> This naming convention aligns with Angular CLI standards and is suitable for large-scale, collaborative, and AI-assisted development.
+> Please follow these rules consistently to ensure clarity, maintainability, and ease of onboarding for all team members.
 
 ---
 
