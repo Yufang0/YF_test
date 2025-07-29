@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { EmployeeService } from '../../services/employee.service';
+import { DepartmentService, Department } from '../../services/department.service';
 import { Employee, EmployeeQueryDto } from '../../models/employee.model';
-import { Department } from '../../models/department.model';
 
 /**
  * 員工列表頁面元件
@@ -19,6 +19,7 @@ import { Department } from '../../models/department.model';
 })
 export class EmployeeListComponent implements OnInit {
   private readonly employeeService = inject(EmployeeService);
+  private readonly departmentService = inject(DepartmentService);
   private readonly fb = inject(FormBuilder);
 
   // 狀態管理
@@ -73,9 +74,9 @@ export class EmployeeListComponent implements OnInit {
    * 載入部門列表
    */
   private loadDepartments(): void {
-    this.employeeService.getDepartments().subscribe({
-      next: (departments) => this.departments.set(departments),
-      error: (error) => console.error('載入部門失敗:', error.message)
+    this.departmentService.getDepartments().subscribe({
+      next: (departments: Department[]) => this.departments.set(departments),
+      error: (error: any) => console.error('載入部門失敗:', error.message)
     });
   }
 

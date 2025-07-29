@@ -1,0 +1,36 @@
+<div class="employee-management">
+  <!-- 頁面標題 -->
+  <header class="page-header">
+    <h1 class="page-title">員工管理</h1>
+    <button 
+      type="button" 
+      class="btn btn-primary"
+      (click)="showCreateForm()">
+      <span class="icon">+</span>
+      新增員工
+    </button>
+  </header>
+
+  <!-- 主要內容區域 -->
+  <main class="main-content">
+    @if (isFormVisible()) {
+      <!-- 員工表單 -->
+      <section class="form-section">
+        <app-employee-form
+          [employee]="selectedEmployee()"
+          (formSubmit)="onFormSuccess()"
+          (formCancel)="hideForm()">
+        </app-employee-form>
+      </section>
+    }
+
+    <!-- 員工列表 -->
+    <section class="list-section">
+      <app-employee-list
+        [searchQuery]="searchQuery()"
+        (editEmployee)="showEditForm($event)"
+        (deleteEmployee)="refreshEmployeeList()">
+      </app-employee-list>
+    </section>
+  </main>
+</div>

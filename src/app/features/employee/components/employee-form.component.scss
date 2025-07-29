@@ -1,0 +1,131 @@
+@use '../../../../assets/styles/variables' as *;
+@use '../../../../assets/styles/typography' as *;
+@use '../../../../assets/styles/components' as *;
+
+.employee-form {
+  .form {
+    padding: $spacing-lg;
+
+    .form-header {
+      margin-bottom: $spacing-lg;
+      padding-bottom: $spacing-md;
+      border-bottom: 1px solid $border-color;
+
+      .form-title {
+        @extend %heading-2;
+        margin: 0;
+        color: $text-primary;
+      }
+    }
+
+    .alert {
+      margin-bottom: $spacing-lg;
+      padding: $spacing-md;
+      border-radius: $border-radius;
+      border: 1px solid;
+
+      &.alert-error {
+        background: rgba($error-color, 0.1);
+        border-color: $error-color;
+        color: $error-color;
+
+        .error-list {
+          margin: $spacing-xs 0 0 $spacing-md;
+          padding: 0;
+
+          li {
+            margin-bottom: $spacing-xs;
+
+            &:last-child {
+              margin-bottom: 0;
+            }
+          }
+        }
+      }
+    }
+
+    .form-body {
+      .form-group {
+        margin-bottom: $spacing-lg;
+
+        .form-label {
+          @extend %form-label;
+          display: block;
+          margin-bottom: $spacing-xs;
+
+          &.required::after {
+            content: ' *';
+            color: $error-color;
+          }
+        }
+
+        .form-input,
+        .form-select {
+          @extend %form-input;
+          width: 100%;
+
+          &.error {
+            border-color: $error-color;
+            box-shadow: 0 0 0 2px rgba($error-color, 0.2);
+          }
+
+          &:focus {
+            outline: none;
+            border-color: $primary-color;
+            box-shadow: 0 0 0 2px rgba($primary-color, 0.2);
+          }
+        }
+
+        .field-error {
+          @extend %field-error;
+          margin-top: $spacing-xs;
+          color: $error-color;
+          font-size: $font-size-sm;
+        }
+      }
+    }
+
+    .form-footer {
+      margin-top: $spacing-xl;
+      padding-top: $spacing-lg;
+      border-top: 1px solid $border-color;
+
+      .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: $spacing-md;
+
+        .btn {
+          min-width: 120px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: $spacing-xs;
+
+          &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+          }
+
+          .loading-spinner.small {
+            width: 16px;
+            height: 16px;
+          }
+        }
+
+        @media (max-width: 768px) {
+          flex-direction: column-reverse;
+          
+          .btn {
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+}
+
+// 載入中動畫
+.loading-spinner {
+  @extend %loading-spinner;
+}

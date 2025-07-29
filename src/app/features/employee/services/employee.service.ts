@@ -137,20 +137,4 @@ export class EmployeeService {
         })
       );
   }
-
-  /**
-   * 取得所有部門列表（用於下拉選單）
-   */
-  getDepartments(): Observable<{ id: number; name: string }[]> {
-    return this.http.get<ApiResponse<{ id: number; name: string }[]>>(`${environment.apiUrl}/departments`)
-      .pipe(
-        map(response => {
-          if (response.code === 1000 && response.data) {
-            return response.data;
-          }
-          throw new Error(response.message || '取得部門列表失敗');
-        }),
-        catchError(error => this.errorHandler.handleError('取得部門列表', error))
-      );
-  }
 }

@@ -7,31 +7,13 @@ import { Routes } from '@angular/router';
 export const employeeRoutes: Routes = [
   {
     path: '',
-    redirectTo: 'list',
+    redirectTo: 'management',
     pathMatch: 'full'
   },
   {
-    path: 'list',
+    path: 'management',
     loadComponent: () => 
-      import('./pages/employee-list/employee-list.component').then(c => c.EmployeeListComponent),
-    title: '員工列表'
-  },
-  {
-    path: 'new',
-    loadComponent: () => 
-      import('./pages/employee-form/employee-form.component').then(c => c.EmployeeFormComponent),
-    title: '新增員工'
-  },
-  {
-    path: ':id',
-    loadComponent: () => 
-      import('./pages/employee-detail/employee-detail.component').then(c => c.EmployeeDetailComponent),
-    title: '員工詳細資訊'
-  },
-  {
-    path: ':id/edit',
-    loadComponent: () => 
-      import('./pages/employee-form/employee-form.component').then(c => c.EmployeeFormComponent),
-    title: '編輯員工'
+      import('./pages/employee-management.component').then(c => c.EmployeeManagementComponent),
+    title: '員工管理'
   }
 ];

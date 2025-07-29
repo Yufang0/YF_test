@@ -1,0 +1,68 @@
+@use '../../../../assets/styles/variables' as *;
+@use '../../../../assets/styles/typography' as *;
+@use '../../../../assets/styles/components' as *;
+
+.employee-management {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: $spacing-lg;
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-xl;
+    padding-bottom: $spacing-md;
+    border-bottom: 1px solid $border-color;
+
+    .page-title {
+      @extend %heading-1;
+      margin: 0;
+      color: $text-primary;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      gap: $spacing-xs;
+
+      .icon {
+        font-size: 1.2em;
+        font-weight: bold;
+      }
+    }
+  }
+
+  .main-content {
+    .form-section {
+      background: $surface-elevated;
+      border-radius: $border-radius;
+      border: 1px solid $border-color;
+      margin-bottom: $spacing-xl;
+      box-shadow: $shadow-sm;
+    }
+
+    .list-section {
+      background: $surface-elevated;
+      border-radius: $border-radius;
+      border: 1px solid $border-color;
+      box-shadow: $shadow-sm;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .employee-management {
+    padding: $spacing-md;
+
+    .page-header {
+      flex-direction: column;
+      align-items: stretch;
+      gap: $spacing-md;
+
+      .page-title {
+        text-align: center;
+      }
+    }
+  }
+}

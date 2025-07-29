@@ -1,52 +1,210 @@
-# 員工功能模組
+# 員工管理功能
 
-## 目的
+## 概述
 
-這個資料夾包含完整的員工管理功能，是一個獨立的業務功能模組。遵循 Angular 20+ 的功能優先架構，提供完整的員工 CRUD（建立、讀取、更新、刪除）操作。
+員工管理功能是 ERP 系統的核心模組之一，提供完整的員工資料管理能力，包括新增、查詢、編輯和刪除員工資訊。該功能採用 Angular 20+ 的最新架構，使用 signals、standalone 組件和原生控制流語法。
 
 ## 資料夾結構
 
 ```
 employee/
-├── models/           # 資料模型和介面定義
-├── services/         # 業務邏輯和 API 服務
-├── pages/           # 頁面元件
-├── components/      # 可重用的業務元件（待建立）
-├── store/           # 狀態管理（未來功能）
-├── employee.routes.ts  # 路由設定
-└── README.md        # 說明文件
+├── README.md                           # 功能說明文件
+├── employee.routes.ts                  # 路由配置
+├── models/                            # 資料模型
+│   ├── employee.model.ts              # 員工相關介面定義
+│   └── api.dto.ts                     # API 回應格式定義
+├── services/                          # 服務層
+│   ├── README.md                      # 服務說明
+│   ├── employee.service.ts            # 員工資料服務
+│   └── department.service.ts          # 部門資料服務
+├── components/                        # 可重用組件
+│   ├── employee-list.component.ts     # 員工列表組件
+│   ├── employee-list.component.html   # 員工列表模板
+│   ├── employee-list.component.scss   # 員工列表樣式
+│   ├── employee-form.component.ts     # 員工表單組件
+│   ├── employee-form.component.html   # 員工表單模板
+│   └── employee-form.component.scss   # 員工表單樣式
+└── pages/                             # 頁面組件
+    ├── README.md                      # 頁面說明
+    ├── employee-management.component.ts   # 主管理頁面
+    ├── employee-management.component.html # 主管理頁面模板
+    └── employee-management.component.scss # 主管理頁面樣式
 ```
 
-## 功能概述
+## 主要功能
 
-### 📋 員工列表管理
+### 1. 員工列表顯示
 
-- 顯示所有員工的分頁列表
-- 按姓名和部門進行搜尋過濾
-- 快速操作：檢視、編輯、刪除
-- 響應式表格設計，支援手機和桌面
+- 支援分頁瀏覽員工資料
+- 顯示員工編號、姓名、部門資訊
+- 提供編輯和刪除操作按鈕
 
-### 👤 員工詳細資訊
+### 2. 員工搜尋功能
 
-- 顯示員工的完整資訊
-- 部門關聯資訊顯示
-- 操作歷史和課程註冊（未來功能）
-- 直接編輯和刪除操作
+- 支援按員工姓名模糊搜尋
+- 支援按部門篩選
+- 即時搜尋結果更新
 
-### ✏️ 員工新增/編輯
+### 3. 員工資料管理
 
-- 統一的表單介面處理新增和編輯
-- 即時表單驗證和錯誤提示
-- 部門下拉選單整合
-- 友善的使用者體驗
+- 新增員工：填寫姓名和選擇部門
+- 編輯員工：修改現有員工資訊
+- 刪除員工：安全刪除確認
 
-### 🗑️ 員工刪除
+### 4. 表單驗證
 
-- 確認對話框防止誤刪
-- 軟刪除或硬刪除支援
-- 相關資料完整性檢查
+- 員工姓名必填驗證（2-50 字元）
+- 部門選擇必填驗證
+- 即時錯誤訊息顯示
 
-## 技術特色
+## 資料模型
+
+### Employee（員工介面）
+
+```typescript
+interface Employee {
+  id: number; // 員工編號
+  name: string; // 員工姓名
+  departmentId: number; // 部門編號
+  departmentName?: string; // 部門名稱（顯示用）
+}
+```
+
+### CreateEmployeeDto（新增員工 DTO）
+
+```typescript
+interface CreateEmployeeDto {
+  name: string; // 員工姓名
+  departmentId: number; // 部門編號
+}
+```
+
+### EmployeeQueryDto（查詢條件 DTO）
+
+```typescript
+interface EmployeeQueryDto {
+  name?: string; // 員工姓名（模糊搜尋）
+  departmentId?: number; // 部門編號
+  firstIndexInPage?: number; // 分頁起始索引
+  lastIndexInPage?: number; // 分頁結束索引
+}
+```
+
+## 使用方式
+
+### 1. 在路由中使用
+
+```typescript
+// 在 app.routes.ts 中配置
+{
+  path: 'employee',
+  loadChildren: () => import('./features/employee/employee.routes').then(r => r.employeeRoutes)
+}
+```
+
+### 2. 服務注入
+
+```typescript
+// 在組件中注入員工服務
+constructor() {
+  private readonly employeeService = inject(EmployeeService);
+}
+
+// 查詢員工列表
+this.employeeService.searchEmployees(queryDto).subscribe(response => {
+  // 處理回應資料
+});
+```
+
+### 3. 組件使用
+
+```typescript
+// 員工管理主頁面
+<app-employee-management></app-employee-management>
+
+// 員工列表組件
+<app-employee-list
+  [searchQuery]="searchQuery()"
+  (editEmployee)="onEditEmployee($event)"
+  (deleteEmployee)="onDeleteEmployee($event)">
+</app-employee-list>
+
+// 員工表單組件
+<app-employee-form
+  [employee]="selectedEmployee()"
+  (formSubmit)="onFormSubmit()"
+  (formCancel)="onFormCancel()">
+</app-employee-form>
+```
+
+## API 端點
+
+### 員工相關 API
+
+- `POST /api/employees/search` - 搜尋員工列表
+- `GET /api/employees/{id}` - 取得單一員工資訊
+- `POST /api/employees` - 建立新員工
+- `PUT /api/employees/{id}` - 更新員工資訊
+- `DELETE /api/employees/{id}` - 刪除員工
+
+### 部門相關 API
+
+- `GET /api/departments` - 取得所有部門列表
+- `GET /api/departments/{id}` - 取得單一部門資訊
+
+## 技術規範
+
+### Angular 20+ 特性
+
+- **Standalone 組件**：所有組件都是獨立的，不依賴 NgModule
+- **Signals**：使用 signals 管理組件狀態
+- **Native Control Flow**：使用 @if、@for、@defer 控制流語法
+- **inject() 函式**：使用函式式依賴注入取代構造函式注入
+- **Reactive Forms**：表單驗證和狀態管理
+
+### 樣式規範
+
+- 採用 Swiss International Style 設計原則
+- 使用模組化 SCSS 架構
+- 響應式設計支援行動裝置
+- 一致的間距和色彩系統
+
+### 錯誤處理
+
+- 統一使用 HttpErrorHandlerService 處理 HTTP 錯誤
+- 使用者友善的錯誤訊息顯示
+- 載入狀態和錯誤狀態管理
+
+## 開發指南
+
+### 新增功能
+
+1. 在 `models/` 目錄新增相關介面定義
+2. 在 `services/` 目錄實作業務邏輯
+3. 在 `components/` 目錄建立可重用組件
+4. 在 `pages/` 目錄建立頁面組件
+5. 更新路由配置和 README
+
+### 程式碼規範
+
+- 使用 TypeScript 嚴格模式
+- 遵循 Angular 官方程式碼規範
+- 使用 ESLint 和 Prettier 格式化程式碼
+- 所有公開方法需要 JSDoc 註解
+
+### 測試
+
+- 單元測試覆蓋率 > 80%
+- 整合測試涵蓋主要業務流程
+- E2E 測試覆蓋關鍵使用者路徑
+
+## 注意事項
+
+1. **權限控制**：確保只有授權使用者可以執行 CRUD 操作
+2. **資料驗證**：前端和後端都要進行資料驗證
+3. **效能最佳化**：使用分頁和虛擬滾動處理大量資料
+4. **無障礙設計**：確保符合 WCAG 2.1 AA 標準
+5. **國際化**：所有文字內容支援多語言
 
 ### 🎯 **Angular 20+ 最佳實務**
 

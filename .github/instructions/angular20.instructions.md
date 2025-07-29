@@ -339,9 +339,21 @@ For every major folder (such as core/, domains/, features/, shared/), you must i
 * Key usage conventions
 * **A minimum working code example**
 
+## 18. README.md Update Requirement
+
+- For every change, Copilot/AI must check and update the relevant README.md file(s) in the affected feature, core, or shared folder.
+- README.md content must always accurately describe:
+  - The current folder purpose and main contents
+  - The up-to-date field list, UI structure, and main usage scenarios
+  - Any new/removed/modified models, components, or service logic
+- README must always be in sync with the code and not be outdated.
+- After every change, Copilot must update the README.md before generating CHANGELOG_LATEST.md.
+- When new fields are added or removed, the README.md must list the latest schema and describe how these changes affect UI or logic.
+- README should be clear, beginner-friendly, and provide usage/code examples when possible.
+
 ---
 
-## 18. Getting Started & Onboarding
+## 19. Getting Started & Onboarding
 
 For new contributors and Copilot-assisted development:
 
@@ -350,7 +362,7 @@ For new contributors and Copilot-assisted development:
 
 ---
 
-## 19. Do's and Don'ts Summary Table
+## 20. Do's and Don'ts Summary Table
 
 | ✅ Do                            | ❌ Don't                                 |
 | -------------------------------- | ---------------------------------------- |
@@ -370,7 +382,7 @@ For new contributors and Copilot-assisted development:
 
 ---
 
-## 20. Official References
+## 21. Official References
 
 - [Angular LLM Guidelines](https://angular.dev/llms)
 - [Angular Signals](https://angular.dev/guide/signals)
@@ -380,7 +392,7 @@ For new contributors and Copilot-assisted development:
 
 ---
 
-## 21. Notes
+## 22. Notes
 
 - Applies to all Angular 20+ projects, team onboarding, and LLM/Copilot scenarios
 - Special rules may be added in feature folders as needed
@@ -388,7 +400,7 @@ For new contributors and Copilot-assisted development:
 
 ---
 
-## 22. Git Commit Message Standards
+## 23. Git Commit Message Standards
 
 All commit messages must follow [Conventional Commits](https://www.conventionalcommits.org/).
 Example: `feat(employee): add profile picture upload`
@@ -396,7 +408,7 @@ This helps Copilot/AI generate correct changelogs and PR descriptions.
 
 ---
 
-## 23. Copilot Change Log Standard
+## 24. Copilot Change Log Standard
 
 Every time Copilot/AI makes changes to the codebase, it must generate a single markdown file `CHANGELOG_LATEST.md` in the root directory. This file should:
 
@@ -406,3 +418,13 @@ Every time Copilot/AI makes changes to the codebase, it must generate a single m
 - Always be overwritten with the latest change summary (do not append).
 
 No code or file content should be output after the changelog file.
+
+## 25. SCSS File Size and Modularization
+
+- Never reduce SCSS file size by deleting or minimizing design/style content just to meet file size budgets.
+- When a single component or page SCSS file approaches or exceeds the budget (e.g., 8kB):
+  - Move all shared variables, spacing, color, and typography rules to global or shared SCSS files (such as src/styles/\_variables.scss, \_typography.scss).
+  - Import only the necessary shared SCSS into each component/page file.
+  - Refactor only by deduplication and modularization—never by losing visual details or reducing quality.
+- Update all imports as needed, and ensure no single SCSS file exceeds the enforced budget.
+- Every refactor must be summarized in CHANGELOG_LATEST.md, listing all moved/modified files and any changed imports.
