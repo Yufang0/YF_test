@@ -7,6 +7,8 @@ description: Complete Angular 20+ Coding, Structure, and Naming Guidelines (LLM/
 
 # 🟢 Angular 20+ Coding, Structure & Naming Unified Guide
 
+> **🚨 重要提醒: 本專案採用共用服務架構，請務必使用 HttpErrorHandlerService 進行 HTTP 錯誤處理，不要建立私有的 handleError 方法。**
+
 **Adapted from angular.dev/llms-full.txt, engineering best practices, and the latest v20+ architectural, naming, and code structure guidelines for large-scale Angular projects.**
 
 ---
@@ -210,6 +212,7 @@ core/
 * Use `resource()` / `httpResource()` for data fetching and reactive flows (Angular 20+)
 * Each resource should define `request()` and `loader()`; provide input via signals
 * Never use `subscribe()` inside components; always use reactive patterns
+* Use `async` pipe to subscribe to Observables in templates.
 
 ---
 
@@ -249,8 +252,28 @@ core/
 * **Always** use Angular CLI/Vite generators (schematics) to create files
 * Regularly refactor and clean up unused files/components
 * Add a short `README.md` in each major folder to document its purpose if possible
+* All code must pass linting (eslint, prettier) and type checking before commit (setup pre-commit hooks).
+* Copilot/AI should always generate code conforming to these lint rules.
 
-## 16. ReadMe Markdown
+
+---
+
+## 16. AI/Copilot/LLM Prompt Context
+* If your team uses AI tools (e.g., Copilot, ChatGPT, or custom LLM solutions) to assist development, you **must** include a `llms.txt` file in the project root.
+* The `llms.txt` should contain:
+  - Official Angular documentation and reference links
+  - Project-specific code conventions and recipes
+  - Any additional AI/system prompt instructions to improve automation or code generation consistency
+* This helps ensure all AI tools generate code that matches the team’s latest standards and conventions.
+* Example:
+ ```
+ llms.txt
+ Angular official docs: https://angular.dev/docs
+ Project coding conventions: see README.md in /core, /features, /shared
+ Code samples: https://github.com/example/angular-samples
+ ```
+
+## 17. ReadMe Markdown
 For every major folder (such as core/, domains/, features/, shared/), you must include a detailed README.md file.
 * This README should be written in simple, beginner-friendly language.
 * It must clearly explain:
@@ -260,10 +283,21 @@ For every major folder (such as core/, domains/, features/, shared/), you must i
   - How someone new to the project should use or extend this folder (with practical examples if possible)
 * The goal: Anyone, even without prior experience on this project, should be able to read this file and immediately understand what this part of the codebase is for, and how to work with it.
 * Prefer clear, step-by-step explanations, diagrams, or file tree samples where helpful.
+* Every folder (core, features, shared) must have a beginner-friendly README.md, including:
+ - Overview of purpose and contents
+ - Key usage conventions
+ - **A minimum working code example**
 
 ---
 
-## 17. Do's and Don'ts Summary Table
+## 18. Getting Started & Onboarding
+For new contributors and Copilot-assisted development:
+- See the "minimum working example" in each major folder's README.md for direct copy-paste usage.
+- Refer to the "Common Pitfalls & FAQ" section for typical errors and solutions.
+
+---
+
+## 18. Do's and Don'ts Summary Table
 
 | ✅ Do                             | ❌ Don't                                  |
 | -------------------------------- | ---------------------------------------- |
@@ -283,7 +317,7 @@ For every major folder (such as core/, domains/, features/, shared/), you must i
 
 ---
 
-## 18. Official References
+## 19. Official References
 
 * [Angular LLM Guidelines](https://angular.dev/llms)
 * [Angular Signals](https://angular.dev/guide/signals)
@@ -293,10 +327,15 @@ For every major folder (such as core/, domains/, features/, shared/), you must i
 
 ---
 
-## 19. Notes
+## 20. Notes
 
 * Applies to all Angular 20+ projects, team onboarding, and LLM/Copilot scenarios
 * Special rules may be added in feature folders as needed
 * This guide merges all v19 principles that are still compatible with v20+ and adds new v20+ specifics (Standalone Components, Signals, Resource API, Native Control Flow, new naming conventions)
 
 ---
+
+## 21. Git Commit Message Standards
+All commit messages must follow [Conventional Commits](https://www.conventionalcommits.org/).
+Example: `feat(employee): add profile picture upload`
+This helps Copilot/AI generate correct changelogs and PR descriptions.
