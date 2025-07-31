@@ -1,3 +1,53 @@
+# 搜尋表單輸入欄位間距修正 - 變更記錄
+
+## 修正搜尋表單輸入欄位間距問題
+
+### 修改檔案清單
+
+- `src/app/features/employee/components/employee-list.component.scss`
+
+### 問題描述
+
+員工搜尋表單中的輸入欄位（"員工姓名"和"部門"）由於重複的間距設定和 100% 寬度設定，導致欄位在容器中黏在一起或重疊。
+
+### 解決方案
+
+1. **清理重複間距設定**：
+
+   - 移除 `.form-label` 的額外 `margin-bottom`，改用 `.form-group` 的統一 `gap` 設定
+   - 避免雙重間距造成的佈局問題
+
+2. **Box-sizing 修正**：
+
+   - 新增 `box-sizing: border-box` 確保 padding 和 border 不會增加元素總寬度
+   - 保持 `width: 100%` 但確保不會超出容器範圍
+
+3. **Grid 佈局優化**：
+   - 使用 `1fr 1fr` 確保兩個欄位等寬分配空間
+   - 透過 `gap: $spacing-lg` 提供充足的水平間距
+
+### 佈局技術詳解
+
+**桌面版佈局**：
+
+- CSS Grid `1fr 1fr` 建立兩欄等寬佈局
+- `gap: $spacing-lg` 提供欄位間的水平間距
+- `align-items: end` 確保輸入欄位底部對齊
+
+**行動版佈局**：
+
+- 切換為 `grid-template-columns: 1fr` 單欄佈局
+- 使用 `gap: $spacing-md` 提供垂直間距
+
+**表單群組內部**：
+
+- Flexbox `column` 方向排列標籤和輸入欄位
+- 統一使用 `gap` 控制內部間距，避免額外的 margin
+
+這種方法確保了跨瀏覽器的一致性，並提供了清晰的視覺分離效果。
+
+---
+
 # 員工功能中文本地化與錯誤修正 - 變更記錄
 
 ## 變更概述

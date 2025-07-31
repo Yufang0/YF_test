@@ -16,16 +16,32 @@
     .search-form {
       .form-row {
         display: grid;
-        grid-template-columns: 300px 200px;
-        gap: $spacing-md;
+        grid-template-columns: 1fr 1fr;
+        gap: $spacing-lg;
         margin-bottom: $spacing-md;
+        align-items: end;
 
         @media (max-width: 768px) {
           grid-template-columns: 1fr;
+          gap: $spacing-md;
         }
 
         @media (max-width: 580px) {
           grid-template-columns: 1fr;
+          gap: $spacing-md;
+        }
+
+        .form-group {
+          display: flex;
+          flex-direction: column;
+          gap: $spacing-xs;
+
+          .form-input,
+          .form-select {
+            width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+          }
         }
       }
 
