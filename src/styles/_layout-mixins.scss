@@ -1,0 +1,146 @@
+// 佈局相關的混合樣式和共用類別
+// Swiss International Style Layout Mixins
+
+// 側邊欄混合樣式
+@mixin sidebar-base {
+  background-color: var(--color-background-secondary);
+  border-right: var(--border);
+  padding: var(--spacing-6) 0;
+  height: 100vh;
+  width: 240px;
+  overflow-y: auto;
+  overflow-x: hidden; /* 禁用側邊欄水平滾動 */
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+
+// 側邊欄標題區域
+@mixin sidebar-header {
+  padding: 0 var(--spacing-6) var(--spacing-8);
+  border-bottom: var(--border);
+  margin-bottom: var(--spacing-6);
+}
+
+// 導航選單基礎樣式
+@mixin nav-base {
+  flex: 1;
+  padding: 0;
+  
+  .nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+// 導航項目樣式
+@mixin nav-item {
+  display: block;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  padding: var(--spacing-3) var(--spacing-6);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-normal);
+  transition: var(--transition-fast);
+  border-left: 3px solid transparent;
+  
+  &:hover {
+    background-color: var(--color-background-tertiary);
+    color: var(--color-text-primary);
+  }
+  
+  &.active {
+    background-color: var(--color-background-tertiary);
+    border-left-color: var(--color-primary);
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-medium);
+  }
+}
+
+// 主內容區域基礎樣式 - 禁用水平滾動
+@mixin main-content-base {
+  grid-column: 2;
+  min-width: 0; /* 關鍵：防止內容被壓縮 */
+  max-width: 100%; /* 限制最大寬度 */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-background-primary);
+  overflow-x: hidden; /* 禁用水平滾動 */
+  overflow-y: auto; /* 允許垂直滾動 */
+}
+
+// 頂部導航列樣式 - 禁用水平滾動
+@mixin top-header {
+  height: 60px;
+  background-color: var(--color-background-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--spacing-6);
+  border-bottom: var(--border);
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0; /* 防止標題列被壓縮 */
+  overflow-x: hidden; /* 禁用頂部標題列水平滾動 */
+}
+
+// 使用者資訊區域樣式
+@mixin user-info-base {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  margin-bottom: var(--spacing-4);
+  padding: var(--spacing-3);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  border: 1px solid transparent;
+
+  &:hover {
+    background-color: var(--color-background-tertiary);
+    border-color: var(--color-border-color-secondary);
+  }
+
+  &:active {
+    background-color: var(--color-background-quaternary);
+  }
+}
+
+// 響應式佈局混合樣式 - 修正 Grid 佈局
+@mixin responsive-layout {
+  @media (max-width: 768px) {
+    .main-layout {
+      grid-template-columns: 1fr;
+      position: relative;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      z-index: 100;
+
+      &.mobile-open {
+        transform: translateX(0);
+      }
+    }
+
+    .main-content {
+      grid-column: 1;
+      margin-left: 0;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .sidebar {
+      width: 200px;
+    }
+  }
+}

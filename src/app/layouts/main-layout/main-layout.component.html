@@ -29,13 +29,20 @@
 
     <!-- 底部資訊 -->
     <div class="sidebar-footer">
-      <div class="user-info">
+      <div class="user-info" (click)="navigateToRoleDashboard()" title="點擊前往個人儀表板">
         <div class="user-avatar">👤</div>
         <div class="user-details">
-          <div class="user-name">管理員</div>
-          <div class="user-role">系統管理員</div>
+          <div class="user-name">{{ user()?.username || '未知使用者' }}</div>
+          <div class="user-role">{{ getRoleDisplayName() }}</div>
         </div>
       </div>
+      <button 
+        type="button" 
+        class="logout-btn" 
+        (click)="logout()"
+        title="登出">
+        🚪 登出
+      </button>
     </div>
   </aside>
 

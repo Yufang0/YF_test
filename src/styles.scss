@@ -6,6 +6,15 @@
 @use './styles/layout';
 @use './styles/themes';
 
+/* Import Mixins for Component Reuse */
+@import './styles/layout-mixins';
+@import './styles/form-mixins';
+@import './styles/card-mixins';
+@import './styles/table-mixins';
+
+/* Import Global Component Styles */
+@import './styles/component-globals';
+
 /* Swiss International (International Typographic) Style - Global Styles */
 
 /* Google Fonts Import - Inter */

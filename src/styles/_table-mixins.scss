@@ -1,0 +1,215 @@
+// 表格和清單的混合樣式
+// Swiss International Style Table & List Mixins
+
+// 基礎表格樣式 - 防止水平滾動
+@mixin table-base {
+  width: 100%;
+  max-width: 100%; /* 限制表格最大寬度 */
+  border-collapse: collapse;
+  font-family: var(--font-family-primary);
+  background-color: var(--color-background-primary);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  table-layout: fixed; /* 固定表格佈局，防止內容撐開 */
+}
+
+// 表格標題樣式 - 防止溢出
+@mixin table-header {
+  th {
+    background-color: var(--color-background-secondary);
+    padding: var(--spacing-4);
+    text-align: left;
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+    border-bottom: var(--border);
+    white-space: nowrap;
+    overflow: hidden; /* 防止內容溢出 */
+    text-overflow: ellipsis; /* 使用省略號顯示溢出文字 */
+    
+    &:first-child {
+      padding-left: var(--spacing-6);
+    }
+    
+    &:last-child {
+      padding-right: var(--spacing-6);
+    }
+  }
+}
+
+// 表格行樣式 - 防止溢出
+@mixin table-row {
+  td {
+    padding: var(--spacing-4);
+    border-bottom: var(--border);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    overflow: hidden; /* 防止內容溢出 */
+    text-overflow: ellipsis; /* 使用省略號顯示溢出文字 */
+    word-wrap: break-word; /* 強制長文字換行 */
+    
+    &:first-child {
+      padding-left: var(--spacing-6);
+    }
+    
+    &:last-child {
+      padding-right: var(--spacing-6);
+    }
+  }
+  
+  &:hover {
+    background-color: var(--color-background-tertiary);
+  }
+  
+  &:last-child td {
+    border-bottom: none;
+  }
+}
+
+// 搜尋區域樣式
+@mixin search-section {
+  background: var(--color-background-primary);
+  border: var(--border);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-8);
+  margin-bottom: var(--spacing-8);
+
+  .search-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-medium);
+    margin-bottom: var(--spacing-6);
+    line-height: var(--line-height-relaxed);
+  }
+}
+
+// 表單行樣式
+@mixin form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// 表單控制組樣式
+@mixin form-control-group {
+  display: flex;
+  flex-direction: column;
+  
+  label {
+    @include form-label;
+  }
+  
+  input, select, textarea {
+    @include form-control-base;
+  }
+}
+
+// 頁面標題樣式
+@mixin page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-8);
+  padding-bottom: var(--spacing-4);
+  border-bottom: var(--border);
+
+  h1 {
+    margin: 0;
+    line-height: var(--line-height-relaxed);
+  }
+
+  .header-actions {
+    display: flex;
+    gap: var(--spacing-4);
+  }
+}
+
+// 動作按鈕群組
+@mixin action-buttons {
+  display: flex;
+  gap: var(--spacing-2);
+  align-items: center;
+  
+  .btn-sm {
+    padding: var(--spacing-2) var(--spacing-3);
+    font-size: var(--font-size-xs);
+    min-height: 28px;
+  }
+}
+
+// 分頁樣式
+@mixin pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-2);
+  margin-top: var(--spacing-6);
+  
+  .pagination-info {
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0 var(--spacing-4);
+  }
+  
+  .pagination-btn {
+    @include button-secondary;
+    min-width: 36px;
+    height: 36px;
+    padding: var(--spacing-2);
+    
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    &.active {
+      @include button-primary;
+    }
+  }
+}
+
+// 載入狀態樣式
+@mixin loading-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-12);
+  
+  .loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--color-background-tertiary);
+    border-top: 3px solid var(--color-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  .loading-text {
+    margin-left: var(--spacing-3);
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+}
+
+// 清單容器樣式
+@mixin list-container {
+  padding: var(--spacing-6);
+  background-color: var(--color-background-primary);
+  min-height: 100vh;
+
+  > * + * {
+    margin-top: var(--spacing-6);
+  }
+}

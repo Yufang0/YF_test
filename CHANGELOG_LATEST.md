@@ -1,4 +1,167 @@
-# 搜尋表單輸入欄位間距修正 - 變更記錄
+# ERP 系統 UI/UX 改進 - 變更記錄
+
+## 登入頁面與導航系統 UI/UX 優化
+
+### 修改檔案清單
+
+**修改檔案**：
+- `src/app/features/auth/pages/login/login.component.scss` - 登入頁面佈局優化
+- `src/app/layouts/main-layout/main-layout.component.ts` - 新增角色導向功能
+- `src/app/layouts/main-layout/main-layout.component.html` - 使用者資訊可點擊功能
+- `src/app/layouts/main-layout/main-layout.component.scss` - 側邊欄固定定位與使用者資訊互動效果
+- `CHANGELOG_LATEST.md` - 更新變更記錄
+
+### 改進內容
+
+#### 1. 登入頁面佈局優化
+- **居中對齊**：登入表單在視窗中完全垂直和水平居中
+- **寬度控制**：表單容器最大寬度限制為 500px，最小寬度 320px，永不佔滿整個頁面寬度
+- **視窗適配**：確保整個登入體驗在典型筆記型電腦螢幕上完美適配，無需捲軸
+- **響應式設計**：在小螢幕上保持良好的視覺比例
+
+#### 2. 側邊欄導航改進
+- **固定定位**：左側邊欄使用 `position: fixed` 確保始終可見
+- **捲動分離**：只有主要內容區域可捲動，側邊欄始終固定在左側
+- **跨瀏覽器相容**：使用現代 CSS 技術確保各瀏覽器一致性
+- **主內容調整**：主內容區域增加左邊距以配合固定側邊欄
+
+#### 3. 使用者資訊互動功能
+- **可點擊區域**：左下角使用者資訊區域現在可完全點擊
+- **視覺回饋**：
+  - 滑鼠懸停時背景顏色變化
+  - 點擊時提供視覺反饋效果
+  - 邊框顏色變化增強互動感
+- **角色導向**：
+  - 主管點擊後自動導向主管儀表板 (`/dashboard/manager`)
+  - 員工點擊後自動導向員工工作台 (`/dashboard/employee`)
+- **工具提示**：新增 "點擊前往個人儀表板" 提示文字
+
+### 技術實作細節
+
+#### CSS 改進
+- **Flexbox 佈局**：登入頁面使用 Flexbox 實現完美居中
+- **Grid 調整**：主佈局 Grid 系統配合固定側邊欄重新設計
+- **過渡效果**：使用 CSS transition 提供流暢的互動動畫
+- **Box-sizing**：確保所有元素使用 border-box 計算
+
+#### TypeScript 功能
+- **路由注入**：使用 Angular inject() 函式注入 Router 服務
+- **角色判斷**：`navigateToRoleDashboard()` 方法根據使用者角色智慧導向
+- **後備機制**：未知角色時導向通用儀表板
+
+#### 響應式考量
+- **行動裝置**：在小螢幕上側邊欄轉為可收合設計
+- **觸控友善**：點擊區域足夠大，適合觸控操作
+- **視覺一致性**：各裝置上保持一致的視覺體驗
+
+### 使用者體驗提升
+
+1. **登入流程**：
+   - 表單大小適中，不會過大或過小
+   - 垂直居中避免使用者需要捲動查看完整表單
+   - 響應式設計確保各種螢幕尺寸下的良好體驗
+
+2. **導航便利性**：
+   - 使用者可透過點擊個人資訊快速返回角色專屬頁面
+   - 側邊欄始終可見，提供一致的導航體驗
+   - 清楚的視覺回饋讓使用者了解可互動元素
+
+3. **視覺設計**：
+   - 保持 Swiss International Style 的簡潔美感
+   - 適度的互動效果增強使用體驗
+   - 一致的色彩和間距系統
+
+這些改進大幅提升了 ERP 系統的使用者體驗，使登入和導航過程更加直觀和高效。
+
+---
+
+# ERP 系統登入功能實作 - 變更記錄
+
+## 新增登入頁面與角色基礎存取控制
+
+### 修改檔案清單
+
+**新增檔案**：
+- `src/app/features/auth/models/auth.model.ts` - 驗證相關資料模型
+- `src/app/features/auth/services/auth.service.ts` - 驗證服務（模擬 API）
+- `src/app/features/auth/pages/login/login.component.ts` - 登入頁面組件
+- `src/app/features/auth/pages/login/login.component.html` - 登入頁面模板
+- `src/app/features/auth/pages/login/login.component.scss` - 登入頁面樣式
+- `src/app/features/auth/auth.routes.ts` - 驗證功能路由
+- `src/app/core/guards/auth.guard.ts` - 路由守衛
+- `src/app/features/dashboard/pages/manager-dashboard/manager-dashboard.component.ts` - 主管儀表板
+- `src/app/features/dashboard/pages/employee-dashboard/employee-dashboard.component.ts` - 員工工作台
+
+**修改檔案**：
+- `src/app/app.routes.ts` - 更新主要路由設定，新增登入路由與路由守衛
+- `src/app/features/dashboard/dashboard.routes.ts` - 新增角色專用儀表板路由
+- `src/app/layouts/main-layout/main-layout.component.ts` - 新增使用者資訊與登出功能
+- `src/app/layouts/main-layout/main-layout.component.html` - 更新使用者資訊顯示與登出按鈕
+- `src/app/layouts/main-layout/main-layout.component.scss` - 新增登出按鈕樣式
+
+### 功能說明
+
+#### 1. 登入驗證系統
+- **模擬 API 服務**：使用 `AuthService` 模擬後端 API 呼叫
+- **角色識別邏輯**：使用者名稱包含 "manager" 或 "主管" → 主管角色，其他 → 員工角色
+- **本地儲存**：登入狀態和使用者資訊儲存在 localStorage
+- **自動導向**：根據角色自動導向對應的儀表板
+
+#### 2. 表單驗證
+- **必填欄位**：使用者名稱和密碼皆為必填
+- **長度驗證**：使用者名稱最少 2 字元，密碼不能為空
+- **即時錯誤訊息**：採用中文錯誤提示，提升使用者體驗
+- **視覺回饋**：錯誤狀態的輸入欄位會變更邊框顏色
+
+#### 3. 角色基礎存取控制
+- **路由守衛**：`AuthGuard` 保護需要驗證的路由
+- **角色驗證**：檢查使用者角色權限，阻止未授權存取
+- **自動導向**：未登入使用者導向登入頁，角色不符導向對應儀表板
+
+#### 4. 使用者介面設計
+- **登入頁面**：現代化設計，包含漸層背景和卡片佈局
+- **演示按鈕**：提供快速登入主管和員工帳號的按鈕
+- **載入狀態**：登入過程中顯示載入動畫
+- **響應式設計**：支援桌面和行動裝置
+
+#### 5. 儀表板區分
+- **主管儀表板**：員工管理、部門管理、系統報表、權限設定
+- **員工工作台**：個人資訊、考勤記錄、薪資查詢、請假申請
+- **動態導向**：根據使用者角色顯示對應的功能選項
+
+### 技術特點
+
+#### Angular 20+ 最佳實作
+- **Standalone Components**：所有組件採用獨立模式
+- **Signals**：使用 Angular Signals 進行狀態管理
+- **inject() DI**：採用現代化的相依性注入方式
+- **響應式表單**：使用 ReactiveFormsModule 進行表單驗證
+
+#### 模擬服務設計
+- **易於替換**：模擬服務結構與真實 API 一致，便於後續替換
+- **RxJS Observable**：返回 Observable 以保持一致的非同步處理
+- **錯誤處理**：包含完整的錯誤處理機制
+- **延遲模擬**：使用 delay operator 模擬網路延遲
+
+#### 安全性考量
+- **本地儲存清理**：登出時清除所有驗證資訊
+- **路由保護**：防止未驗證使用者存取受保護的路由
+- **角色驗證**：確保使用者只能存取其角色允許的功能
+
+### 演示功能
+- **主管登入**：使用者名稱包含 "manager" 或任何包含 "主管" 的字串
+- **員工登入**：其他任何使用者名稱（密碼不能為空）
+- **快速登入按鈕**：提供 "主管登入" 和 "員工登入" 快速演示按鈕
+
+### 後續擴展準備
+當真實後端 API 準備就緒時，只需要：
+1. 更新 `AuthService` 中的 `login()` 方法，將模擬邏輯替換為真實 HTTP 呼叫
+2. 調整角色判斷邏輯以使用後端回傳的角色資訊
+3. 新增 token 管理和 HTTP 攔截器（如需要）
+
+這種設計確保了從模擬到實際 API 的平滑過渡。
+
+---
 
 ## 修正搜尋表單輸入欄位間距問題
 

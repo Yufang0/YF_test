@@ -1,0 +1,93 @@
+<div class="login-container">
+  <div class="login-card">
+    <!-- 系統標題 -->
+    <div class="login-header">
+      <h1 class="system-title">ERP 管理系統</h1>
+      <p class="system-subtitle">企業資源規劃系統</p>
+    </div>
+
+    <!-- 登入表單 -->
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <!-- 使用者名稱欄位 -->
+      <div class="form-group">
+        <label for="username" class="form-label">使用者名稱</label>
+        <input
+          id="username"
+          type="text"
+          formControlName="username"
+          class="form-input"
+          [class.error]="hasFieldError('username')"
+          placeholder="請輸入使用者名稱"
+          autocomplete="username">
+        @if (hasFieldError('username')) {
+          <div class="error-message">{{ getFieldErrorMessage('username') }}</div>
+        }
+      </div>
+
+      <!-- 密碼欄位 -->
+      <div class="form-group">
+        <label for="password" class="form-label">密碼</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          class="form-input"
+          [class.error]="hasFieldError('password')"
+          placeholder="請輸入密碼"
+          autocomplete="current-password">
+        @if (hasFieldError('password')) {
+          <div class="error-message">{{ getFieldErrorMessage('password') }}</div>
+        }
+      </div>
+
+      <!-- 錯誤訊息 -->
+      @if (errorMessage()) {
+        <div class="alert alert-error">
+          <span class="icon">⚠️</span>
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <!-- 登入按鈕 -->
+      <button
+        type="submit"
+        class="btn btn-primary btn-full"
+        [disabled]="loading() || loginForm.invalid">
+        @if (loading()) {
+          <span class="loading-spinner"></span>
+          登入中...
+        } @else {
+          登入
+        }
+      </button>
+    </form>
+
+    <!-- 演示區域 -->
+    <div class="demo-section">
+      <p class="demo-title">演示帳號：</p>
+      <div class="demo-buttons">
+        <button
+          type="button"
+          class="btn btn-outline btn-sm"
+          (click)="loginAsManager()"
+          [disabled]="loading()">
+          主管登入
+        </button>
+        <button
+          type="button"
+          class="btn btn-outline btn-sm"
+          (click)="loginAsEmployee()"
+          [disabled]="loading()">
+          員工登入
+        </button>
+      </div>
+    </div>
+
+    <!-- 提示訊息 -->
+    <div class="login-hints">
+      <p class="hint-text">
+        <strong>提示：</strong>使用者名稱包含 "manager" 或 "主管" 將登入為主管角色
+      </p>
+    </div>
+  </div>
+</div>

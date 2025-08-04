@@ -1,0 +1,145 @@
+// 按鈕和表單元素的混合樣式
+// Swiss International Style Form & Button Mixins
+
+// 基礎按鈕樣式
+@mixin button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3) var(--spacing-4);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.5;
+  text-decoration: none;
+  border: 1px solid transparent;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  min-height: 36px;
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// 主要按鈕樣式
+@mixin button-primary {
+  @include button-base;
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border-color: var(--color-primary);
+  
+  &:hover:not(:disabled) {
+    background-color: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+  }
+  
+  &:active:not(:disabled) {
+    background-color: var(--color-primary-active);
+    border-color: var(--color-primary-active);
+  }
+}
+
+// 次要按鈕樣式
+@mixin button-secondary {
+  @include button-base;
+  background-color: transparent;
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  
+  &:hover:not(:disabled) {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+  }
+}
+
+// 危險按鈕樣式
+@mixin button-danger {
+  @include button-base;
+  background-color: var(--color-error);
+  color: var(--color-white);
+  border-color: var(--color-error);
+  
+  &:hover:not(:disabled) {
+    background-color: #dc2626;
+    border-color: #dc2626;
+  }
+}
+
+// 幽靈按鈕樣式
+@mixin button-ghost {
+  @include button-base;
+  background-color: transparent;
+  color: var(--color-text-secondary);
+  border-color: var(--color-border-color);
+  
+  &:hover:not(:disabled) {
+    background-color: var(--color-background-tertiary);
+    color: var(--color-text-primary);
+  }
+}
+
+// 表單控制項基礎樣式
+@mixin form-control-base {
+  width: 100%;
+  padding: var(--spacing-3);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  color: var(--color-text-primary);
+  background-color: var(--color-background-primary);
+  border: 1px solid var(--color-border-color);
+  border-radius: var(--border-radius);
+  transition: var(--transition-fast);
+  
+  &:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgb(59 130 246 / 0.1);
+  }
+  
+  &:disabled {
+    background-color: var(--color-background-tertiary);
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  &.error {
+    border-color: var(--color-error);
+    
+    &:focus {
+      box-shadow: 0 0 0 2px rgb(239 68 68 / 0.1);
+    }
+  }
+}
+
+// 表單標籤樣式
+@mixin form-label {
+  display: block;
+  margin-bottom: var(--spacing-2);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+// 表單錯誤樣式
+@mixin form-error {
+  margin-top: var(--spacing-2);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-xs);
+  color: var(--color-error);
+  line-height: 1.4;
+}
+
+// 表單群組樣式
+@mixin form-group {
+  margin-bottom: var(--spacing-4);
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}

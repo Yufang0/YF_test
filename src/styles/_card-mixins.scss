@@ -1,0 +1,185 @@
+// 卡片和內容容器的混合樣式
+// Swiss International Style Container & Card Mixins
+
+// 基礎卡片樣式
+@mixin card-base {
+  background-color: var(--color-background-primary);
+  border: var(--border);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-6);
+  transition: var(--transition-medium);
+}
+
+// 互動式卡片樣式
+@mixin card-interactive {
+  @include card-base;
+  cursor: pointer;
+  
+  &:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+// 卡片標題樣式
+@mixin card-header {
+  margin-bottom: var(--spacing-4);
+  padding-bottom: var(--spacing-4);
+  border-bottom: var(--border);
+  
+  h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    font-family: var(--font-family-primary);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+  }
+}
+
+// 卡片內容樣式
+@mixin card-content {
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+// 卡片底部樣式
+@mixin card-footer {
+  margin-top: var(--spacing-4);
+  padding-top: var(--spacing-4);
+  border-top: var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-3);
+}
+
+// 內容容器樣式 - 禁用水平滾動
+@mixin content-container {
+  flex: 1;
+  padding: var(--spacing-6);
+  background-color: var(--color-background-primary);
+  overflow-y: auto; /* 允許垂直滾動 */
+  overflow-x: hidden; /* 禁用水平滾動 */
+  min-width: 0; /* 防止內容溢出 */
+  max-width: 100%; /* 限制最大寬度 */
+  word-wrap: break-word; /* 強制長文字換行 */
+  box-sizing: border-box; /* 包含 padding 在寬度計算中 */
+  
+  .content-header {
+    margin-bottom: var(--spacing-6);
+    
+    h1 {
+      margin: 0 0 var(--spacing-2) 0;
+      font-family: var(--font-family-primary);
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-primary);
+      word-wrap: break-word; /* 防止長標題溢出 */
+    }
+    
+    .subtitle {
+      margin: 0;
+      font-family: var(--font-family-primary);
+      font-size: var(--font-size-base);
+      color: var(--color-text-secondary);
+      word-wrap: break-word; /* 防止長副標題溢出 */
+    }
+  }
+}
+
+// 動作工具列樣式
+@mixin action-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-6);
+  padding: var(--spacing-4);
+  background-color: var(--color-background-secondary);
+  border: var(--border);
+  border-radius: var(--border-radius);
+  
+  .toolbar-section {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    
+    &.left {
+      flex: 1;
+    }
+    
+    &.right {
+      flex-shrink: 0;
+    }
+  }
+}
+
+// 狀態標籤樣式
+@mixin status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-1) var(--spacing-3);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: var(--border-radius-full);
+  
+  &.success {
+    background-color: #dcfce7;
+    color: #166534;
+  }
+  
+  &.warning {
+    background-color: #fef3c7;
+    color: #92400e;
+  }
+  
+  &.error {
+    background-color: #fee2e2;
+    color: #991b1b;
+  }
+  
+  &.info {
+    background-color: #dbeafe;
+    color: #1e40af;
+  }
+}
+
+// 空狀態樣式
+@mixin empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-12);
+  text-align: center;
+  color: var(--color-text-secondary);
+  
+  .empty-icon {
+    font-size: 48px;
+    margin-bottom: var(--spacing-4);
+    opacity: 0.5;
+  }
+  
+  .empty-title {
+    margin: 0 0 var(--spacing-2) 0;
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+  }
+  
+  .empty-description {
+    margin: 0 0 var(--spacing-4) 0;
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-sm);
+    max-width: 400px;
+  }
+}
