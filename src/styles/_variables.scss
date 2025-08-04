@@ -78,3 +78,29 @@
   --transition-fast: 0.15s ease;
   --transition-normal: 0.3s ease;
 }
+
+/* Sass 變數對應 - 為了向後相容性 */
+$spacing-xs: var(--spacing-1);
+$spacing-sm: var(--spacing-2);
+$spacing-md: var(--spacing-4);
+$spacing-lg: var(--spacing-6);
+$spacing-xl: var(--spacing-8);
+
+$text-primary: var(--color-primary);
+$text-secondary: var(--color-secondary);
+$text-tertiary: var(--color-gray-600);
+$border-color: var(--color-gray-300);
+$border-radius: var(--border-radius);
+
+$surface-primary: var(--color-background-primary);
+$surface-secondary: var(--color-background-secondary);
+$surface-elevated: var(--color-gray-50);
+$surface-hover: var(--color-gray-100);
+
+$shadow-sm: var(--shadow-sm);
+
+$font-mono: 'Courier New', Courier, monospace;
+$font-size-sm: var(--font-size-sm);
+
+$error-color: var(--color-accent);
+$primary-color: var(--color-primary);

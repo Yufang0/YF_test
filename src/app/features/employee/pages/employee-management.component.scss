@@ -1,30 +1,32 @@
-@use '../../../../assets/styles/variables' as *;
-@use '../../../../assets/styles/typography' as *;
-@use '../../../../assets/styles/components' as *;
+@use '../../../../styles/variables' as *;
+@use '../../../../styles/typography' as *;
+@use '../../../../styles/mixins-index' as *;
+
+/* Employee Management Page Styles */
 
 .employee-management {
   max-width: 1200px;
   margin: 0 auto;
-  padding: $spacing-lg;
+  padding: var(--spacing-6);
 
   .page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: $spacing-xl;
-    padding-bottom: $spacing-md;
-    border-bottom: 1px solid $border-color;
+    margin-bottom: var(--spacing-8);
+    padding-bottom: var(--spacing-4);
+    border-bottom: 1px solid var(--border-color);
 
     .page-title {
       @extend %heading-1;
       margin: 0;
-      color: $text-primary;
+      color: var(--color-primary);
     }
 
     .btn {
       display: flex;
       align-items: center;
-      gap: $spacing-xs;
+      gap: var(--spacing-1);
 
       .icon {
         font-size: 1.2em;
@@ -35,30 +37,30 @@
 
   .main-content {
     .form-section {
-      background: $surface-elevated;
-      border-radius: $border-radius;
-      border: 1px solid $border-color;
-      margin-bottom: $spacing-xl;
-      box-shadow: $shadow-sm;
+      background: var(--color-background-primary);
+      border-radius: var(--border-radius);
+      border: 1px solid var(--border-color);
+      margin-bottom: var(--spacing-8);
+      box-shadow: var(--shadow-sm);
     }
 
     .list-section {
-      background: $surface-elevated;
-      border-radius: $border-radius;
-      border: 1px solid $border-color;
-      box-shadow: $shadow-sm;
+      background: var(--color-background-primary);
+      border-radius: var(--border-radius);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
     }
   }
 }
 
 @media (max-width: 768px) {
   .employee-management {
-    padding: $spacing-md;
+    padding: var(--spacing-4);
 
     .page-header {
       flex-direction: column;
       align-items: stretch;
-      gap: $spacing-md;
+      gap: var(--spacing-4);
 
       .page-title {
         text-align: center;

@@ -7,13 +7,10 @@
 @use './styles/themes';
 
 /* Import Mixins for Component Reuse */
-@import './styles/layout-mixins';
-@import './styles/form-mixins';
-@import './styles/card-mixins';
-@import './styles/table-mixins';
+@use './styles/mixins-index' as *;
 
 /* Import Global Component Styles */
-@import './styles/component-globals';
+@use './styles/component-globals';
 
 /* Swiss International (International Typographic) Style - Global Styles */
 

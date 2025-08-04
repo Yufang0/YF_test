@@ -17,6 +17,43 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Typography Placeholders for Component Use */
+%heading-1 {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  color: var(--color-primary);
+  margin: 0;
+}
+
+%heading-2 {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  color: var(--color-primary);
+  margin: 0;
+}
+
+%body-large {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+  color: var(--color-secondary);
+  margin: 0;
+}
+
+%body-small {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+  color: var(--color-secondary);
+  margin: 0;
+}
+
 /* Headings - Swiss Typography Hierarchy */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-family-primary);

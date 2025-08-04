@@ -1,29 +1,31 @@
-@use '../../../../assets/styles/variables' as *;
-@use '../../../../assets/styles/typography' as *;
-@use '../../../../assets/styles/components' as *;
+@use '../../../../styles/variables' as *;
+@use '../../../../styles/typography' as *;
+@use '../../../../styles/mixins-index' as *;
+
+/* Employee List Component Styles */
 
 .employee-list {
   .search-section {
-    padding: $spacing-lg;
-    border-bottom: 1px solid $border-color;
+    padding: var(--spacing-6);
+    border-bottom: 1px solid var(--border-color);
 
     .section-title {
       @extend %heading-2;
-      margin: 0 0 $spacing-md 0;
-      color: $text-primary;
+      margin: 0 0 var(--spacing-4) 0;
+      color: var(--color-primary);
     }
 
     .search-form {
       .form-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: $spacing-lg;
-        margin-bottom: $spacing-md;
+        gap: var(--spacing-6);
+        margin-bottom: var(--spacing-4);
         align-items: end;
 
         @media (max-width: 768px) {
           grid-template-columns: 1fr;
-          gap: $spacing-md;
+          gap: var(--spacing-4);
         }
 
         @media (max-width: 580px) {
