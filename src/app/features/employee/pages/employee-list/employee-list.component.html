@@ -193,34 +193,6 @@
           </div>
 
           <div class="form-group">
-            <label for="create-emp-email">電子郵件</label>
-            <input 
-              type="email" 
-              id="create-emp-email" 
-              formControlName="emp_email" 
-              class="form-control"
-              [class.error]="hasError(createForm, 'emp_email')"
-              placeholder="請輸入電子郵件">
-            @if (getErrorMessage(createForm, 'emp_email')) {
-              <div class="error-message">{{ getErrorMessage(createForm, 'emp_email') }}</div>
-            }
-          </div>
-
-          <div class="form-group">
-            <label for="create-emp-phone">連絡電話</label>
-            <input 
-              type="tel" 
-              id="create-emp-phone" 
-              formControlName="emp_phone" 
-              class="form-control"
-              [class.error]="hasError(createForm, 'emp_phone')"
-              placeholder="請輸入連絡電話">
-            @if (getErrorMessage(createForm, 'emp_phone')) {
-              <div class="error-message">{{ getErrorMessage(createForm, 'emp_phone') }}</div>
-            }
-          </div>
-
-          <div class="form-group">
             <label for="create-dept-id">部門 ID *</label>
             <input 
               type="number" 
@@ -245,6 +217,34 @@
               placeholder="請輸入職位名稱">
             @if (getErrorMessage(createForm, 'job_title')) {
               <div class="error-message">{{ getErrorMessage(createForm, 'job_title') }}</div>
+            }
+          </div>
+
+          <div class="form-group full-width">
+            <label for="create-emp-email">電子郵件</label>
+            <input 
+              type="email" 
+              id="create-emp-email" 
+              formControlName="emp_email" 
+              class="form-control"
+              [class.error]="hasError(createForm, 'emp_email')"
+              placeholder="請輸入電子郵件">
+            @if (getErrorMessage(createForm, 'emp_email')) {
+              <div class="error-message">{{ getErrorMessage(createForm, 'emp_email') }}</div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="create-emp-phone">連絡電話</label>
+            <input 
+              type="tel" 
+              id="create-emp-phone" 
+              formControlName="emp_phone" 
+              class="form-control"
+              [class.error]="hasError(createForm, 'emp_phone')"
+              placeholder="請輸入連絡電話">
+            @if (getErrorMessage(createForm, 'emp_phone')) {
+              <div class="error-message">{{ getErrorMessage(createForm, 'emp_phone') }}</div>
             }
           </div>
 
@@ -281,7 +281,7 @@
             }
           </div>
 
-          <div class="form-group">
+          <div class="form-group full-width">
             <label for="create-user">建立者 *</label>
             <input 
               type="text" 
@@ -354,34 +354,6 @@
           </div>
 
           <div class="form-group">
-            <label for="edit-emp-email">電子郵件</label>
-            <input 
-              type="email" 
-              id="edit-emp-email" 
-              formControlName="emp_email" 
-              class="form-control"
-              [class.error]="hasError(editForm, 'emp_email')"
-              placeholder="請輸入電子郵件">
-            @if (getErrorMessage(editForm, 'emp_email')) {
-              <div class="error-message">{{ getErrorMessage(editForm, 'emp_email') }}</div>
-            }
-          </div>
-
-          <div class="form-group">
-            <label for="edit-emp-phone">連絡電話</label>
-            <input 
-              type="tel" 
-              id="edit-emp-phone" 
-              formControlName="emp_phone" 
-              class="form-control"
-              [class.error]="hasError(editForm, 'emp_phone')"
-              placeholder="請輸入連絡電話">
-            @if (getErrorMessage(editForm, 'emp_phone')) {
-              <div class="error-message">{{ getErrorMessage(editForm, 'emp_phone') }}</div>
-            }
-          </div>
-
-          <div class="form-group">
             <label for="edit-dept-id">部門 ID *</label>
             <input 
               type="number" 
@@ -406,6 +378,34 @@
               placeholder="請輸入職位名稱">
             @if (getErrorMessage(editForm, 'job_title')) {
               <div class="error-message">{{ getErrorMessage(editForm, 'job_title') }}</div>
+            }
+          </div>
+
+          <div class="form-group full-width">
+            <label for="edit-emp-email">電子郵件</label>
+            <input 
+              type="email" 
+              id="edit-emp-email" 
+              formControlName="emp_email" 
+              class="form-control"
+              [class.error]="hasError(editForm, 'emp_email')"
+              placeholder="請輸入電子郵件">
+            @if (getErrorMessage(editForm, 'emp_email')) {
+              <div class="error-message">{{ getErrorMessage(editForm, 'emp_email') }}</div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="edit-emp-phone">連絡電話</label>
+            <input 
+              type="tel" 
+              id="edit-emp-phone" 
+              formControlName="emp_phone" 
+              class="form-control"
+              [class.error]="hasError(editForm, 'emp_phone')"
+              placeholder="請輸入連絡電話">
+            @if (getErrorMessage(editForm, 'emp_phone')) {
+              <div class="error-message">{{ getErrorMessage(editForm, 'emp_phone') }}</div>
             }
           </div>
 
@@ -442,7 +442,7 @@
             }
           </div>
 
-          <div class="form-group">
+          <div class="form-group full-width">
             <label for="edit-update-user">更新使用者 *</label>
             <input 
               type="text" 

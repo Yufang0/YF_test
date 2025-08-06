@@ -90,51 +90,51 @@ export class EmployeeListComponent implements OnInit {
    * 搜尋員工
    */
   onSearch(): void {
-    // 暫時先載入所有員工，稍後可實作完整的搜尋功能
-    this.loadEmployees();
+    const formValue = this.searchForm.value;
+    
+    // 檢查是否有任何搜尋條件
+    const hasSearchCriteria = formValue.emp_code?.trim() || 
+                             formValue.emp_name?.trim() || 
+                             formValue.dept_id || 
+                             formValue.job_title?.trim();
+    
+    if (!hasSearchCriteria) {
+      // 沒有搜尋條件，載入所有員工
+      this.loadEmployees();
+      return;
+    }
+
+    // 根據有效的搜尋條件進行搜尋
+    this.searchEmployees(formValue);
   }
 
   /**
-   * 按姓名搜尋
+   * 根據條件搜尋員工
    */
-  private searchByName(empName: string): void {
-    this.employeeService.searchEmployeesByName(empName).subscribe({
+  private searchEmployees(searchCriteria: {
+    emp_code?: string | null;
+    emp_name?: string | null;
+    dept_id?: number | null;
+    job_title?: string | null;
+  }): void {
+    this.error.set(null);
+    
+    // 使用新的綜合搜尋 API
+    const criteria = {
+      empCode: searchCriteria.emp_code?.trim() || undefined,
+      empName: searchCriteria.emp_name?.trim() || undefined,
+      deptId: searchCriteria.dept_id || undefined,
+      jobTitle: searchCriteria.job_title?.trim() || undefined
+    };
+
+    this.employeeService.searchEmployeesByCriteria(criteria).subscribe({
       next: (employees) => {
         this.employees.set(employees);
         this.error.set(null);
       },
       error: (error) => {
+        this.employees.set([]);
         this.error.set(error.message || '搜尋員工失敗');
-      }
-    });
-  }
-
-  /**
-   * 按職位搜尋
-   */
-  private searchByJobTitle(jobTitle: string): void {
-    this.employeeService.searchEmployeesByJobTitle(jobTitle).subscribe({
-      next: (employees) => {
-        this.employees.set(employees);
-        this.error.set(null);
-      },
-      error: (error) => {
-        this.error.set(error.message || '搜尋員工失敗');
-      }
-    });
-  }
-
-  /**
-   * 按狀態篩選
-   */
-  private filterByStatus(isActive: boolean): void {
-    this.employeeService.getEmployeesByStatus(isActive).subscribe({
-      next: (employees) => {
-        this.employees.set(employees);
-        this.error.set(null);
-      },
-      error: (error) => {
-        this.error.set(error.message || '篩選員工失敗');
       }
     });
   }

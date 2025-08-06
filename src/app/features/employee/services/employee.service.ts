@@ -329,4 +329,47 @@ export class EmployeeService {
         })
       );
   }
+
+  /**
+   * 根據綜合條件搜尋員工
+   */
+  searchEmployeesByCriteria(criteria: {
+    empCode?: string;
+    empName?: string;
+    deptId?: number;
+    jobTitle?: string;
+  }): Observable<Employee[]> {
+    this.loadingSignal.set(true);
+    
+    let params = new HttpParams();
+    
+    // 只加入非空的搜尋條件
+    if (criteria.empCode?.trim()) {
+      params = params.set('empCode', criteria.empCode.trim());
+    }
+    if (criteria.empName?.trim()) {
+      params = params.set('empName', criteria.empName.trim());
+    }
+    if (criteria.deptId) {
+      params = params.set('deptId', criteria.deptId.toString());
+    }
+    if (criteria.jobTitle?.trim()) {
+      params = params.set('jobTitle', criteria.jobTitle.trim());
+    }
+    
+    return this.http.get<ApiResponse<Employee[]>>(`${this.apiUrl}/search/criteria`, { params })
+      .pipe(
+        map(response => {
+          this.loadingSignal.set(false);
+          if (response.code === 1000 && response.data) {
+            return response.data;
+          }
+          throw new Error(response.message || '搜尋員工失敗');
+        }),
+        catchError(error => {
+          this.loadingSignal.set(false);
+          return this.errorHandler.handleError('搜尋員工', error);
+        })
+      );
+  }
 }

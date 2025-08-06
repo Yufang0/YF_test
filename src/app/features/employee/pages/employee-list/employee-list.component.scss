@@ -69,12 +69,21 @@
 .search-form {
   .form-row {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
     align-items: end;
     
+    // 桌機版：保持網格布局，確保間距
+    @media (min-width: 769px) {
+      grid-template-columns: repeat(4, 1fr) auto;
+      gap: 24px;
+      max-width: none;
+    }
+    
+    // 手機版：垂直堆疊，增加垂直間距
     @media (max-width: 768px) {
       grid-template-columns: 1fr;
+      gap: 16px;
     }
   }
 
@@ -82,9 +91,15 @@
     display: flex;
     flex-direction: column;
     min-width: 0; // 防止溢出
+    max-width: 100%; // 確保不超出容器
+    
+    // 桌機版：固定最大寬度避免過寬
+    @media (min-width: 769px) {
+      max-width: 220px;
+    }
 
     label {
-      margin-bottom: 6px;
+      margin-bottom: 8px;
       font-weight: 500;
       color: #495057;
       font-size: 14px;
@@ -92,12 +107,14 @@
     }
 
     .form-control {
-      padding: 8px 12px;
+      padding: 10px 12px;
       border: 1px solid #ced4da;
       border-radius: 4px;
       font-size: 14px;
       transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
       min-width: 0; // 防止溢出
+      width: 100%;
+      box-sizing: border-box;
 
       &:focus {
         outline: none;
@@ -115,12 +132,25 @@
   .form-actions {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    min-width: 120px;
+    gap: 12px;
+    min-width: 140px;
+    justify-self: end; // 在 grid 中對齊到右側
     
+    // 桌機版：按鈕橫向排列
     @media (min-width: 769px) {
       flex-direction: row;
-      gap: 8px;
+      gap: 12px;
+      align-items: end;
+      justify-self: start; // 在桌機版對齊到左側
+    }
+    
+    // 手機版：按鈕垂直堆疊，全寬
+    @media (max-width: 768px) {
+      justify-self: stretch;
+      
+      .btn {
+        width: 100%;
+      }
     }
   }
 }
@@ -349,17 +379,20 @@
   justify-content: center;
   z-index: 1050;
   padding: 20px;
+  overflow-y: auto; // 允許整個 overlay 垂直滾動
 }
 
 .modal-content {
   background: white;
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  max-width: 600px;
+  max-width: 800px; // 增加最大寬度
   width: 100%;
-  max-height: 90vh;
+  max-height: 95vh; // 增加最大高度
   display: flex;
   flex-direction: column;
+  margin: auto; // 確保居中
+  overflow: hidden; // 防止內容溢出
 }
 
 .modal-header {
@@ -368,6 +401,7 @@
   align-items: center;
   padding: 20px 24px;
   border-bottom: 1px solid #dee2e6;
+  flex-shrink: 0; // 確保標頭不被壓縮
 
   h3 {
     margin: 0;
@@ -400,10 +434,24 @@
 .modal-body {
   padding: 24px;
   overflow-y: auto;
+  overflow-x: hidden; // 明確禁止水平滾動
   flex-grow: 1;
+  
+  // 改善表單佈局，使用 CSS Grid
+  form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); // 自適應網格
+    gap: 20px;
+    
+    // 確保某些欄位佔滿整行
+    .full-width {
+      grid-column: 1 / -1;
+    }
+  }
 
   .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 0; // Grid 已處理間距
+    min-width: 0; // 防止 grid item 溢出
 
     &:last-child {
       margin-bottom: 0;
@@ -415,15 +463,19 @@
       font-weight: 500;
       color: #495057;
       font-size: 14px;
+      word-wrap: break-word; // 長文字自動換行
     }
 
     .form-control {
       width: 100%;
+      max-width: 100%; // 確保不超出父容器
+      min-width: 0; // 防止溢出
       padding: 10px 12px;
       border: 1px solid #ced4da;
       border-radius: 4px;
       font-size: 14px;
       transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+      box-sizing: border-box; // 確保 padding 不會增加寬度
 
       &:focus {
         outline: none;
@@ -439,12 +491,18 @@
           box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.25);
         }
       }
+
+      &.readonly {
+        background-color: #f8f9fa;
+        cursor: not-allowed;
+      }
     }
 
     .error-message {
       margin-top: 6px;
       font-size: 12px;
       color: #dc3545;
+      word-wrap: break-word;
     }
   }
 }
@@ -457,6 +515,8 @@
   border-top: 1px solid #dee2e6;
   background-color: #f8f9fa;
   border-radius: 0 0 8px 8px;
+  flex-shrink: 0; // 確保底部不被壓縮
+  flex-wrap: wrap; // 允許按鈕換行
 }
 
 // 響應式設計
@@ -506,18 +566,44 @@
 
   .modal-overlay {
     padding: 10px;
+    align-items: flex-start; // 在小螢幕上從頂部開始
   }
 
   .modal-content {
     margin: 0;
+    max-height: 95vh;
+    max-width: 100%; // 在小螢幕上佔滿寬度
   }
 
   .modal-body {
     padding: 16px;
+    
+    // 在行動裝置上改為單欄佈局
+    form {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    
+    .form-control {
+      font-size: 16px; // 防止 iOS 自動縮放
+    }
   }
 
   .modal-header, .modal-footer {
     padding: 16px;
+  }
+  
+  .modal-footer {
+    flex-direction: column-reverse; // 在小螢幕上垂直排列按鈕
+    
+    .btn {
+      width: 100%;
+      margin-bottom: 8px;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
   }
 }
 
