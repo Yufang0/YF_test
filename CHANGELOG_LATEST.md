@@ -3,9 +3,11 @@
 ## 🔍 搜尋功能重大改進 (2025-08-06 最新)
 
 ### 問題修復
+
 **原問題**：員工查詢功能不管搜尋條件是什麼，都會查出全部員工，Spring Boot log 看到的 SQL 沒有任何 where 條件。
 
 **解決方案**：
+
 1. **前端修復**：`onSearch()` 方法原本只呼叫 `loadEmployees()`，現在正確使用搜尋表單的值
 2. **後端新增**：實作綜合條件搜尋 API，支援動態 SQL 產生
 3. **UI 改進**：移除編輯彈窗的水平滾動條，內容自適應
@@ -13,6 +15,7 @@
 ### 🚀 新增功能
 
 #### 綜合搜尋 API
+
 - **端點**：`GET /api/employees/search/criteria`
 - **參數**：`empCode`, `empName`, `deptId`, `jobTitle` (全部可選)
 - **特色**：
@@ -22,12 +25,10 @@
   - 排序：按員工編號升序排列
 
 #### 前端智慧搜尋
+
 ```typescript
 // 檢查是否有搜尋條件
-const hasSearchCriteria = formValue.emp_code?.trim() || 
-                         formValue.emp_name?.trim() || 
-                         formValue.dept_id || 
-                         formValue.job_title?.trim();
+const hasSearchCriteria = formValue.emp_code?.trim() || formValue.emp_name?.trim() || formValue.dept_id || formValue.job_title?.trim();
 
 // 無條件時載入全部，有條件時執行搜尋
 if (!hasSearchCriteria) {
@@ -38,6 +39,7 @@ if (!hasSearchCriteria) {
 ```
 
 #### 後端動態查詢
+
 ```java
 @Query("SELECT e FROM EmployeeEntity e WHERE " +
        "(:empCode IS NULL OR e.empCode LIKE %:empCode%) AND " +
@@ -51,26 +53,28 @@ List<EmployeeEntity> findByCriteria(@Param("empCode") String empCode, ...);
 ### 🎨 UI/UX 大幅改進
 
 #### Modal 彈窗優化
+
 - **移除水平滾動條**：設定 `overflow-x: hidden`
 - **增加彈窗尺寸**：最大寬度 600px → 800px，高度 90vh → 95vh
 - **CSS Grid 佈局**：自適應表單佈局 `repeat(auto-fit, minmax(250px, 1fr))`
 - **內容自適應**：長文字自動換行，欄位排列自動調整
 
 #### 響應式設計
-- **桌面版**：2欄 Grid 佈局，最佳化空間利用
+
+- **桌面版**：2 欄 Grid 佈局，最佳化空間利用
 - **行動版**：單欄佈局，全寬按鈕，垂直排列
 - **字體優化**：iOS 輸入框 16px 防止自動縮放
 
 ```scss
 .modal-body {
   overflow-x: hidden; // 禁止水平滾動
-  
+
   form {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
   }
-  
+
   .full-width {
     grid-column: 1 / -1; // 某些欄位佔滿整行
   }
@@ -78,6 +82,7 @@ List<EmployeeEntity> findByCriteria(@Param("empCode") String empCode, ...);
 ```
 
 ### 📱 行動裝置體驗提升
+
 - **彈窗從頂部開始**：避免鍵盤遮擋
 - **按鈕垂直排列**：改善觸控體驗
 - **全寬度表單**：行動裝置上佔滿螢幕
@@ -86,6 +91,7 @@ List<EmployeeEntity> findByCriteria(@Param("empCode") String empCode, ...);
 ### 🔧 技術實作亮點
 
 #### 架構設計
+
 ```
 前端: Angular Component → Service → HTTP Client
                 ↓
@@ -93,6 +99,7 @@ List<EmployeeEntity> findByCriteria(@Param("empCode") String empCode, ...);
 ```
 
 #### API 端點整理
+
 - `GET /api/employees` - 分頁查詢所有員工
 - `GET /api/employees/search/criteria` - **新增**：綜合條件搜尋
 - `GET /api/employees/search?empName=` - 姓名搜尋
@@ -100,6 +107,7 @@ List<EmployeeEntity> findByCriteria(@Param("empCode") String empCode, ...);
 - `GET /api/employees/department/{deptId}` - 部門員工
 
 #### 效能優化建議
+
 - 在 `emp_code`, `emp_name`, `dept_id`, `job_title` 建立資料庫索引
 - 實作查詢結果快取機制
 - 大數據量時考慮分頁搜尋
@@ -109,13 +117,16 @@ List<EmployeeEntity> findByCriteria(@Param("empCode") String empCode, ...);
 ## UI/UX 改善 (之前更新)
 
 ### 員工查詢表單布局優化
+
 - **修正查詢表單欄位間距問題**：
+
   - 更新 CSS Grid 布局，避免輸入欄位黏在一起或重疊
   - 桌機版：使用 `grid-template-columns: repeat(4, 1fr) auto` 確保 4 個查詢欄位 + 按鈕區域的均勻分布
   - 增加 `gap: 24px` 提供充足的欄位間距
   - 每個輸入欄位設定 `max-width: 220px` 避免過寬
 
 - **響應式設計改善**：
+
   - 手機版：改為垂直堆疊布局 (`grid-template-columns: 1fr`)
   - 增加垂直間距 `gap: 16px` 提供清晰的視覺分離
   - 按鈕在手機版自動展開為全寬 (`width: 100%`)
@@ -128,11 +139,13 @@ List<EmployeeEntity> findByCriteria(@Param("empCode") String empCode, ...);
 ### 後端 API 修正
 
 #### 員工資料顯示問題修正
+
 - **修正 emp_phone 欄位顯示**：
   - 後端 `convertEntityToVo()` 方法添加 `vo.setEmpPhone(entity.getEmpPhone())` 映射
   - 修正 API 回應缺少電話號碼的問題
 
 #### 員工更新功能修正
+
 - **完善員工更新邏輯**：
   - 後端 `updateEntityFromDto()` 方法添加 `emp_phone` 和 `update_user` 欄位更新
   - 前端更新 DTO 添加 `emp_code` 欄位確保完整更新
