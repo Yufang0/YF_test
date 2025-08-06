@@ -3,8 +3,9 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { EmployeeService } from '../../services/employee.service';
-import { DepartmentService, Department } from '../../services/department.service';
-import { Employee, CreateEmployeeDto, UpdateEmployeeDto } from '../../models/employee.model';
+import { DepartmentService } from '../../services/department.service';
+import { Employee, EmployeeCreateDto, EmployeeUpdateDto } from '../../models/employee.model';
+import { Department } from '../../models/department.model';
 
 /**
  * 員工表單元件
@@ -32,57 +33,73 @@ export class EmployeeFormComponent implements OnInit {
   readonly loading = this.employeeService.loading;
   readonly isEditMode = signal(false);
   readonly error = signal<string | null>(null);
+  readonly success = signal<string | null>(null);
 
   // 表單
   employeeForm: FormGroup = this.fb.group({
-    name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
-    departmentId: [null, [Validators.required]]
+    emp_code: ['', [Validators.required, Validators.maxLength(20), Validators.pattern(/^[A-Z0-9]+$/)]],
+    emp_name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
+    emp_email: ['', [Validators.email, Validators.maxLength(100)]],
+    emp_phone: ['', [Validators.maxLength(20), Validators.pattern(/^[0-9+\-\s()]*$/)]],
+    dept_id: [null as number | null],
+    job_title: ['', [Validators.maxLength(100)]],
+    hire_date: [''],
+    resign_date: [''],
+    is_active: [true],
+    create_user: ['SYSTEM'],
+    update_user: ['']
   });
 
   ngOnInit(): void {
-    this.loadDepartments();
-    
     const employeeId = this.id();
     if (employeeId) {
       this.isEditMode.set(true);
       this.loadEmployee(parseInt(employeeId, 10));
+      // 編輯模式下，員工編號不可編輯
+      this.employeeForm.get('emp_code')?.disable();
     }
+    this.loadDepartments();
   }
 
   /**
-   * 載入部門列表
+   * 載入員工資料
    */
-  private loadDepartments(): void {
-    this.departmentService.getDepartments().subscribe({
-      next: (departments: Department[]) => this.departments.set(departments),
-      error: (error: any) => {
-        this.error.set('載入部門列表失敗');
-        console.error('載入部門失敗:', error.message);
+  private loadEmployee(empId: number): void {
+    this.employeeService.getEmployeeById(empId).subscribe({
+      next: (employee) => {
+        this.employee.set(employee);
+        this.employeeForm.patchValue({
+          emp_code: employee.emp_code,
+          emp_name: employee.emp_name,
+          emp_email: employee.emp_email,
+          emp_phone: employee.emp_phone,
+          dept_id: employee.dept_id,
+          job_title: employee.job_title,
+          hire_date: employee.hire_date,
+          resign_date: employee.resign_date,
+          is_active: employee.is_active
+        });
+        this.error.set(null);
+      },
+      error: (error) => {
+        this.error.set(error.message || '載入員工資料失敗');
+        console.error('載入員工資料錯誤:', error);
       }
     });
   }
 
   /**
-   * 載入員工資訊（編輯模式）
+   * 載入部門資料
    */
-  private loadEmployee(employeeId: number): void {
-    if (isNaN(employeeId)) {
-      this.error.set('無效的員工編號');
-      return;
-    }
-
-    this.employeeService.getEmployee(employeeId).subscribe({
-      next: (employee) => {
-        this.employee.set(employee);
-        this.employeeForm.patchValue({
-          name: employee.name,
-          departmentId: employee.departmentId
-        });
+  private loadDepartments(): void {
+    this.departmentService.getDepartments().subscribe({
+      next: (departments: Department[]) => {
+        this.departments.set(departments);
         this.error.set(null);
       },
-      error: (error) => {
-        this.error.set(error.message);
-        console.error('載入員工資訊失敗:', error.message);
+      error: (error: Error) => {
+        this.error.set(error.message || '載入部門資料失敗');
+        console.error('載入部門資料錯誤:', error);
       }
     });
   }
@@ -91,68 +108,140 @@ export class EmployeeFormComponent implements OnInit {
    * 提交表單
    */
   onSubmit(): void {
-    if (this.employeeForm.invalid) {
-      this.markFormGroupTouched();
-      return;
-    }
-
-    const formValue = this.employeeForm.value;
-
-    if (this.isEditMode()) {
-      this.updateEmployee(formValue);
+    if (this.employeeForm.valid) {
+      const formValue = this.employeeForm.value;
+      
+      if (this.isEditMode()) {
+        this.updateEmployee(formValue);
+      } else {
+        this.createEmployee(formValue);
+      }
     } else {
-      this.createEmployee(formValue);
+      this.markFormGroupTouched();
     }
   }
 
   /**
-   * 建立新員工
+   * 建立員工
    */
-  private createEmployee(formValue: any): void {
-    const createDto: CreateEmployeeDto = {
-      name: formValue.name.trim(),
-      departmentId: parseInt(formValue.departmentId, 10)
+  private createEmployee(formValue: Partial<EmployeeCreateDto>): void {
+    const createDto: EmployeeCreateDto = {
+      emp_code: formValue.emp_code!,
+      emp_name: formValue.emp_name!,
+      emp_email: formValue.emp_email || undefined,
+      emp_phone: formValue.emp_phone || undefined,
+      dept_id: formValue.dept_id!,
+      job_title: formValue.job_title || undefined,
+      hire_date: formValue.hire_date || undefined,
+      resign_date: formValue.resign_date || undefined,
+      is_active: formValue.is_active!,
+      create_user: formValue.create_user!
     };
 
     this.employeeService.createEmployee(createDto).subscribe({
-      next: (employee) => {
-        console.log('員工建立成功:', employee);
-        this.router.navigate(['/employees', employee.id]);
+      next: (newEmployee) => {
+        this.success.set('員工建立成功！');
+        this.error.set(null);
+        console.log('員工建立成功:', newEmployee);
+        // 3秒後導航回員工列表
+        setTimeout(() => {
+          this.router.navigate(['/employee']);
+        }, 3000);
       },
       error: (error) => {
-        this.error.set(error.message);
-        console.error('建立員工失敗:', error.message);
+        this.error.set(error.message || '建立員工失敗');
+        this.success.set(null);
+        console.error('建立員工錯誤:', error);
       }
     });
   }
 
   /**
-   * 更新員工資訊
+   * 更新員工
    */
-  private updateEmployee(formValue: any): void {
-    const emp = this.employee();
-    if (!emp) return;
+  private updateEmployee(formValue: Partial<EmployeeUpdateDto>): void {
+    const employee = this.employee();
+    if (!employee) return;
 
-    const updateDto: UpdateEmployeeDto = {
-      id: emp.id,
-      name: formValue.name.trim(),
-      departmentId: parseInt(formValue.departmentId, 10)
+    const updateDto: EmployeeUpdateDto = {
+      emp_id: employee.emp_id,
+      emp_name: formValue.emp_name || undefined,
+      emp_email: formValue.emp_email || undefined,
+      emp_phone: formValue.emp_phone || undefined,
+      dept_id: formValue.dept_id || undefined,
+      job_title: formValue.job_title || undefined,
+      hire_date: formValue.hire_date || undefined,
+      resign_date: formValue.resign_date || undefined,
+      is_active: formValue.is_active || undefined,
+      update_user: formValue.update_user!
     };
 
-    this.employeeService.updateEmployee(updateDto).subscribe({
-      next: (employee) => {
-        console.log('員工更新成功:', employee);
-        this.router.navigate(['/employees', employee.id]);
+    this.employeeService.updateEmployee(employee.emp_id, updateDto).subscribe({
+      next: (updatedEmployee) => {
+        this.success.set('員工更新成功！');
+        this.error.set(null);
+        console.log('員工更新成功:', updatedEmployee);
+        // 3秒後導航回員工列表
+        setTimeout(() => {
+          this.router.navigate(['/employee']);
+        }, 3000);
       },
       error: (error) => {
-        this.error.set(error.message);
-        console.error('更新員工失敗:', error.message);
+        this.error.set(error.message || '更新員工失敗');
+        this.success.set(null);
+        console.error('更新員工錯誤:', error);
       }
     });
   }
 
   /**
-   * 標記表單所有欄位為已觸碰
+   * 取消操作
+   */
+  onCancel(): void {
+    this.router.navigate(['/employee']);
+  }
+
+  /**
+   * 重設表單
+   */
+  onReset(): void {
+    if (this.isEditMode()) {
+      // 編輯模式下重設為原始值
+      const employee = this.employee();
+      if (employee) {
+        this.employeeForm.patchValue({
+          emp_code: employee.emp_code,
+          emp_name: employee.emp_name,
+          emp_email: employee.emp_email,
+          dept_id: employee.dept_id,
+          job_title: employee.job_title,
+          hire_date: employee.hire_date,
+          resign_date: employee.resign_date,
+          is_active: employee.is_active
+        });
+      }
+    } else {
+      // 新增模式下清空表單
+      this.employeeForm.reset();
+      this.employeeForm.patchValue({
+        is_active: true,
+        create_user: 'SYSTEM'
+      });
+    }
+    this.error.set(null);
+    this.success.set(null);
+  }
+
+  /**
+   * 清除訊息
+   */
+  onClearMessages(): void {
+    this.error.set(null);
+    this.success.set(null);
+  }
+
+  /**
+   * 標記表單群組為已觸碰，用於顯示驗證錯誤
    */
   private markFormGroupTouched(): void {
     Object.keys(this.employeeForm.controls).forEach(key => {
@@ -162,36 +251,59 @@ export class EmployeeFormComponent implements OnInit {
   }
 
   /**
-   * 取消操作
+   * 取得表單控制項錯誤訊息
    */
-  cancel(): void {
-    if (this.isEditMode()) {
-      this.router.navigate(['/employees', this.employee()?.id]);
-    } else {
-      this.router.navigate(['/employees']);
+  getErrorMessage(fieldName: string): string {
+    const control = this.employeeForm.get(fieldName);
+    if (control?.errors && control.touched) {
+      if (control.errors['required']) {
+        return `${this.getFieldDisplayName(fieldName)} 為必填欄位`;
+      }
+      if (control.errors['email']) {
+        return '請輸入有效的電子郵件格式';
+      }
+      if (control.errors['minlength']) {
+        return `${this.getFieldDisplayName(fieldName)} 長度不足`;
+      }
+      if (control.errors['maxlength']) {
+        return `${this.getFieldDisplayName(fieldName)} 長度超出限制`;
+      }
+      if (control.errors['pattern']) {
+        return `${this.getFieldDisplayName(fieldName)} 格式不正確（只允許大寫字母和數字）`;
+      }
     }
+    return '';
   }
 
   /**
-   * 檢查欄位是否有錯誤且已被觸碰
+   * 取得欄位顯示名稱
    */
-  hasFieldError(fieldName: string): boolean {
-    const field = this.employeeForm.get(fieldName);
-    return !!(field?.invalid && field?.touched);
+  private getFieldDisplayName(fieldName: string): string {
+    const fieldNames: Record<string, string> = {
+      emp_code: '員工編號',
+      emp_name: '員工姓名',
+      emp_email: '電子郵件',
+      dept_id: '部門',
+      job_title: '職位',
+      hire_date: '入職日期',
+      resign_date: '離職日期'
+    };
+    return fieldNames[fieldName] || fieldName;
   }
 
   /**
-   * 取得欄位錯誤訊息
+   * 檢查欄位是否有錯誤
    */
-  getFieldErrorMessage(fieldName: string): string {
-    const field = this.employeeForm.get(fieldName);
-    if (!field?.errors || !field?.touched) return '';
+  hasError(fieldName: string): boolean {
+    const control = this.employeeForm.get(fieldName);
+    return !!(control?.errors && control.touched);
+  }
 
-    const errors = field.errors;
-    if (errors['required']) return '此欄位為必填';
-    if (errors['minlength']) return `最少需要 ${errors['minlength'].requiredLength} 個字元`;
-    if (errors['maxlength']) return `最多只能 ${errors['maxlength'].requiredLength} 個字元`;
-
-    return '輸入格式不正確';
+  /**
+   * 檢查欄位是否有效
+   */
+  isValid(fieldName: string): boolean {
+    const control = this.employeeForm.get(fieldName);
+    return !!(control?.valid && control.touched);
   }
 }

@@ -1,10 +1,23 @@
 /**
  * API 回應基礎介面
  */
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   code: number;
   message: string;
   data?: T;
+}
+
+/**
+ * 分頁回應介面 - 對應後端 PageResponse
+ */
+export interface PageResponse<T> {
+  content: T[];
+  page: number;
+  size: number;
+  total_elements: number;
+  total_pages: number;
+  first: boolean;
+  last: boolean;
 }
 
 /**

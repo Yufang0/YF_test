@@ -1,0 +1,438 @@
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { RouterModule, Router } from '@angular/router';
+import { EmployeeService } from '../../services/employee.service';
+import { Employee, EmployeeCreateDto, EmployeeUpdateDto } from '../../models/employee.model';
+
+/**
+ * 員工列表頁面元件
+ * 提供員工查詢、建立、更新和刪除功能
+ */
+@Component({
+  selector: 'app-employee-list',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  templateUrl: './employee-list.component.html',
+  styleUrl: './employee-list.component.scss'
+})
+export class EmployeeListComponent implements OnInit {
+  private readonly employeeService = inject(EmployeeService);
+  private readonly fb = inject(FormBuilder);
+  private readonly router = inject(Router);
+
+  // 狀態管理
+  readonly employees = signal<Employee[]>([]);
+  readonly selectedEmployee = signal<Employee | null>(null);
+  readonly showCreateForm = signal(false);
+  readonly showEditForm = signal(false);
+  readonly loading = this.employeeService.loading;
+  readonly error = signal<string | null>(null);
+
+  // 搜尋表單
+  readonly searchForm = this.fb.group({
+    empName: [''],
+    jobTitle: [''],
+    isActive: [null as boolean | null]
+  });
+
+  // 建立員工表單
+  readonly createForm = this.fb.group({
+    emp_code: ['', [Validators.required, Validators.maxLength(20), Validators.pattern(/^[A-Z0-9]+$/)]],
+    emp_name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
+    emp_email: ['', [Validators.email, Validators.maxLength(50)]],
+    dept_id: [null as number | null],
+    job_title: ['', [Validators.maxLength(100)]],
+    hire_date: [''],
+    resign_date: [''],
+    is_active: [true],
+    create_user: ['SYSTEM']
+  });
+
+  // 編輯員工表單
+  readonly editForm = this.fb.group({
+    emp_id: [0, Validators.required],
+    emp_code: ['', [Validators.maxLength(20), Validators.pattern(/^[A-Z0-9]+$/)]],
+    emp_name: ['', [Validators.minLength(2), Validators.maxLength(50)]],
+    emp_email: ['', [Validators.email, Validators.maxLength(50)]],
+    dept_id: [null as number | null],
+    job_title: ['', [Validators.maxLength(100)]],
+    hire_date: [''],
+    resign_date: [''],
+    is_active: [true]
+  });
+
+  ngOnInit(): void {
+    this.loadEmployees();
+  }
+
+  /**
+   * 載入所有員工
+   */
+  loadEmployees(): void {
+    this.error.set(null);
+    this.employeeService.getAllEmployees().subscribe({
+      next: (employees) => {
+        this.employees.set(employees);
+      },
+      error: (error) => {
+        this.error.set(error.message);
+        console.error('載入員工列表失敗:', error);
+      }
+    });
+  }
+
+  /**
+   * 根據姓名搜尋員工
+   */
+  searchByName(): void {
+    const empName = this.searchForm.get('empName')?.value;
+    if (!empName?.trim()) {
+      this.loadEmployees();
+      return;
+    }
+
+    this.error.set(null);
+    this.employeeService.searchEmployeesByName(empName.trim()).subscribe({
+      next: (employees) => {
+        this.employees.set(employees);
+      },
+      error: (error) => {
+        this.error.set(error.message);
+        console.error('搜尋員工失敗:', error);
+      }
+    });
+  }
+
+  /**
+   * 根據職位搜尋員工
+   */
+  searchByJobTitle(): void {
+    const jobTitle = this.searchForm.get('jobTitle')?.value;
+    if (!jobTitle?.trim()) {
+      this.loadEmployees();
+      return;
+    }
+
+    this.error.set(null);
+    this.employeeService.searchEmployeesByJobTitle(jobTitle.trim()).subscribe({
+      next: (employees) => {
+        this.employees.set(employees);
+      },
+      error: (error) => {
+        this.error.set(error.message);
+        console.error('搜尋員工失敗:', error);
+      }
+    });
+  }
+
+  /**
+   * 根據狀態篩選員工
+   */
+  filterByStatus(): void {
+    const isActive = this.searchForm.get('isActive')?.value;
+    if (isActive === null) {
+      this.loadEmployees();
+      return;
+    }
+
+    this.error.set(null);
+    this.employeeService.getEmployeesByStatus(isActive).subscribe({
+      next: (employees) => {
+        this.employees.set(employees);
+      },
+      error: (error) => {
+        this.error.set(error.message);
+        console.error('篩選員工失敗:', error);
+      }
+    });
+  }
+
+  /**
+   * 重設搜尋條件
+   */
+  resetSearch(): void {
+    this.searchForm.reset();
+    this.loadEmployees();
+  }
+
+  /**
+   * 顯示建立員工表單
+   */
+  showCreateEmployeeForm(): void {
+    this.createForm.reset({
+      emp_code: '',
+      emp_name: '',
+      emp_email: '',
+      dept_id: null,
+      job_title: '',
+      hire_date: '',
+      resign_date: '',
+      is_active: true,
+      create_user: 'SYSTEM'
+    });
+    this.showCreateForm.set(true);
+    this.showEditForm.set(false);
+  }
+
+  /**
+   * 建立員工
+   */
+  createEmployee(): void {
+    if (this.createForm.invalid) {
+      this.markFormGroupTouched(this.createForm);
+      return;
+    }
+
+    const createDto: EmployeeCreateDto = this.createForm.value as EmployeeCreateDto;
+    this.error.set(null);
+
+    this.employeeService.createEmployee(createDto).subscribe({
+      next: (employee) => {
+        this.employees.update(employees => [...employees, employee]);
+        this.showCreateForm.set(false);
+        this.createForm.reset();
+      },
+      error: (error) => {
+        this.error.set(error.message);
+        console.error('建立員工失敗:', error);
+      }
+    });
+  }
+
+  /**
+   * 取消建立員工
+   */
+  cancelCreate(): void {
+    this.showCreateForm.set(false);
+    this.createForm.reset();
+  }
+
+  /**
+   * 顯示編輯員工表單
+   */
+  showEditEmployeeForm(employee: Employee): void {
+    this.selectedEmployee.set(employee);
+    this.editForm.patchValue({
+      emp_id: employee.emp_id,
+      emp_code: employee.emp_code,
+      emp_name: employee.emp_name,
+      emp_email: employee.emp_email,
+      dept_id: employee.dept_id,
+      job_title: employee.job_title,
+      hire_date: employee.hire_date,
+      resign_date: employee.resign_date,
+      is_active: employee.is_active
+    });
+    this.showEditForm.set(true);
+    this.showCreateForm.set(false);
+  }
+
+  /**
+   * 更新員工
+   */
+  updateEmployee(): void {
+    if (this.editForm.invalid) {
+      this.markFormGroupTouched(this.editForm);
+      return;
+    }
+
+    const updateDto: EmployeeUpdateDto = this.editForm.value as EmployeeUpdateDto;
+    this.error.set(null);
+
+    this.employeeService.updateEmployee(updateDto.emp_id, updateDto).subscribe({
+      next: (updatedEmployee) => {
+        this.employees.update(employees => 
+          employees.map(emp => 
+            emp.emp_id === updatedEmployee.emp_id ? updatedEmployee : emp
+          )
+        );
+        this.showEditForm.set(false);
+        this.selectedEmployee.set(null);
+        this.editForm.reset();
+      },
+      error: (error) => {
+        this.error.set(error.message);
+        console.error('更新員工失敗:', error);
+      }
+    });
+  }
+
+  /**
+   * 取消編輯員工
+   */
+  cancelEdit(): void {
+    this.showEditForm.set(false);
+    this.selectedEmployee.set(null);
+    this.editForm.reset();
+  }
+
+  /**
+   * 刪除員工
+   */
+  deleteEmployee(employee: Employee): void {
+    if (!confirm(`確定要刪除員工「${employee.emp_name}」嗎？`)) {
+      return;
+    }
+
+    this.error.set(null);
+    this.employeeService.deleteEmployee(employee.emp_id).subscribe({
+      next: () => {
+        this.employees.update(employees => 
+          employees.filter(emp => emp.emp_id !== employee.emp_id)
+        );
+      },
+      error: (error) => {
+        this.error.set(error.message);
+        console.error('刪除員工失敗:', error);
+      }
+    });
+  }
+
+  /**
+   * 查看員工詳細資訊
+   */
+  viewEmployee(employee: Employee): void {
+    this.router.navigate(['/employee/detail', employee.emp_id]);
+  }
+
+  /**
+   * 標記表單為已觸碰以顯示驗證錯誤
+   */
+  private markFormGroupTouched(formGroup: FormGroup): void {
+    Object.keys(formGroup.controls).forEach(key => {
+      const control = formGroup.get(key);
+      control?.markAsTouched();
+    });
+  }
+
+  /**
+   * 取得表單控制項的錯誤訊息
+   */
+  getFieldError(formGroup: FormGroup, fieldName: string): string {
+    const control = formGroup.get(fieldName);
+    if (control && control.errors && control.touched) {
+      if (control.errors['required']) return `${fieldName} 為必填欄位`;
+      if (control.errors['email']) return '請輸入有效的電子郵箱格式';
+      if (control.errors['minlength']) return `${fieldName} 長度不足`;
+      if (control.errors['maxlength']) return `${fieldName} 長度超過限制`;
+      if (control.errors['pattern']) return `${fieldName} 格式不正確`;
+    }
+    return '';
+  }
+}
+    
+    if (total <= maxVisible) {
+      return Array.from({ length: total }, (_, i) => i + 1);
+    }
+    
+    const start = Math.max(1, current - Math.floor(maxVisible / 2));
+    const end = Math.min(total, start + maxVisible - 1);
+    
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  });
+
+  // 搜尋表單
+  searchForm: FormGroup = this.fb.group({
+    name: [''],
+    departmentId: [null]
+  });
+
+  ngOnInit(): void {
+    this.loadDepartments();
+    this.searchEmployees();
+  }
+
+  /**
+   * 載入部門列表
+   */
+  private loadDepartments(): void {
+    this.departmentService.getDepartments().subscribe({
+      next: (departments: Department[]) => this.departments.set(departments),
+      error: (error: any) => console.error('載入部門失敗:', error.message)
+    });
+  }
+
+  /**
+   * 搜尋員工
+   */
+  searchEmployees(): void {
+    const formValue = this.searchForm.value;
+    const page = this.currentPage();
+    
+    const queryDto: EmployeeQueryDto = {
+      name: formValue.name || undefined,
+      departmentId: formValue.departmentId || undefined,
+      firstIndexInPage: (page - 1) * this.pageSize(),
+      lastIndexInPage: page * this.pageSize() - 1
+    };
+
+    this.employeeService.searchEmployees(queryDto).subscribe({
+      next: (response) => {
+        this.employees.set(response.dataList);
+        this.totalRecords.set(response.totalRecords);
+      },
+      error: (error) => console.error('搜尋員工失敗:', error.message)
+    });
+  }
+
+  /**
+   * 重設搜尋條件
+   */
+  resetSearch(): void {
+    this.searchForm.reset();
+    this.currentPage.set(1);
+    this.searchEmployees();
+  }
+
+  /**
+   * 切換到指定頁面
+   */
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
+      this.searchEmployees();
+    }
+  }
+
+  /**
+   * 下一頁
+   */
+  nextPage(): void {
+    if (this.hasNextPage()) {
+      this.goToPage(this.currentPage() + 1);
+    }
+  }
+
+  /**
+   * 上一頁
+   */
+  previousPage(): void {
+    if (this.hasPreviousPage()) {
+      this.goToPage(this.currentPage() - 1);
+    }
+  }
+
+  /**
+   * 刪除員工
+   */
+  deleteEmployee(employee: Employee): void {
+    if (confirm(`確定要刪除員工「${employee.name}」嗎？`)) {
+      this.employeeService.deleteEmployee(employee.id).subscribe({
+        next: () => {
+          console.log('員工刪除成功');
+          this.searchEmployees(); // 重新載入列表
+        },
+        error: (error) => console.error('刪除員工失敗:', error.message)
+      });
+    }
+  }
+
+  /**
+   * 取得部門名稱
+   */
+  getDepartmentName(departmentId: number): string {
+    const department = this.departments().find(d => d.id === departmentId);
+    return department?.name || '未知部門';
+  }
+}

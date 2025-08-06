@@ -1,8 +1,7 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
+import { Component, signal, inject, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { EmployeeListComponent } from '../components/employee-list.component';
-import { EmployeeFormComponent } from '../components/employee-form.component';
+import { EmployeeListComponent } from './employee-list/employee-list.component';
 import { EmployeeService } from '../services/employee.service';
 import { Employee, EmployeeQueryDto } from '../models/employee.model';
 
@@ -13,12 +12,15 @@ import { Employee, EmployeeQueryDto } from '../models/employee.model';
 @Component({
   selector: 'app-employee-management',
   standalone: true,
-  imports: [CommonModule, FormsModule, EmployeeListComponent, EmployeeFormComponent],
+  imports: [CommonModule, FormsModule, EmployeeListComponent],
   templateUrl: './employee-management.component.html',
   styleUrl: './employee-management.component.scss'
 })
 export class EmployeeManagementComponent implements OnInit {
   private readonly employeeService = inject(EmployeeService);
+
+  // ViewChild 用來存取子組件
+  @ViewChild(EmployeeListComponent) employeeListComponent!: EmployeeListComponent;
 
   // 使用 signals 管理狀態
   readonly selectedEmployee = signal<Employee | null>(null);
@@ -34,8 +36,10 @@ export class EmployeeManagementComponent implements OnInit {
    * 顯示新增員工表單
    */
   showCreateForm(): void {
-    this.selectedEmployee.set(null);
-    this.isFormVisible.set(true);
+    // 調用子組件的新增員工方法
+    if (this.employeeListComponent) {
+      this.employeeListComponent.onShowCreateForm();
+    }
   }
 
   /**

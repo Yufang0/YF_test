@@ -13,23 +13,9 @@
 
   <!-- 主要內容區域 -->
   <main class="main-content">
-    @if (isFormVisible()) {
-      <!-- 員工表單 -->
-      <section class="form-section">
-        <app-employee-form
-          [employee]="selectedEmployee()"
-          (formSubmit)="onFormSuccess()"
-          (formCancel)="hideForm()">
-        </app-employee-form>
-      </section>
-    }
-
     <!-- 員工列表 -->
     <section class="list-section">
-      <app-employee-list
-        [searchQuery]="searchQuery()"
-        (editEmployee)="showEditForm($event)"
-        (deleteEmployee)="refreshEmployeeList()">
+      <app-employee-list>
       </app-employee-list>
     </section>
   </main>

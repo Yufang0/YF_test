@@ -46,7 +46,7 @@ export class EmployeeDetailComponent implements OnInit {
       return;
     }
 
-    this.employeeService.getEmployee(employeeId).subscribe({
+    this.employeeService.getEmployeeById(employeeId).subscribe({
       next: (employee) => {
         this.employee.set(employee);
         this.error.set(null);
@@ -64,7 +64,7 @@ export class EmployeeDetailComponent implements OnInit {
   private loadDepartments(): void {
     this.departmentService.getDepartments().subscribe({
       next: (departments: Department[]) => this.departments.set(departments),
-      error: (error: any) => console.error('載入部門失敗:', error.message)
+      error: (error: Error) => console.error('載入部門失敗:', error.message)
     });
   }
 
@@ -75,8 +75,8 @@ export class EmployeeDetailComponent implements OnInit {
     const emp = this.employee();
     if (!emp) return;
 
-    if (confirm(`確定要刪除員工「${emp.name}」嗎？`)) {
-      this.employeeService.deleteEmployee(emp.id).subscribe({
+    if (confirm(`確定要刪除員工「${emp.emp_name}」嗎？`)) {
+      this.employeeService.deleteEmployee(emp.emp_id).subscribe({
         next: () => {
           console.log('員工刪除成功');
           // 導向員工列表頁面

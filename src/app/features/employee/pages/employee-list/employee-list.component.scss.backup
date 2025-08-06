@@ -1,0 +1,24 @@
+/* 員工清單 - 最小樣式 */
+.employee-list-container {
+  padding: var(--spacing-6);
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-8);
+  border-bottom: var(--border);
+}
+
+.search-section {
+  border: var(--border);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-8);
+  margin-bottom: var(--spacing-8);
+}
+
+.employee-table {
+  width: 100%;
+  border-collapse: collapse;
+}

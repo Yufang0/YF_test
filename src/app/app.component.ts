@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 /**
@@ -13,12 +13,12 @@ import { RouterOutlet } from '@angular/router';
     :host {
       display: block;
       min-height: 100vh;
-      font-family: var(--font-family-primary);
-      background-color: var(--color-background-primary);
-      color: var(--color-text-primary);
+      font-family: var(--font-family-primary, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif);
+      background-color: var(--color-background-primary, #f5f5f5);
+      color: var(--color-text-primary, #333);
     }
   `]
 })
 export class AppComponent {
-  title = 'YF_test';
+  protected readonly title = signal('YF_test');
 }

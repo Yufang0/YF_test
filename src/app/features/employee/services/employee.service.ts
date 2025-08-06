@@ -1,16 +1,15 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map, catchError } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { HttpErrorHandlerService } from '../../../core/services/http-error-handler.service';
 import { 
   Employee, 
-  CreateEmployeeDto, 
-  UpdateEmployeeDto, 
-  EmployeeQueryDto, 
-  EmployeeQueryResponse
+  EmployeeCreateDto, 
+  EmployeeUpdateDto, 
+  EmployeeSummaryDto
 } from '../models/employee.model';
-import { ApiResponse } from '../models/api.dto';
+import { ApiResponse, PageResponse } from '../models/api.dto';
 
 /**
  * 員工服務
@@ -29,53 +28,9 @@ export class EmployeeService {
   readonly loading = this.loadingSignal.asReadonly();
 
   /**
-   * 查詢員工列表
-   */
-  searchEmployees(queryDto: EmployeeQueryDto): Observable<EmployeeQueryResponse> {
-    this.loadingSignal.set(true);
-    
-    return this.http.post<ApiResponse<EmployeeQueryResponse>>(`${this.apiUrl}/search`, queryDto)
-      .pipe(
-        map(response => {
-          this.loadingSignal.set(false);
-          if (response.code === 1000 && response.data) {
-            return response.data;
-          }
-          throw new Error(response.message || '查詢員工失敗');
-        }),
-        catchError(error => {
-          this.loadingSignal.set(false);
-          return this.errorHandler.handleError('查詢員工', error);
-        })
-      );
-  }
-
-  /**
-   * 取得單一員工詳細資訊
-   */
-  getEmployee(id: number): Observable<Employee> {
-    this.loadingSignal.set(true);
-    
-    return this.http.get<ApiResponse<Employee>>(`${this.apiUrl}/${id}`)
-      .pipe(
-        map(response => {
-          this.loadingSignal.set(false);
-          if (response.code === 1000 && response.data) {
-            return response.data;
-          }
-          throw new Error(response.message || '取得員工資訊失敗');
-        }),
-        catchError(error => {
-          this.loadingSignal.set(false);
-          return this.errorHandler.handleError('取得員工資訊', error);
-        })
-      );
-  }
-
-  /**
    * 建立新員工
    */
-  createEmployee(createDto: CreateEmployeeDto): Observable<Employee> {
+  createEmployee(createDto: EmployeeCreateDto): Observable<Employee> {
     this.loadingSignal.set(true);
     
     return this.http.post<ApiResponse<Employee>>(this.apiUrl, createDto)
@@ -95,12 +50,205 @@ export class EmployeeService {
   }
 
   /**
-   * 更新員工資訊
+   * 根據 ID 取得員工詳細資訊
    */
-  updateEmployee(updateDto: UpdateEmployeeDto): Observable<Employee> {
+  getEmployeeById(empId: number): Observable<Employee> {
     this.loadingSignal.set(true);
     
-    return this.http.put<ApiResponse<Employee>>(`${this.apiUrl}/${updateDto.id}`, updateDto)
+    return this.http.get<ApiResponse<Employee>>(`${this.apiUrl}/${empId}`)
+      .pipe(
+        map(response => {
+          this.loadingSignal.set(false);
+          if (response.code === 1000 && response.data) {
+            return response.data;
+          }
+          throw new Error(response.message || '取得員工資訊失敗');
+        }),
+        catchError(error => {
+          this.loadingSignal.set(false);
+          return this.errorHandler.handleError('取得員工資訊', error);
+        })
+      );
+  }
+
+  /**
+   * 根據員工編號取得員工詳細資訊
+   */
+  getEmployeeByCode(empCode: string): Observable<Employee> {
+    this.loadingSignal.set(true);
+    
+    return this.http.get<ApiResponse<Employee>>(`${this.apiUrl}/code/${empCode}`)
+      .pipe(
+        map(response => {
+          this.loadingSignal.set(false);
+          if (response.code === 1000 && response.data) {
+            return response.data;
+          }
+          throw new Error(response.message || '取得員工資訊失敗');
+        }),
+        catchError(error => {
+          this.loadingSignal.set(false);
+          return this.errorHandler.handleError('取得員工資訊', error);
+        })
+      );
+  }
+
+  /**
+   * 分頁查詢所有員工
+   */
+  getAllEmployees(page = 0, size = 10): Observable<Employee[]> {
+    this.loadingSignal.set(true);
+    
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+    
+    return this.http.get<ApiResponse<PageResponse<Employee>>>(this.apiUrl, { params })
+      .pipe(
+        map(response => {
+          this.loadingSignal.set(false);
+          if (response.code === 1000 && response.data) {
+            // 從分頁回應中提取員工陣列
+            return response.data.content || [];
+          }
+          throw new Error(response.message || '查詢員工列表失敗');
+        }),
+        catchError(error => {
+          this.loadingSignal.set(false);
+          return this.errorHandler.handleError('查詢員工列表', error);
+        })
+      );
+  }
+
+  /**
+   * 根據員工狀態分頁查詢員工
+   */
+  getEmployeesByStatus(isActive: boolean, page = 0, size = 10): Observable<Employee[]> {
+    this.loadingSignal.set(true);
+    
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+    
+    return this.http.get<ApiResponse<PageResponse<Employee>>>(`${this.apiUrl}/status/${isActive}`, { params })
+      .pipe(
+        map(response => {
+          this.loadingSignal.set(false);
+          if (response.code === 1000 && response.data) {
+            return response.data.content || [];
+          }
+          throw new Error(response.message || '查詢員工列表失敗');
+        }),
+        catchError(error => {
+          this.loadingSignal.set(false);
+          return this.errorHandler.handleError('查詢員工列表', error);
+        })
+      );
+  }
+
+  /**
+   * 根據部門 ID 查詢員工列表
+   */
+  getEmployeesByDepartment(deptId: number): Observable<Employee[]> {
+    this.loadingSignal.set(true);
+    
+    return this.http.get<ApiResponse<Employee[]>>(`${this.apiUrl}/department/${deptId}`)
+      .pipe(
+        map(response => {
+          this.loadingSignal.set(false);
+          if (response.code === 1000 && response.data) {
+            return response.data;
+          }
+          throw new Error(response.message || '查詢部門員工失敗');
+        }),
+        catchError(error => {
+          this.loadingSignal.set(false);
+          return this.errorHandler.handleError('查詢部門員工', error);
+        })
+      );
+  }
+
+  /**
+   * 根據姓名模糊搜尋員工
+   */
+  searchEmployeesByName(empName: string): Observable<Employee[]> {
+    this.loadingSignal.set(true);
+    
+    const params = new HttpParams().set('empName', empName);
+    
+    return this.http.get<ApiResponse<Employee[]>>(`${this.apiUrl}/search`, { params })
+      .pipe(
+        map(response => {
+          this.loadingSignal.set(false);
+          if (response.code === 1000 && response.data) {
+            return response.data;
+          }
+          throw new Error(response.message || '搜尋員工失敗');
+        }),
+        catchError(error => {
+          this.loadingSignal.set(false);
+          return this.errorHandler.handleError('搜尋員工', error);
+        })
+      );
+  }
+
+  /**
+   * 根據職位模糊搜尋員工
+   */
+  searchEmployeesByJobTitle(jobTitle: string): Observable<Employee[]> {
+    this.loadingSignal.set(true);
+    
+    const params = new HttpParams().set('jobTitle', jobTitle);
+    
+    return this.http.get<ApiResponse<Employee[]>>(`${this.apiUrl}/search/job-title`, { params })
+      .pipe(
+        map(response => {
+          this.loadingSignal.set(false);
+          if (response.code === 1000 && response.data) {
+            return response.data;
+          }
+          throw new Error(response.message || '搜尋員工失敗');
+        }),
+        catchError(error => {
+          this.loadingSignal.set(false);
+          return this.errorHandler.handleError('搜尋員工', error);
+        })
+      );
+  }
+
+  /**
+   * 根據入職日期範圍查詢員工
+   */
+  getEmployeesByHireDateRange(startDate: string, endDate: string): Observable<Employee[]> {
+    this.loadingSignal.set(true);
+    
+    const params = new HttpParams()
+      .set('startDate', startDate)
+      .set('endDate', endDate);
+    
+    return this.http.get<ApiResponse<Employee[]>>(`${this.apiUrl}/hire-date-range`, { params })
+      .pipe(
+        map(response => {
+          this.loadingSignal.set(false);
+          if (response.code === 1000 && response.data) {
+            return response.data;
+          }
+          throw new Error(response.message || '查詢員工失敗');
+        }),
+        catchError(error => {
+          this.loadingSignal.set(false);
+          return this.errorHandler.handleError('查詢員工', error);
+        })
+      );
+  }
+
+  /**
+   * 更新員工資訊
+   */
+  updateEmployee(empId: number, updateDto: EmployeeUpdateDto): Observable<Employee> {
+    this.loadingSignal.set(true);
+    
+    return this.http.put<ApiResponse<Employee>>(`${this.apiUrl}/${empId}`, updateDto)
       .pipe(
         map(response => {
           this.loadingSignal.set(false);
@@ -119,21 +267,65 @@ export class EmployeeService {
   /**
    * 刪除員工
    */
-  deleteEmployee(id: number): Observable<boolean> {
+  deleteEmployee(empId: number): Observable<void> {
     this.loadingSignal.set(true);
     
-    return this.http.delete<ApiResponse<boolean>>(`${this.apiUrl}/${id}`)
+    return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/${empId}`)
       .pipe(
         map(response => {
           this.loadingSignal.set(false);
           if (response.code === 1000) {
-            return true;
+            return;
           }
           throw new Error(response.message || '刪除員工失敗');
         }),
         catchError(error => {
           this.loadingSignal.set(false);
           return this.errorHandler.handleError('刪除員工', error);
+        })
+      );
+  }
+
+  /**
+   * 取得部門員工摘要列表
+   */
+  getEmployeeSummaryByDepartment(deptId: number): Observable<EmployeeSummaryDto[]> {
+    this.loadingSignal.set(true);
+    
+    return this.http.get<ApiResponse<EmployeeSummaryDto[]>>(`${this.apiUrl}/department/${deptId}/summary`)
+      .pipe(
+        map(response => {
+          this.loadingSignal.set(false);
+          if (response.code === 1000 && response.data) {
+            return response.data;
+          }
+          throw new Error(response.message || '查詢部門員工摘要失敗');
+        }),
+        catchError(error => {
+          this.loadingSignal.set(false);
+          return this.errorHandler.handleError('查詢部門員工摘要', error);
+        })
+      );
+  }
+
+  /**
+   * 統計部門啟用員工數量
+   */
+  countActiveEmployeesByDepartment(deptId: number): Observable<number> {
+    this.loadingSignal.set(true);
+    
+    return this.http.get<ApiResponse<number>>(`${this.apiUrl}/department/${deptId}/count`)
+      .pipe(
+        map(response => {
+          this.loadingSignal.set(false);
+          if (response.code === 1000 && response.data !== undefined) {
+            return response.data;
+          }
+          throw new Error(response.message || '統計員工數量失敗');
+        }),
+        catchError(error => {
+          this.loadingSignal.set(false);
+          return this.errorHandler.handleError('統計員工數量', error);
         })
       );
   }

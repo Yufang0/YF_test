@@ -11,7 +11,7 @@
       <div class="page-header">
         <div class="header-left">
           <a 
-            [routerLink]="isEditMode() ? ['/employees', employee()?.id] : ['/employees']" 
+            [routerLink]="isEditMode() ? ['/employees', employee()?.emp_id] : ['/employees']" 
             class="back-link"
           >
             <span class="back-icon">←</span>
@@ -57,13 +57,13 @@
                   id="name"
                   formControlName="name"
                   class="form-control"
-                  [class.error]="hasFieldError('name')"
+                  [class.error]="hasError('emp_name')"
                   placeholder="請輸入員工姓名"
                   maxlength="50"
                 >
-                @if (hasFieldError('name')) {
+                @if (hasError('emp_name')) {
                   <div class="field-error">
-                    {{ getFieldErrorMessage('name') }}
+                    {{ getErrorMessage('emp_name') }}
                   </div>
                 }
               </div>
@@ -77,16 +77,16 @@
                   id="departmentId"
                   formControlName="departmentId"
                   class="form-control"
-                  [class.error]="hasFieldError('departmentId')"
+                  [class.error]="hasError('dept_id')"
                 >
                   <option value="">請選擇部門</option>
                   @for (department of departments(); track department.id) {
                     <option [value]="department.id">{{ department.name }}</option>
                   }
                 </select>
-                @if (hasFieldError('departmentId')) {
+                @if (hasError('dept_id')) {
                   <div class="field-error">
-                    {{ getFieldErrorMessage('departmentId') }}
+                    {{ getErrorMessage('dept_id') }}
                   </div>
                 }
               </div>
@@ -111,7 +111,7 @@
               <button 
                 type="button" 
                 class="btn btn-secondary"
-                (click)="cancel()"
+                (click)="onCancel()"
                 [disabled]="loading()"
               >
                 取消

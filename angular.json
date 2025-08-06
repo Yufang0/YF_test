@@ -64,7 +64,8 @@
               "buildTarget": "YF_test:build:production"
             },
             "development": {
-              "buildTarget": "YF_test:build:development"
+              "buildTarget": "YF_test:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"
