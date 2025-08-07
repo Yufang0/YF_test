@@ -20,10 +20,7 @@ a:focus-visible,
 .btn-outline-danger:focus-visible,
 .form-control:focus-visible,
 .btn-close:focus-visible,
-[role="button"]:focus-visible,
-.nav-link:focus-visible,
-.sidebar .nav-link:focus-visible,
-.sidebar-nav .nav-link:focus-visible {
+[role="button"]:focus-visible {
   outline: 3px solid #007bff !important;
   outline-offset: 2px !important;
   box-shadow: none !important;
@@ -40,10 +37,7 @@ a:focus,
 [tabindex]:focus,
 .btn:focus,
 .form-control:focus,
-.btn-close:focus,
-.nav-link:focus,
-.sidebar .nav-link:focus,
-.sidebar-nav .nav-link:focus {
+.btn-close:focus {
   outline: none !important;
   box-shadow: none !important;
 }
@@ -59,10 +53,7 @@ a:focus,
   [tabindex]:focus,
   .btn:focus,
   .form-control:focus,
-  .btn-close:focus,
-  .nav-link:focus,
-  .sidebar .nav-link:focus,
-  .sidebar-nav .nav-link:focus {
+  .btn-close:focus {
     outline: 2px solid #007bff !important;
     outline-offset: 2px !important;
     box-shadow: none !important;

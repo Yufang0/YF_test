@@ -57,8 +57,7 @@
 /* 強制應用全域聚焦樣式到組件內的所有按鈕 */
 :host ::ng-deep {
   button:focus-visible,
-  .btn:focus-visible,
-  .btn-primary:focus-visible {
+  .btn:focus-visible {
     outline: 3px solid #007bff !important;
     outline-offset: 2px !important;
     box-shadow: none !important;
@@ -67,19 +66,9 @@
   }
 
   button:focus,
-  .btn:focus,
-  .btn-primary:focus {
+  .btn:focus {
     outline: none !important;
     box-shadow: none !important;
-  }
-
-  /* 特別針對新增員工按鈕的焦點樣式 */
-  .page-header .btn-primary:focus-visible {
-    outline: 3px solid #007bff !important;
-    outline-offset: 2px !important;
-    box-shadow: none !important;
-    border-radius: 4px !important;
-    z-index: 9999 !important;
   }
 }
 
