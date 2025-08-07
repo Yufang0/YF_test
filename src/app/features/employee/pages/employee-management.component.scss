@@ -39,7 +39,7 @@
     .form-section {
       background: var(--color-background-primary);
       border-radius: var(--border-radius);
-      border: 1px solid var(--border-color);
+      border: 100px solid var(--border-color);
       margin-bottom: var(--spacing-8);
       box-shadow: var(--shadow-sm);
     }
@@ -51,6 +51,35 @@
       box-shadow: var(--shadow-sm);
       
     }
+  }
+}
+
+/* 強制應用全域聚焦樣式到組件內的所有按鈕 */
+:host ::ng-deep {
+  button:focus-visible,
+  .btn:focus-visible,
+  .btn-primary:focus-visible {
+    outline: 3px solid #007bff !important;
+    outline-offset: 2px !important;
+    box-shadow: none !important;
+    border-radius: 4px !important;
+    z-index: 9999 !important;
+  }
+
+  button:focus,
+  .btn:focus,
+  .btn-primary:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  /* 特別針對新增員工按鈕的焦點樣式 */
+  .page-header .btn-primary:focus-visible {
+    outline: 3px solid #007bff !important;
+    outline-offset: 2px !important;
+    box-shadow: none !important;
+    border-radius: 4px !important;
+    z-index: 9999 !important;
   }
 }
 

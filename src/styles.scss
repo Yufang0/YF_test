@@ -6,6 +6,9 @@
 @use './styles/layout';
 @use './styles/themes';
 
+/* Import Flatpickr Styles */
+@use 'flatpickr/dist/flatpickr.css' as *;
+
 /* Import Mixins for Component Reuse */
 @use './styles/mixins-index' as *;
 

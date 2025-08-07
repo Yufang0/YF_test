@@ -101,6 +101,13 @@
     box-shadow: 0 0 0 2px rgb(59 130 246 / 0.1);
   }
   
+  // 支援全域聚焦樣式 - 讓 focus-visible 優先
+  &:focus-visible {
+    outline: 3px solid #007bff !important;
+    outline-offset: 2px !important;
+    box-shadow: none !important;
+  }
+  
   &:disabled {
     background-color: var(--color-background-tertiary);
     opacity: 0.6;
@@ -112,6 +119,13 @@
     
     &:focus {
       box-shadow: 0 0 0 2px rgb(239 68 68 / 0.1);
+    }
+    
+    // 支援全域聚焦樣式 - 讓 focus-visible 優先
+    &:focus-visible {
+      outline: 3px solid #007bff !important;
+      outline-offset: 2px !important;
+      box-shadow: none !important;
     }
   }
 }

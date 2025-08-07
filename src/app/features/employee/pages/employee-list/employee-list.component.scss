@@ -1,7 +1,131 @@
+// 確保最外層容器與 employee-list-container 完全對齊
+:host {
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  box-sizing: border-box;
+  width: 100%;
+  
+  // 重置瀏覽器預設樣式
+  margin-block-start: 0;
+  margin-block-end: 0;
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+}
+
+.employee-management {
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  box-sizing: border-box;
+  width: 100%;
+  
+  // 重置瀏覽器預設樣式
+  margin-block-start: 0;
+  margin-block-end: 0;
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+}
+
+// 確保所有主要容器元素使用一致的盒模型和重置樣式
+.employee-list-container,
+.main-content,
+.list-section,
+.search-section,
+.employees-section {
+  // 統一盒模型計算方式
+  box-sizing: border-box;
+  
+  // 重置可能影響對齊的預設樣式
+  margin-block-start: 0;
+  margin-block-end: 0;
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+  
+  // 確保沒有意外的邊框或輪廓
+  border: none;
+  outline: none;
+  
+  // 防止內容溢出或被裁切
+  overflow: visible;
+}
+
+// 特別重置 section 元素的瀏覽器預設樣式
+section {
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+}
+
 .employee-list-container {
-  padding: 24px;
-  max-width: 1200px;
+  // 頂層容器：提供基本的包裹功能，讓子元素統一控制對齊
+  width: 100%; // 確保容器佔滿可用寬度
+  padding: 0; // 移除外層 padding，讓子元素直接控制自己的間距
+  box-sizing: border-box; // 包含 padding 在寬度計算內
+  
+  // 重置所有可能影響佈局的樣式
+  margin: 0;
+  border: none;
+  outline: none;
+  
+  // 確保容器不會干擾子元素的對齊
+  position: relative;
+  overflow: visible;
+}
+
+// 主要內容區域與列表區域寬度一致性設定
+.main-content {
+  width: 100%;
+  max-width: 1200px; // 與 employee-list-container 保持一致
   margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+  box-sizing: border-box;
+  
+  // 重置瀏覽器預設樣式，確保沒有額外的 margin 或 padding
+  border: none;
+  outline: none;
+  
+  // 確保內容區域不受其他因素影響
+  position: relative;
+  overflow: visible; // 防止內容被裁切
+}
+
+// 列表區域
+.list-section {
+  width: 100%;
+  max-width: 1200px; // 與父容器保持一致
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+  box-sizing: border-box;
+  
+  // 重置瀏覽器預設的 section 樣式
+  border: none;
+  outline: none;
+  
+  // 確保列表區域不受其他因素影響
+  position: relative;
+  overflow: visible; // 防止內容被裁切
+
+  // 移除任何可能造成寬度不一致的額外 margin 或 padding
+  &:not(:first-child) {
+    margin-top: 0;
+  }
+
+  &:not(:last-child) {
+    margin-bottom: 0;
+  }
+  
+  // 重置瀏覽器預設的 section margin
+  margin-block-start: 0;
+  margin-block-end: 0;
+  margin-inline-start: 0;
+  margin-inline-end: 0;
 }
 
 // 頁面標題
@@ -60,10 +184,22 @@
 
 // 搜尋區域
 .search-section {
+  width: 100%; // 與外層容器完全一致的寬度
+  margin: 0 0 20px 0; // 移除左右 margin，只保留底部間距
+  padding: 24px 24px 0px 24px; // 內部間距
   background: #f8f9fa;
-  padding: 24px;
   border-radius: 8px;
-  margin-bottom: 24px;
+  box-sizing: border-box; // 包含 padding 在寬度計算內
+  
+  // 確保搜尋區域與外層容器完全對齊
+  border: none;
+  outline: none;
+  
+  // 重置瀏覽器預設樣式
+  margin-block-start: 0;
+  margin-block-end: 4px;
+  margin-inline-start: 0;
+  margin-inline-end: 0;
 }
 
 .search-form {
@@ -71,19 +207,21 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
-    align-items: end;
-    
-    // 桌機版：保持網格布局，確保間距
-    @media (min-width: 769px) {
+    align-items: start; // 改為 start，讓所有容器從頂部開始對齊
+
+    // 桌機版：保持網格布局，確保間距和對齊
+    @media (min-width: 1025px) { // 提高桌機斷點：從 769px 改為 1025px，讓更多螢幕尺寸使用垂直佈局
       grid-template-columns: repeat(4, 1fr) auto;
       gap: 24px;
       max-width: none;
+      align-items: start; // 重要：改為頂部對齊，配合 margin-top 策略
     }
-    
-    // 手機版：垂直堆疊，增加垂直間距
-    @media (max-width: 768px) {
+
+    // 平板與小螢幕：垂直堆疊，增加垂直間距
+    @media (max-width: 1024px) { // 新增中等螢幕斷點：1024px 以下就開始垂直堆疊
       grid-template-columns: 1fr;
-      gap: 16px;
+      gap: 18px; // 垂直堆疊時適當間距
+      align-items: stretch; // 垂直堆疊時讓元素伸展
     }
   }
 
@@ -92,9 +230,9 @@
     flex-direction: column;
     min-width: 0; // 防止溢出
     max-width: 100%; // 確保不超出容器
-    
+
     // 桌機版：固定最大寬度避免過寬
-    @media (min-width: 769px) {
+    @media (min-width: 1025px) { // 對應調整：從 769px 改為 1025px
       max-width: 220px;
     }
 
@@ -111,6 +249,8 @@
       border: 1px solid #ced4da;
       border-radius: 4px;
       font-size: 14px;
+      height: 38px; // 設定固定高度，與按鈕保持一致
+      line-height: 1.4; // 設定合適的行高
       transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
       min-width: 0; // 防止溢出
       width: 100%;
@@ -133,23 +273,95 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-    min-width: 140px;
+    min-width: 100px; // 增加按鈕容器最小寬度：從 140px 改為 180px
     justify-self: end; // 在 grid 中對齊到右側
     
-    // 桌機版：按鈕橫向排列
-    @media (min-width: 769px) {
-      flex-direction: row;
-      gap: 12px;
-      align-items: end;
-      justify-self: start; // 在桌機版對齊到左側
+    // 關鍵修正：使用 margin-top 模擬 label 的空間，確保按鈕與 form-control 對齊
+    margin-top: 32px; // label (14px) + margin-bottom (8px) + 額外調整 (10px) = 32px
+    align-self: start; // 改為 start，讓 margin-top 生效
+
+    // 確保 form-actions 內的按鈕與 form-control 高度一致
+    .btn {
+      height: 38px; // 與 .form-control 完全一致的高度
+      padding: 10px 16px; // 增加按鈕左右內距：從 16px 改為 24px，讓按鈕更寬
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4; // 與 .form-control 一致的行高
+      box-sizing: border-box; // 確保 padding 不會增加總高度
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 60px; // 設定按鈕最小寬度，確保一致性
     }
-    
-    // 手機版：按鈕垂直堆疊，全寬
-    @media (max-width: 768px) {
+
+    // 桌機版：按鈕橫向排列
+    @media (min-width: 1025px) { // 對應調整：從 769px 改為 1025px
+      flex-direction: row;
+      gap: 16px; // 增加按鈕間距：從 12px 改為 16px，配合更寬的按鈕
+      align-items: flex-start; // 改為 flex-start，配合 margin-top 對齊
+      justify-self: start; // 在桌機版對齊到左側
+      margin-top: 32px; // 桌機版也保持相同的上邊距
+    }
+
+    // 平板與手機版：按鈕垂直堆疊，全寬
+    @media (max-width: 1024px) { // 對應調整：從 768px 改為 1024px，涵蓋更多裝置
       justify-self: stretch;
-      
+      align-self: stretch; // 垂直佈局時伸展
+      margin-top: 0; // 垂直佈局時移除上邊距
+
       .btn {
         width: 100%;
+      }
+    }
+  }
+
+  // 搜尋表單專用按鈕樣式：確保與輸入欄位完美對齊（簡化版本）
+  .form-actions .btn {
+    height: 38px !important; // 強制高度與 .form-control 一致
+    line-height: 1.4 !important; // 強制行高與 .form-control 一致
+    box-sizing: border-box !important; // 強制盒模型與 .form-control 一致
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    // 確保在桌機版也能完美對齊
+    @media (min-width: 1025px) {
+      height: 38px !important;
+    }
+  }
+}
+
+// 精確對齊修正：確保搜尋表單中的按鈕與輸入欄位完美對齊
+.search-form {
+  // 確保所有 form-group 有一致的結構高度
+  .form-group {
+    // 設定最小高度，包含 label + form-control
+    min-height: calc(14px + 8px + 38px); // label 高度 + margin + form-control 高度
+  }
+  
+  // 讓 form-actions 模擬相同的結構高度
+  .form-actions {
+    // 使用 pseudo-element 創建隱形的 label 空間
+    &::before {
+      content: '';
+      display: block;
+      height: 22px; // label (14px) + margin-bottom (8px) = 22px
+      width: 100%;
+    }
+    
+    // 在桌機版確保對齊
+    @media (min-width: 1025px) {
+      &::before {
+        height: 22px; // 保持相同的空間
+      }
+    }
+    
+    // 在行動版移除偽元素
+    @media (max-width: 1024px) {
+      &::before {
+        display: none;
       }
     }
   }
@@ -196,8 +408,23 @@
   100% { transform: rotate(360deg); }
 }
 
-// 員工列表區域
-.employees-section {
+// 員工列表區域（實際的 HTML 結構使用 .employee-list）
+.employee-list {
+  width: 100%; // 與外層容器完全一致的寬度
+  margin: 0; // 移除所有 margin，與外層容器完全對齊
+  padding: 24px; // 與搜尋區域相同的內距
+  box-sizing: border-box; // 包含任何 padding 在寬度計算內
+  
+  // 確保員工列表區域與外層容器完全對齊
+  border: none;
+  outline: none;
+  
+  // 重置瀏覽器預設樣式
+  margin-block-start: 0;
+  margin-block-end: 0;
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+
   .section-header {
     margin-bottom: 16px;
 
@@ -282,7 +509,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 16px;
+  padding: 10px 16px; // 調整 padding 與 form-control 一致：從 8px 改為 10px
   border: none;
   border-radius: 4px;
   font-size: 14px;
@@ -290,7 +517,21 @@
   text-decoration: none;
   cursor: pointer;
   transition: all 0.15s ease-in-out;
-  min-height: 38px;
+  height: 38px; // 設定固定高度，與 form-control 一致
+  line-height: 1.4; // 設定與 form-control 一致的行高
+  box-sizing: border-box; // 確保 padding 不會增加總高度
+
+  &:focus-visible {
+    outline: 3px solid #007bff !important;
+    outline-offset: 2px !important;
+    box-shadow: none !important;
+    border-radius: 4px !important;
+  }
+
+  &:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
 
   &:disabled {
     opacity: 0.6;
@@ -299,9 +540,10 @@
 
   // 按鈕大小
   &.btn-sm {
-    padding: 4px 12px;
+    padding: 6px 12px; // 小按鈕適當調整 padding
     font-size: 12px;
-    min-height: 32px;
+    height: 32px; // 設定小按鈕固定高度：從 min-height 改為 height
+    line-height: 1.3; // 小按鈕的行高
   }
 
   // 按鈕顏色
@@ -312,6 +554,13 @@
     &:hover:not(:disabled) {
       background-color: #0056b3;
     }
+    
+    &:focus-visible {
+      outline: 3px solid #007bff !important;
+      outline-offset: 2px !important;
+      box-shadow: none !important;
+      border-radius: 4px !important;
+    }
   }
 
   &.btn-secondary {
@@ -320,6 +569,13 @@
 
     &:hover:not(:disabled) {
       background-color: #545b62;
+    }
+    
+    &:focus-visible {
+      outline: 3px solid #007bff !important;
+      outline-offset: 2px !important;
+      box-shadow: none !important;
+      border-radius: 4px !important;
     }
   }
 
@@ -341,6 +597,18 @@
       background-color: #007bff;
       color: white;
     }
+    
+    &:focus-visible {
+      outline: 3px solid #007bff !important;
+      outline-offset: 2px !important;
+      box-shadow: none !important;
+      border-radius: 4px !important;
+    }
+    
+    &:focus {
+      outline: none !important;
+      box-shadow: none !important;
+    }
   }
 
   &.btn-outline-secondary {
@@ -352,6 +620,18 @@
       background-color: #6c757d;
       color: white;
     }
+    
+    &:focus-visible {
+      outline: 3px solid #007bff !important;
+      outline-offset: 2px !important;
+      box-shadow: none !important;
+      border-radius: 4px !important;
+    }
+    
+    &:focus {
+      outline: none !important;
+      box-shadow: none !important;
+    }
   }
 
   &.btn-outline-danger {
@@ -362,6 +642,18 @@
     &:hover:not(:disabled) {
       background-color: #dc3545;
       color: white;
+    }
+    
+    &:focus-visible {
+      outline: 3px solid #007bff !important;
+      outline-offset: 2px !important;
+      box-shadow: none !important;
+      border-radius: 4px !important;
+    }
+    
+    &:focus {
+      outline: none !important;
+      box-shadow: none !important;
     }
   }
 }
@@ -386,9 +678,9 @@
   background: white;
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  max-width: 800px; // 增加最大寬度
-  width: 100%;
-  max-height: 95vh; // 增加最大高度
+  max-width: 650px; // 增加彈窗寬度：從 480px 改為 650px，提供更寬鬆的空間
+  width: 90%; // 使用相對寬度，確保響應式
+  max-height: 95vh;
   display: flex;
   flex-direction: column;
   margin: auto; // 確保居中
@@ -436,21 +728,33 @@
   overflow-y: auto;
   overflow-x: hidden; // 明確禁止水平滾動
   flex-grow: 1;
-  
-  // 改善表單佈局，使用 CSS Grid
+  display: flex;
+  flex-direction: column;
+  align-items: center; // 水平居中對齊內容
+
+  // 改善表單佈局：改為垂直單欄佈局
   form {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); // 自適應網格
-    gap: 20px;
-    
-    // 確保某些欄位佔滿整行
+    display: flex;
+    flex-direction: column;
+    gap: 24px; // 進一步增加表單元素間距：從 20px 改為 24px，讓整體更寬鬆
+    width: 100%;
+    max-width: 480px; // 增加表單最大寬度：從 320px 改為 480px，充分利用彈窗空間
+    align-items: center; // 內容水平居中
+
+    // 移除之前的 grid 佈局
+    // grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+
+    // 確保某些欄位也遵循統一寬度
     .full-width {
-      grid-column: 1 / -1;
+      width: 100%;
+      max-width: 480px; // 對應調整全寬欄位
     }
   }
 
   .form-group {
-    margin-bottom: 0; // Grid 已處理間距
+    width: 100%;
+    max-width: 480px; // 統一所有 form-group 寬度：從 320px 改為 480px
+    margin-bottom: 12px; // 進一步增加表單群組間距：從 4px 改為 12px，讓欄位間更明顯分離
     min-width: 0; // 防止 grid item 溢出
 
     &:last-child {
@@ -459,15 +763,16 @@
 
     label {
       display: block;
-      margin-bottom: 6px;
+      margin-bottom: 14px; // 進一步增加標籤與輸入框間距：從 10px 改為 14px，讓間距更明顯
       font-weight: 500;
       color: #495057;
       font-size: 14px;
       word-wrap: break-word; // 長文字自動換行
+      text-align: left; // 標籤左對齊
     }
 
     .form-control {
-      width: 100%;
+      width: 100%; // 輸入框佔滿 form-group 寬度
       max-width: 100%; // 確保不超出父容器
       min-width: 0; // 防止溢出
       padding: 10px 12px;
@@ -503,26 +808,25 @@
       font-size: 12px;
       color: #dc3545;
       word-wrap: break-word;
+      text-align: left; // 錯誤訊息左對齊
     }
   }
 }
 
 .modal-footer {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center; // 改為居中對齊
   gap: 12px;
   padding: 20px 24px;
-  border-top: 1px solid #dee2e6;
-  background-color: #f8f9fa;
   border-radius: 0 0 8px 8px;
   flex-shrink: 0; // 確保底部不被壓縮
   flex-wrap: wrap; // 允許按鈕換行
 }
 
-// 響應式設計
-@media (max-width: 768px) {
+// 響應式設計 - 調整斷點讓更多裝置獲得更好的垂直佈局體驗
+@media (max-width: 1024px) { // 從 768px 調整為 1024px，涵蓋平板等中等螢幕
   .employee-list-container {
-    padding: 16px;
+    padding: 0; // 移除外層 padding，讓子元素自己控制間距
   }
 
   .page-header {
@@ -545,6 +849,8 @@
 
     .btn {
       flex: 1;
+      height: 38px; // 確保響應式模式下按鈕高度與輸入框一致
+      padding: 10px 16px; // 確保響應式模式下 padding 一致
     }
   }
 
@@ -573,17 +879,27 @@
     margin: 0;
     max-height: 95vh;
     max-width: 100%; // 在小螢幕上佔滿寬度
+    width: 95%; // 在小螢幕上稍微縮小一點邊距
   }
 
   .modal-body {
     padding: 16px;
-    
-    // 在行動裝置上改為單欄佈局
+
+    // 在行動裝置上調整表單樣式
     form {
-      grid-template-columns: 1fr;
-      gap: 16px;
+      max-width: 100%; // 小螢幕上表單佔滿可用寬度
+      gap: 20px; // 調整行動裝置間距：從 18px 改為 20px，保持與桌面版相近的寬鬆感
     }
-    
+
+    .form-group {
+      max-width: 100%; // 小螢幕上 form-group 佔滿寬度
+      margin-bottom: 10px; // 行動裝置上適當的底部間距：從 6px 改為 10px
+
+      label {
+        margin-bottom: 12px; // 行動裝置上標籤間距：調整為 12px
+      }
+    }
+
     .form-control {
       font-size: 16px; // 防止 iOS 自動縮放
     }
@@ -592,14 +908,16 @@
   .modal-header, .modal-footer {
     padding: 16px;
   }
-  
+
   .modal-footer {
     flex-direction: column-reverse; // 在小螢幕上垂直排列按鈕
+    justify-content: center; // 保持居中對齊
     
+
     .btn {
       width: 100%;
       margin-bottom: 8px;
-      
+
       &:last-child {
         margin-bottom: 0;
       }
@@ -607,39 +925,81 @@
   }
 }
 
+// 響應式設計補充：確保所有螢幕尺寸上按鈕與輸入框高度一致
+@media (max-width: 1024px) {
+  .employee-list-container {
+    padding: 0; // 確保外層容器沒有 padding
+  }
+  
+  .search-section,
+  .employee-list {
+    // 調整內距以適應小螢幕，保持一致的邊界
+    padding: 16px; // 小螢幕上使用較小的內距
+  }
+
+  // 確保小螢幕上按鈕也保持一致的高度
+  .btn {
+    height: 38px; // 確保在小螢幕上按鈕高度一致
+    padding: 10px 16px; // 確保 padding 一致
+  }
+
+  .form-control {
+    height: 38px; // 確保在小螢幕上輸入框高度一致
+  }
+
+  // 特別針對搜尋表單的按鈕對齊
+  .search-form .form-actions .btn {
+    height: 38px; // 強制搜尋表單按鈕高度與輸入框一致
+    padding: 10px 16px; // 強制搜尋表單按鈕 padding 與輸入框一致
+    line-height: 1.4; // 強制搜尋表單按鈕行高與輸入框一致
+    box-sizing: border-box; // 確保計算方式一致
+  }
+}
+
 // 檢視員工詳情彈窗樣式
 .view-modal {
   .modal-content {
-    max-width: 600px;
+    max-width: 650px; // 與其他彈窗保持一致寬度
     width: 90vw;
   }
 
   .view-content {
     max-height: 70vh;
     overflow-y: auto;
+    padding: 0; // 移除額外內邊距，讓內容佔滿寬度
+    width: 100%; // 確保內容區域佔滿彈窗寬度
   }
 
   .employee-details {
+    width: 90%; // 確保詳細資料區域佔滿寬度(文字)
+    padding: 0 24px; // 統一內邊距與其他彈窗一致
+    box-sizing: border-box;
+
     .detail-row {
       display: flex;
-      align-items: center;
-      padding: 12px 0;
+      align-items: flex-start; // 改為頂部對齊，提供更好的多行文字顯示
+      padding: 16px 0; // 增加垂直間距：從 12px 改為 16px
       border-bottom: 1px solid #f0f0f0;
+      width: 100%; // 確保每行佔滿寬度
 
       &:last-child {
         border-bottom: none;
       }
 
       strong {
-        min-width: 120px;
+        min-width: 140px; // 增加標籤寬度：從 120px 改為 140px，提供更好的對齊
         font-weight: 600;
         color: #495057;
-        margin-right: 16px;
+        margin-right: 20px; // 增加標籤與內容間距：從 16px 改為 20px
+        flex-shrink: 0; // 防止標籤被壓縮
+        margin-bottom: 8px; // 增加標籤底部間距
       }
 
       span {
         flex: 1;
         color: #212529;
+        word-wrap: break-word; // 長文字自動換行
+        line-height: 1.5; // 增加行高，提升可讀性
 
         &.status-active {
           color: #28a745;
@@ -652,5 +1012,85 @@
         }
       }
     }
+  }
+}
+
+// 除錯輔助：暫時顯示容器邊界以檢查對齊（開發時使用，正式版請移除）
+/*
+// 嘗試使用 ::ng-deep 來影響父容器
+::ng-deep app-employee-list {
+  border: 5px solid yellow !important;
+  background-color: rgba(255, 255, 0, 0.05) !important;
+  display: block !important;
+  margin: 2px !important;
+}
+
+:host {
+  border: 4px solid red !important;
+  background-color: rgba(255, 0, 0, 0.05) !important;
+}
+
+.employee-management {
+  border: 4px solid orange !important;
+  background-color: rgba(255, 165, 0, 0.05) !important;
+}
+
+.employee-list-container {
+  border: 3px solid purple !important;
+  background-color: rgba(128, 0, 128, 0.1) !important;
+}
+
+.search-section {
+  border: 3px solid green !important;
+  background-color: rgba(0, 255, 0, 0.1) !important;
+}
+
+.employee-list {
+  border: 3px solid blue !important;
+  background-color: rgba(0, 0, 255, 0.1) !important;
+  min-height: 50px !important; // 確保容器有高度，即使內容為空
+}
+
+.table-container {
+  border: 2px solid orange !important;
+  background-color: rgba(255, 165, 0, 0.1) !important;
+}
+
+// 特別標示頁面標題區域（如果啟用的話）
+.page-header {
+  border: 2px solid cyan !important;
+  background-color: rgba(0, 255, 255, 0.1) !important;
+}
+
+*/
+
+/* 強制應用全域聚焦樣式到組件內的所有按鈕 - 確保不被組件封裝影響 */
+:host ::ng-deep {
+  button:focus-visible,
+  .btn:focus-visible,
+  .btn-primary:focus-visible,
+  .btn-secondary:focus-visible,
+  .btn-outline-primary:focus-visible,
+  .btn-outline-secondary:focus-visible,
+  .btn-outline-danger:focus-visible {
+    outline: 3px solid #007bff !important;
+    outline-offset: 2px !important;
+    box-shadow: none !important;
+    border-radius: 4px !important;
+    z-index: 9999 !important;
+  }
+
+  button:focus,
+  .btn:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  /* 特別針對搜尋表單的按鈕 */
+  .search-form .form-actions .btn:focus-visible {
+    outline: 3px solid #007bff !important;
+    outline-offset: 2px !important;
+    box-shadow: none !important;
+    border-radius: 4px !important;
   }
 }

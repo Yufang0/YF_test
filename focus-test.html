@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>聚焦樣式測試</title>
+  <style>
+    /* 直接內嵌測試樣式 */
+    body {
+      font-family: 'Inter', sans-serif;
+      padding: 24px;
+      line-height: 1.6;
+    }
+    
+    /* 聚焦樣式測試 */
+    button:focus-visible,
+    input:focus-visible,
+    textarea:focus-visible,
+    select:focus-visible,
+    a:focus-visible,
+    [tabindex]:focus-visible {
+      outline: 2px solid #007bff !important;
+      outline-offset: 2px !important;
+      box-shadow: none !important;
+      border-radius: 4px;
+    }
+
+    /* 移除滑鼠聚焦樣式 */
+    button:focus,
+    input:focus,
+    textarea:focus,
+    select:focus,
+    a:focus,
+    [tabindex]:focus {
+      outline: none !important;
+      box-shadow: none !important;
+    }
+    
+    /* 為不支援 :focus-visible 的瀏覽器提供回退 */
+    @supports not selector(:focus-visible) {
+      button:focus,
+      input:focus,
+      textarea:focus,
+      select:focus,
+      a:focus,
+      [tabindex]:focus {
+        outline: 2px solid #007bff !important;
+        outline-offset: 2px !important;
+        box-shadow: none !important;
+        border-radius: 4px;
+      }
+    }
+
+    .test-section {
+      margin-bottom: 32px;
+      padding: 16px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+    }
+    
+    .form-group {
+      margin-bottom: 16px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    
+    input, textarea, select {
+      width: 100%;
+      max-width: 300px;
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    
+    button {
+      padding: 8px 16px;
+      margin-right: 8px;
+      margin-bottom: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: white;
+      cursor: pointer;
+    }
+    
+    a {
+      color: #007bff;
+      text-decoration: underline;
+      margin-right: 16px;
+    }
+    
+    .focusable-div {
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #f9f9f9;
+      margin-bottom: 8px;
+      max-width: 300px;
+    }
+    
+    .instructions {
+      background: #e7f3ff;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎯 聚焦樣式測試頁面</h1>
+  
+  <div class="instructions">
+    <h3>📋 測試說明</h3>
+    <ul>
+      <li><strong>鍵盤測試：</strong>使用 <kbd>Tab</kbd> 鍵在元素間切換，應該看到<strong>藍色邊框</strong>聚焦樣式</li>
+      <li><strong>滑鼠測試：</strong>用滑鼠點擊各個元素，<strong>不應該</strong>看到聚焦樣式</li>
+      <li><strong>顏色：</strong>聚焦邊框應該是 <span style="color: #007bff; font-weight: bold;">2px solid #007bff（藍色）</span></li>
+      <li><strong>間距：</strong>邊框與元素間應有 2px 間距</li>
+    </ul>
+  </div>
+
+  <div class="test-section">
+    <h2>表單元素</h2>
+    <div class="form-group">
+      <label for="text-input">文字輸入框：</label>
+      <input type="text" id="text-input" placeholder="請輸入文字">
+    </div>
+    
+    <div class="form-group">
+      <label for="email-input">電子郵件：</label>
+      <input type="email" id="email-input" placeholder="email@example.com">
+    </div>
+    
+    <div class="form-group">
+      <label for="password-input">密碼：</label>
+      <input type="password" id="password-input" placeholder="請輸入密碼">
+    </div>
+    
+    <div class="form-group">
+      <label for="textarea">多行文字：</label>
+      <textarea id="textarea" rows="3" placeholder="請輸入多行文字"></textarea>
+    </div>
+    
+    <div class="form-group">
+      <label for="select">下拉選單：</label>
+      <select id="select">
+        <option value="">請選擇...</option>
+        <option value="1">選項 1</option>
+        <option value="2">選項 2</option>
+        <option value="3">選項 3</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>按鈕元素</h2>
+    <button type="button">標準按鈕</button>
+    <button type="submit">提交按鈕</button>
+    <button type="reset">重置按鈕</button>
+    <button type="button" disabled>停用按鈕</button>
+  </div>
+
+  <div class="test-section">
+    <h2>連結元素</h2>
+    <a href="#" onclick="return false;">普通連結</a>
+    <a href="#test" onclick="return false;">錨點連結</a>
+    <a href="https://example.com" target="_blank">外部連結</a>
+  </div>
+
+  <div class="test-section">
+    <h2>可聚焦的其他元素</h2>
+    <div tabindex="0" class="focusable-div">可聚焦的 div (tabindex="0")</div>
+    <span tabindex="0" class="focusable-div" style="display: inline-block;">可聚焦的 span</span>
+  </div>
+
+  <div class="test-section">
+    <h2>🔍 除錯資訊</h2>
+    <p><strong>瀏覽器支援檢查：</strong></p>
+    <p id="focus-visible-support"></p>
+    <p><strong>聚焦事件監聽：</strong></p>
+    <p id="focus-events"></p>
+  </div>
+
+  <script>
+    // 檢查瀏覽器對 :focus-visible 的支援
+    const supportElement = document.getElementById('focus-visible-support');
+    try {
+      document.querySelector(':focus-visible');
+      supportElement.textContent = '✅ 瀏覽器支援 :focus-visible';
+      supportElement.style.color = 'green';
+    } catch (e) {
+      supportElement.textContent = '❌ 瀏覽器不支援 :focus-visible，將使用 :focus 回退';
+      supportElement.style.color = 'orange';
+    }
+
+    // 監聽聚焦事件
+    let focusEventCount = 0;
+    const eventElement = document.getElementById('focus-events');
+    
+    document.addEventListener('focusin', function(e) {
+      focusEventCount++;
+      eventElement.textContent = `聚焦事件 #${focusEventCount}: ${e.target.tagName} (${e.target.type || 'N/A'})`;
+      eventElement.style.color = 'blue';
+      
+      // 3秒後清除訊息
+      setTimeout(() => {
+        if (eventElement.textContent.includes(`#${focusEventCount}`)) {
+          eventElement.textContent = '等待聚焦事件...';
+          eventElement.style.color = 'gray';
+        }
+      }, 3000);
+    });
+
+    // 初始化
+    eventElement.textContent = '等待聚焦事件...';
+    eventElement.style.color = 'gray';
+    
+    console.log('聚焦樣式測試頁面已載入');
+    console.log('請使用 Tab 鍵測試聚焦樣式');
+  </script>
+</body>
+</html>

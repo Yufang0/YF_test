@@ -1,5 +1,75 @@
 /* 全域組件樣式 - 減少組件檔案大小 */
 
+/* 全域聚焦樣式 - Swiss International Style */
+/* 只在鍵盤操作時顯示聚焦樣式，滑鼠點擊不顯示 */
+
+/* 超高特異性的聚焦樣式 - 強制覆蓋所有組件樣式 */
+*:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible,
+.btn:focus-visible,
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible,
+.btn-danger:focus-visible,
+.btn-outline-primary:focus-visible,
+.btn-outline-secondary:focus-visible,
+.btn-outline-danger:focus-visible,
+.form-control:focus-visible,
+.btn-close:focus-visible,
+[role="button"]:focus-visible,
+.nav-link:focus-visible,
+.sidebar .nav-link:focus-visible,
+.sidebar-nav .nav-link:focus-visible {
+  outline: 3px solid #007bff !important;
+  outline-offset: 2px !important;
+  box-shadow: none !important;
+  border-radius: 4px !important;
+  z-index: 9999 !important;
+}
+
+/* 移除所有元素的預設 focus 樣式，只保留 focus-visible */
+button:focus,
+input:focus,
+textarea:focus,
+select:focus,
+a:focus,
+[tabindex]:focus,
+.btn:focus,
+.form-control:focus,
+.btn-close:focus,
+.nav-link:focus,
+.sidebar .nav-link:focus,
+.sidebar-nav .nav-link:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* 為無障礙考量，確保 focus-visible 在所有支援的瀏覽器中正常運作 */
+@supports not selector(:focus-visible) {
+  /* 對於不支援 :focus-visible 的舊瀏覽器，回退到 :focus */
+  button:focus,
+  input:focus,
+  textarea:focus,
+  select:focus,
+  a:focus,
+  [tabindex]:focus,
+  .btn:focus,
+  .form-control:focus,
+  .btn-close:focus,
+  .nav-link:focus,
+  .sidebar .nav-link:focus,
+  .sidebar-nav .nav-link:focus {
+    outline: 2px solid #007bff !important;
+    outline-offset: 2px !important;
+    box-shadow: none !important;
+    border-radius: 4px;
+  }
+}
+
 /* 員工清單樣式 */
 .employee-list-container {
   background-color: var(--color-background-primary);
@@ -53,9 +123,14 @@
         border: var(--border);
         border-radius: var(--border-radius);
 
+        &:focus-visible {
+          outline: 2px solid #007bff !important;
+          outline-offset: 2px !important;
+          border-radius: 4px;
+        }
+
         &:focus {
-          outline: 2px solid var(--color-primary);
-          outline-offset: 2px;
+          outline: none;
         }
       }
     }
@@ -177,7 +252,7 @@
 
           &.active {
             background: var(--color-text-primary);
-            color: var(--color-background-primary);
+            //color: var(--color-background-primary);
           }
 
           &:disabled {

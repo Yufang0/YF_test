@@ -29,7 +29,7 @@
 
     <!-- 底部資訊 -->
     <div class="sidebar-footer">
-      <div class="user-info" (click)="navigateToRoleDashboard()" title="點擊前往個人儀表板">
+      <div class="user-info" (click)="navigateToRoleDashboard()" title="點擊前往個人儀表板" tabindex="0" (keydown.enter)="navigateToRoleDashboard()" (keydown.space)="navigateToRoleDashboard()">
         <div class="user-avatar">👤</div>
         <div class="user-details">
           <div class="user-name">{{ user()?.username || '未知使用者' }}</div>

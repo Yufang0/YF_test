@@ -63,3 +63,53 @@
     margin-left: 0;
   }
 }
+
+/* 確保側邊欄導航連結的焦點樣式正確顯示 */
+:host ::ng-deep {
+  .sidebar-nav .nav-link:focus-visible,
+  .nav-link:focus-visible {
+    outline: 3px solid #007bff !important;
+    outline-offset: 2px !important;
+    box-shadow: none !important;
+    border-radius: 4px !important;
+    z-index: 9999 !important;
+  }
+
+  .sidebar-nav .nav-link:focus,
+  .nav-link:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  /* 確保登出按鈕和使用者資訊的焦點樣式 */
+  .logout-btn:focus-visible,
+  .user-info:focus-visible {
+    outline: 3px solid #007bff !important;
+    outline-offset: 2px !important;
+    box-shadow: none !important;
+    border-radius: 4px !important;
+    z-index: 9999 !important;
+  }
+
+  .logout-btn:focus,
+  .user-info:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  /* 確保頭部按鈕的焦點樣式 */
+  .header-btn:focus-visible,
+  .menu-toggle:focus-visible {
+    outline: 3px solid #007bff !important;
+    outline-offset: 2px !important;
+    box-shadow: none !important;
+    border-radius: 4px !important;
+    z-index: 9999 !important;
+  }
+
+  .header-btn:focus,
+  .menu-toggle:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+}

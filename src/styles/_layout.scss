@@ -42,8 +42,10 @@
       }
 
       &.active {
-        color: var(--color-primary);
-        background-color: var(--color-background-accent);
+        background-color: var(--color-background-accent); // 保留底色變化
+        color: inherit; // 不改文字顏色
+        font-weight: normal; // 不變粗
+        border-left: none; // 確保左邊沒有紅框（保險加上）
       }
     }
   }
@@ -98,9 +100,10 @@
       }
 
       &.active {
-        color: var(--color-primary);
-        background-color: var(--color-background-accent);
-        font-weight: var(--font-weight-medium);
+        background-color: var(--color-background-accent); // 保留底色變化
+        color: inherit; // 不改文字顏色
+        font-weight: normal; // 不變粗
+        border-left: none; // 確保左邊沒有紅框（保險加上）
       }
     }
   }

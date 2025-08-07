@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>聚焦樣式終極測試</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        
+        /* 複製專案中的所有聚焦樣式 */
+        *:focus-visible,
+        button:focus-visible,
+        input:focus-visible,
+        textarea:focus-visible,
+        select:focus-visible,
+        a:focus-visible,
+        [tabindex]:focus-visible,
+        .btn:focus-visible,
+        .btn-primary:focus-visible,
+        .btn-secondary:focus-visible,
+        .btn-danger:focus-visible,
+        .btn-outline-primary:focus-visible,
+        .btn-outline-secondary:focus-visible,
+        .btn-outline-danger:focus-visible,
+        .form-control:focus-visible,
+        .btn-close:focus-visible,
+        [role="button"]:focus-visible {
+            outline: 3px solid #007bff !important;
+            outline-offset: 2px !important;
+            box-shadow: none !important;
+            border-radius: 4px !important;
+            z-index: 9999 !important;
+        }
+        
+        button:focus,
+        input:focus,
+        textarea:focus,
+        select:focus,
+        a:focus,
+        [tabindex]:focus,
+        .btn:focus,
+        .form-control:focus,
+        .btn-close:focus {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        
+        /* 測試樣式 - 模擬專案中的按鈕樣式 */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.15s ease-in-out;
+            margin: 5px;
+        }
+        
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .btn-outline-primary {
+            background-color: transparent;
+            color: #007bff;
+            border: 1px solid #007bff;
+        }
+        
+        .btn-outline-secondary {
+            background-color: transparent;
+            color: #6c757d;
+            border: 1px solid #6c757d;
+        }
+        
+        .btn-outline-danger {
+            background-color: transparent;
+            color: #dc3545;
+            border: 1px solid #dc3545;
+        }
+        
+        .form-control {
+            padding: 10px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+            margin: 5px;
+            width: 200px;
+        }
+        
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f9f9f9;
+            border-left: 4px solid #007bff;
+        }
+        
+        .test-result {
+            background: #d4edda;
+            border-left-color: #28a745;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <h1>聚焦樣式終極測試頁面</h1>
+    
+    <div class="status">
+        <strong>測試說明:</strong> 使用 Tab 鍵在元素間移動，每個元素都應顯示藍色聚焦框 (#007bff，3px 粗細)。
+        用滑鼠點擊時不應顯示聚焦框。
+    </div>
+    
+    <div class="test-section">
+        <h2>🔧 新增員工按鈕測試（模擬主頁面）</h2>
+        <button class="btn btn-primary">
+            <span>+</span>
+            新增員工
+        </button>
+    </div>
+    
+    <div class="test-section">
+        <h2>🔍 搜尋表單按鈕測試</h2>
+        <button class="btn btn-primary">搜尋</button>
+        <button class="btn btn-secondary">重設</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>📋 操作按鈕測試（模擬員工列表）</h2>
+        <button class="btn btn-outline-primary">檢視</button>
+        <button class="btn btn-outline-secondary">編輯</button>
+        <button class="btn btn-outline-danger">刪除</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>📝 表單按鈕測試（模擬員工表單）</h2>
+        <button class="btn btn-primary">建立員工</button>
+        <button class="btn btn-secondary">取消</button>
+        <button class="btn btn-danger">刪除</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>💡 表單輸入框測試</h2>
+        <input type="text" class="form-control" placeholder="員工編號">
+        <input type="text" class="form-control" placeholder="員工姓名">
+        <select class="form-control">
+            <option>選擇部門</option>
+            <option>IT部門</option>
+            <option>HR部門</option>
+        </select>
+    </div>
+    
+    <div class="test-section">
+        <h2>🔗 連結測試</h2>
+        <a href="#" style="margin: 5px; display: inline-block;">普通連結</a>
+        <a href="#" tabindex="0" style="margin: 5px; display: inline-block;">帶 tabindex 的連結</a>
+    </div>
+    
+    <div class="status test-result" id="testResult">
+        <strong>測試結果:</strong> 
+        <div id="focusLog">開始測試...</div>
+    </div>
+
+    <script>
+        let focusCount = 0;
+        const log = document.getElementById('focusLog');
+        
+        function logFocus(element, eventType) {
+            focusCount++;
+            const elementDesc = `${element.tagName.toLowerCase()}${element.className ? '.' + element.className.split(' ').join('.') : ''}`;
+            log.innerHTML += `<br>${focusCount}. ${eventType}: ${elementDesc}`;
+        }
+        
+        // 監控所有可聚焦元素
+        document.querySelectorAll('button, input, select, a, [tabindex]').forEach(element => {
+            element.addEventListener('focus', () => logFocus(element, 'focus'));
+            element.addEventListener('blur', () => logFocus(element, 'blur'));
+        });
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+                console.log('Tab navigation:', document.activeElement);
+            }
+        });
+        
+        log.innerHTML = '✅ 事件監聽器已設置完成，請使用 Tab 鍵測試聚焦樣式';
+    </script>
+</body>
+</html>
