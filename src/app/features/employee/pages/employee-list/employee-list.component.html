@@ -88,12 +88,96 @@
           <table class="table table-striped">
             <thead>
               <tr>
-                <th>員工編號</th>
-                <th>員工姓名</th>
-                <th>連絡電話</th>
-                <th>部門 ID</th>
-                <th>職位</th>
-                <th>狀態</th>
+                <th class="sortable-header" (click)="onSort('emp_code')">
+                  <div class="header-content">
+                    <span class="sort-icons">
+                      <span 
+                        class="sort-icon sort-up" 
+                        [class]="'sort-icon sort-up ' + getSortIconState('emp_code', 'asc')"
+                        title="點擊升序排序">▲</span>
+                      <span 
+                        class="sort-icon sort-down" 
+                        [class]="'sort-icon sort-down ' + getSortIconState('emp_code', 'desc')"
+                        title="點擊降序排序">▼</span>
+                    </span>
+                    <span class="header-text">員工編號</span>
+                  </div>
+                </th>
+                <th class="sortable-header" (click)="onSort('emp_name')">
+                  <div class="header-content">
+                    <span class="sort-icons">
+                      <span 
+                        class="sort-icon sort-up" 
+                        [class]="'sort-icon sort-up ' + getSortIconState('emp_name', 'asc')"
+                        title="點擊升序排序">▲</span>
+                      <span 
+                        class="sort-icon sort-down" 
+                        [class]="'sort-icon sort-down ' + getSortIconState('emp_name', 'desc')"
+                        title="點擊降序排序">▼</span>
+                    </span>
+                    <span class="header-text">員工姓名</span>
+                  </div>
+                </th>
+                <th class="sortable-header" (click)="onSort('emp_phone')">
+                  <div class="header-content">
+                    <span class="sort-icons">
+                      <span 
+                        class="sort-icon sort-up" 
+                        [class]="'sort-icon sort-up ' + getSortIconState('emp_phone', 'asc')"
+                        title="點擊升序排序">▲</span>
+                      <span 
+                        class="sort-icon sort-down" 
+                        [class]="'sort-icon sort-down ' + getSortIconState('emp_phone', 'desc')"
+                        title="點擊降序排序">▼</span>
+                    </span>
+                    <span class="header-text">連絡電話</span>
+                  </div>
+                </th>
+                <th class="sortable-header" (click)="onSort('dept_id')">
+                  <div class="header-content">
+                    <span class="sort-icons">
+                      <span 
+                        class="sort-icon sort-up" 
+                        [class]="'sort-icon sort-up ' + getSortIconState('dept_id', 'asc')"
+                        title="點擊升序排序">▲</span>
+                      <span 
+                        class="sort-icon sort-down" 
+                        [class]="'sort-icon sort-down ' + getSortIconState('dept_id', 'desc')"
+                        title="點擊降序排序">▼</span>
+                    </span>
+                    <span class="header-text">部門 ID</span>
+                  </div>
+                </th>
+                <th class="sortable-header" (click)="onSort('job_title')">
+                  <div class="header-content">
+                    <span class="sort-icons">
+                      <span 
+                        class="sort-icon sort-up" 
+                        [class]="'sort-icon sort-up ' + getSortIconState('job_title', 'asc')"
+                        title="點擊升序排序">▲</span>
+                      <span 
+                        class="sort-icon sort-down" 
+                        [class]="'sort-icon sort-down ' + getSortIconState('job_title', 'desc')"
+                        title="點擊降序排序">▼</span>
+                    </span>
+                    <span class="header-text">職位</span>
+                  </div>
+                </th>
+                <th class="sortable-header" (click)="onSort('is_active')">
+                  <div class="header-content">
+                    <span class="sort-icons">
+                      <span 
+                        class="sort-icon sort-up" 
+                        [class]="'sort-icon sort-up ' + getSortIconState('is_active', 'asc')"
+                        title="點擊升序排序">▲</span>
+                      <span 
+                        class="sort-icon sort-down" 
+                        [class]="'sort-icon sort-down ' + getSortIconState('is_active', 'desc')"
+                        title="點擊降序排序">▼</span>
+                    </span>
+                    <span class="header-text">狀態</span>
+                  </div>
+                </th>
                 <th>操作</th>
               </tr>
             </thead>
@@ -107,7 +191,7 @@
                   <td>{{ employee.job_title || '-' }}</td>
                   <td>
                     <span [class]="employee.is_active ? 'status-active' : 'status-inactive'">
-                      {{ employee.is_active ? '啟用' : '停用' }}
+                      {{ employee.is_active ? '在職' : '離職' }}
                     </span>
                   </td>
                   <td>
@@ -276,8 +360,8 @@
               formControlName="is_active" 
               class="form-control"
               [class.error]="hasError(createForm, 'is_active')">
-              <option [ngValue]="true">啟用</option>
-              <option [ngValue]="false">停用</option>
+              <option [ngValue]="true">在職</option>
+              <option [ngValue]="false">離職</option>
             </select>
             @if (getErrorMessage(createForm, 'is_active')) {
               <div class="error-message">{{ getErrorMessage(createForm, 'is_active') }}</div>
@@ -437,8 +521,8 @@
               formControlName="is_active" 
               class="form-control"
               [class.error]="hasError(editForm, 'is_active')">
-              <option [ngValue]="true">啟用</option>
-              <option [ngValue]="false">停用</option>
+              <option [ngValue]="true">在職</option>
+              <option [ngValue]="false">離職</option>
             </select>
             @if (getErrorMessage(editForm, 'is_active')) {
               <div class="error-message">{{ getErrorMessage(editForm, 'is_active') }}</div>
@@ -534,7 +618,7 @@
               <div class="detail-row">
                 <strong>員工狀態：</strong>
                 <span [class]="selectedEmployee()!.is_active ? 'status-active' : 'status-inactive'">
-                  {{ selectedEmployee()!.is_active ? '啟用' : '停用' }}
+                  {{ selectedEmployee()!.is_active ? '在職' : '離職' }}
                 </span>
               </div>
               <div class="detail-row">

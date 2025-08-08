@@ -449,6 +449,42 @@ section {
 }
 
 // 表格樣式
+.table-container {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  background-color: white;
+  
+  // 確保在行動裝置上可以水平滾動
+  -webkit-overflow-scrolling: touch;
+  
+  // 在較小螢幕上顯示滾動提示
+  @media (max-width: 900px) {
+    position: relative;
+    
+    &::after {
+      content: '← 滑動查看更多 →';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 4px 12px;
+      font-size: 12px;
+      border-radius: 4px 4px 0 0;
+      pointer-events: none;
+      opacity: 0;
+      animation: fadeInOut 3s ease-in-out;
+    }
+  }
+}
+
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
 .table-responsive {
   overflow-x: auto;
   border-radius: 8px;
@@ -460,12 +496,23 @@ section {
   margin-bottom: 0;
   background-color: white;
   border-collapse: collapse;
+  
+  // 確保表格在行動裝置上不會過度壓縮
+  min-width: 800px;
 
   th, td {
     padding: 12px 16px;
     text-align: left;
     border-bottom: 1px solid #dee2e6;
     font-size: 14px;
+    white-space: nowrap; // 防止文字換行影響表格佈局
+    
+    // 在行動裝置上設定最小寬度確保可讀性
+    @media (max-width: 900px) {
+      min-width: 120px;
+      font-size: 13px;
+      padding: 10px 12px;
+    }
   }
 
   th {
@@ -473,10 +520,42 @@ section {
     font-weight: 600;
     color: #495057;
     border-bottom: 2px solid #dee2e6;
+    position: sticky;
+    top: 0;
+    z-index: 10;
   }
 
   tbody tr:hover {
     background-color: #f8f9fa;
+  }
+
+  // 特定欄位寬度設定
+  th:nth-child(1), td:nth-child(1) { // 員工編號
+    min-width: 70px;
+  }
+  
+  th:nth-child(2), td:nth-child(2) { // 員工姓名
+    min-width: 70px;
+  }
+  
+  th:nth-child(3), td:nth-child(3) { // 連絡電話
+    min-width: 80px;
+  }
+  
+  th:nth-child(4), td:nth-child(4) { // 部門ID
+    min-width: 60px;
+  }
+  
+  th:nth-child(5), td:nth-child(5) { // 職位
+    min-width: 80px;
+  }
+  
+  th:nth-child(6), td:nth-child(6) { // 狀態
+    min-width: 40px;
+  }
+  
+  th:nth-child(7), td:nth-child(7) { // 操作
+    min-width: 160px;
   }
 
   .status-badge {
@@ -502,6 +581,74 @@ section {
     gap: 8px;
     flex-wrap: wrap;
   }
+}
+
+// 排序表格樣式
+.sortable-header {
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #f8f9fa;
+  }
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .sort-icons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1;
+    font-size: 0.8rem;
+  }
+
+  .sort-icon {
+    display: block;
+    transition: color 0.2s ease;
+    margin: 1px 0;
+
+    // 預設狀態 - 淺灰色
+    &.inactive {
+      color: #dee2e6;
+    }
+
+    // 啟用狀態 - 深色
+    &.active {
+      color: #495057;
+      font-weight: bold;
+    }
+
+    &:hover {
+      color: #007bff;
+    }
+  }
+
+  .sort-up {
+    margin-bottom: -2px;
+  }
+
+  .sort-down {
+    margin-top: -2px;
+  }
+
+  .header-text {
+    font-weight: 600;
+  }
+}
+
+// 確保表格標題樣式一致
+.table thead th {
+  border-bottom: 2px solid #dee2e6;
+  vertical-align: middle;
+  padding: 0.75rem;
+  font-weight: 600;
+  background-color: #f8f9fa;
 }
 
 // 按鈕樣式
@@ -853,21 +1000,106 @@ section {
       padding: 10px 16px; // 確保響應式模式下 padding 一致
     }
   }
+}
 
-  .table-responsive {
-    font-size: 12px;
+// 行動裝置表格響應式設計
+@media (max-width: 900px) {
+  .table-container {
+    margin: 0 -12px; // 延伸到容器邊緣，提供更多滾動空間
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
   }
 
-  .table th, .table td {
-    padding: 8px 12px;
-  }
-
-  .action-buttons {
-    flex-direction: column;
-
-    .btn {
-      width: 100%;
+  .table {
+    min-width: 900px; // 確保表格寬度足夠顯示所有資訊
+    
+    th, td {
+      font-size: 12px;
+      padding: 8px 10px;
+      
+      // 排序圖示在行動裝置上縮小
+      .sort-icons {
+        font-size: 0.7rem;
+      }
     }
+    
+    // 操作按鈕在行動裝置上調整
+    .action-buttons {
+      flex-direction: column;
+      gap: 4px;
+      
+      .btn {
+        font-size: 11px;
+        padding: 6px 10px;
+        min-width: 50px;
+      }
+    }
+  }
+  
+  // 搜尋區域在行動裝置上的調整
+  .search-section {
+    margin-left: -12px;
+    margin-right: -12px;
+    border-radius: 0;
+  }
+  
+  .employee-list {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
+
+// 更小螢幕的特殊處理
+@media (max-width: 600px) {
+  .table {
+    min-width: 1000px; // 在更小螢幕上確保更多空間
+    
+    .action-buttons .btn {
+      font-size: 10px;
+      padding: 5px 8px;
+    }
+  }
+  
+  .modal-overlay {
+    padding: 10px;
+  }
+  
+  .modal-content {
+    max-width: 95%;
+    max-height: 90vh;
+  }
+}
+
+// 響應式設計補充：確保所有螢幕尺寸上按鈕與輸入框高度一致
+@media (max-width: 1024px) {
+  .employee-list-container {
+    padding: 16px;
+  }
+  
+  .search-section,
+  .employee-list {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  // 確保小螢幕上按鈕也保持一致的高度
+  .btn {
+    height: 38px;
+    padding: 10px 16px;
+    box-sizing: border-box;
+  }
+
+  .form-control {
+    height: 38px;
+    padding: 10px 12px;
+    box-sizing: border-box;
+  }
+
+  // 特別針對搜尋表單的按鈕對齊
+  .search-form .form-actions .btn {
+    height: 38px;
+    padding: 10px 16px;
   }
 
   .modal-overlay {

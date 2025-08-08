@@ -30,6 +30,13 @@ export class EmployeeListComponent implements OnInit {
   readonly loading = this.employeeService.loading;
   readonly error = signal<string | null>(null);
 
+  // 排序狀態
+  readonly sortColumn = signal<keyof Employee | null>(null);
+  readonly sortDirection = signal<'asc' | 'desc' | 'none'>('none');
+  
+  // 儲存原始資料順序
+  private originalEmployeeOrder = signal<Employee[]>([]);
+
   // 搜尋表單
   readonly searchForm = this.fb.group({
     emp_code: [''],
@@ -77,6 +84,7 @@ export class EmployeeListComponent implements OnInit {
     this.employeeService.getAllEmployees().subscribe({
       next: (employees) => {
         this.employees.set(employees);
+        this.originalEmployeeOrder.set([...employees]); // 儲存原始順序
         this.error.set(null);
       },
       error: (error) => {
@@ -130,10 +138,12 @@ export class EmployeeListComponent implements OnInit {
     this.employeeService.searchEmployeesByCriteria(criteria).subscribe({
       next: (employees) => {
         this.employees.set(employees);
+        this.originalEmployeeOrder.set([...employees]); // 儲存原始順序
         this.error.set(null);
       },
       error: (error) => {
         this.employees.set([]);
+        this.originalEmployeeOrder.set([]); // 清空原始順序
         this.error.set(error.message || '搜尋員工失敗');
       }
     });
@@ -184,6 +194,8 @@ export class EmployeeListComponent implements OnInit {
           this.loadEmployees();
           this.showCreateForm.set(false);
           this.error.set(null);
+          // 重置排序狀態
+          this.resetSort();
           console.log('員工建立成功:', newEmployee);
         },
         error: (error) => {
@@ -252,6 +264,8 @@ export class EmployeeListComponent implements OnInit {
           this.showEditForm.set(false);
           this.selectedEmployee.set(null);
           this.error.set(null);
+          // 重置排序狀態
+          this.resetSort();
           console.log('員工更新成功:', updatedEmployee);
         },
         error: (error) => {
@@ -283,6 +297,8 @@ export class EmployeeListComponent implements OnInit {
           // 重新載入員工列表
           this.loadEmployees();
           this.error.set(null);
+          // 重置排序狀態
+          this.resetSort();
           console.log('員工刪除成功');
         },
         error: (error) => {
@@ -357,6 +373,96 @@ export class EmployeeListComponent implements OnInit {
   hasError(formGroup: FormGroup, fieldName: string): boolean {
     const control = formGroup.get(fieldName);
     return !!(control?.errors && control.touched);
+  }
+
+  /**
+   * 排序表格 - 三態循環：升序 → 降序 → 無排序 → 升序
+   */
+  onSort(column: keyof Employee): void {
+    const currentColumn = this.sortColumn();
+    const currentDirection = this.sortDirection();
+
+    if (currentColumn === column) {
+      // 同一欄位，按照三態循環切換
+      if (currentDirection === 'asc') {
+        this.sortDirection.set('desc');
+      } else if (currentDirection === 'desc') {
+        this.sortDirection.set('none');
+        this.sortColumn.set(null);
+      } else {
+        this.sortDirection.set('asc');
+        this.sortColumn.set(column);
+      }
+    } else {
+      // 不同欄位，設為新欄位且升序
+      this.sortColumn.set(column);
+      this.sortDirection.set('asc');
+    }
+
+    // 執行排序
+    this.applySort();
+  }
+
+  /**
+   * 執行員工資料排序或恢復原始順序
+   */
+  private applySort(): void {
+    const column = this.sortColumn();
+    const direction = this.sortDirection();
+    
+    // 如果沒有排序欄位或方向為none，恢復原始順序
+    if (!column || direction === 'none') {
+      this.employees.set([...this.originalEmployeeOrder()]);
+      return;
+    }
+
+    const sorted = [...this.employees()].sort((a, b) => {
+      const aValue = a[column];
+      const bValue = b[column];
+
+      // 處理空值
+      if (aValue == null && bValue == null) return 0;
+      if (aValue == null) return direction === 'asc' ? 1 : -1;
+      if (bValue == null) return direction === 'asc' ? -1 : 1;
+
+      // 數字比較
+      if (typeof aValue === 'number' && typeof bValue === 'number') {
+        return direction === 'asc' ? aValue - bValue : bValue - aValue;
+      }
+
+      // 字串比較
+      const aStr = String(aValue).toLowerCase();
+      const bStr = String(bValue).toLowerCase();
+      
+      if (aStr < bStr) return direction === 'asc' ? -1 : 1;
+      if (aStr > bStr) return direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    this.employees.set(sorted);
+  }
+
+  /**
+   * 重置排序狀態
+   */
+  private resetSort(): void {
+    this.sortColumn.set(null);
+    this.sortDirection.set('none');
+    this.employees.set([...this.originalEmployeeOrder()]);
+  }
+
+  /**
+   * 取得排序圖示狀態
+   */
+  getSortIconState(column: keyof Employee, direction: 'asc' | 'desc'): 'active' | 'inactive' {
+    const currentColumn = this.sortColumn();
+    const currentDirection = this.sortDirection();
+    
+    if (currentColumn === column && currentDirection === direction) {
+      return 'active';
+    }
+    
+    return 'inactive';
   }
 
   /**

@@ -1,6 +1,387 @@
 # Angular Employee Management - 變更日誌
 
-## 🔍 搜尋功能重大改進 (2025-08-06 最新)
+## � 三態排序功能增強 (2025-08-08 最新)
+
+### 🚀 新增功能
+
+#### 員工表格三態排序系統
+
+- **三態循環排序**：升序 → 降序 → 無排序 → 升序的循環切換
+- **視覺指示器改進**：
+  - 啟用狀態：深灰色圖示 (#495057)
+  - 非啟用狀態：淺灰色圖示 (#dee2e6)
+  - 懸停效果：藍色高亮 (#007bff)
+- **原始順序恢復**：無排序狀態時恢復資料的原始載入順序
+- **智慧排序邏輯**：點擊不同欄位重置為升序，點擊相同欄位則循環切換
+
+#### 排序狀態管理
+
+- **狀態儲存**：自動保存原始資料順序以供恢復
+- **CRUD 同步**：新增、編輯、刪除員工後自動重置排序狀態
+- **搜尋相容**：搜尋結果也支援完整的三態排序功能
+
+#### 使用者體驗優化
+
+- **直觀操作**：每個欄位標題都有明顯的上下箭頭圖示
+- **狀態反饋**：當前排序方向透過深色圖示清楚指示
+- **提示優化**：更新滑鼠懸停提示為「點擊升序排序」「點擊降序排序」
+- **響應式支援**：所有螢幕尺寸都完整支援排序功能
+
+### 📝 程式碼變更
+
+#### 排序邏輯重構 (employee-list.component.ts)
+
+**排序狀態管理**
+
+```typescript
+// 三態排序狀態
+readonly sortDirection = signal<'asc' | 'desc' | 'none'>('none');
+private originalEmployeeOrder = signal<Employee[]>([]);
+
+// 三態循環排序邏輯
+onSort(column: keyof Employee): void {
+  if (currentColumn === column) {
+    if (currentDirection === 'asc') {
+      this.sortDirection.set('desc');
+    } else if (currentDirection === 'desc') {
+      this.sortDirection.set('none');
+      this.sortColumn.set(null);
+    } else {
+      this.sortDirection.set('asc');
+      this.sortColumn.set(column);
+    }
+  }
+}
+```
+
+**原始順序管理**
+
+```typescript
+loadEmployees(): void {
+  this.employeeService.getAllEmployees().subscribe({
+    next: (employees) => {
+      this.employees.set(employees);
+      this.originalEmployeeOrder.set([...employees]); // 儲存原始順序
+    }
+  });
+}
+
+private applySort(): void {
+  // 無排序時恢復原始順序
+  if (!column || direction === 'none') {
+    this.employees.set([...this.originalEmployeeOrder()]);
+    return;
+  }
+  // 執行排序邏輯...
+}
+```
+
+**狀態指示器**
+
+```typescript
+getSortIconState(column: keyof Employee, direction: 'asc' | 'desc'): 'active' | 'inactive' {
+  const currentColumn = this.sortColumn();
+  const currentDirection = this.sortDirection();
+
+  return (currentColumn === column && currentDirection === direction)
+    ? 'active' : 'inactive';
+}
+```
+
+#### 視覺樣式更新 (employee-list.component.scss)
+
+**排序圖示樣式**
+
+```scss
+.sort-icon {
+  transition: color 0.2s ease;
+
+  &.inactive {
+    color: #dee2e6; // 淺灰色非啟用狀態
+  }
+
+  &.active {
+    color: #495057; // 深灰色啟用狀態
+    font-weight: bold;
+  }
+
+  &:hover {
+    color: #007bff; // 藍色懸停效果
+  }
+}
+```
+
+#### HTML 模板更新 (employee-list.component.html)
+
+**動態樣式綁定**
+
+```html
+<span class="sort-icon sort-up" [class]="'sort-icon sort-up ' + getSortIconState('emp_code', 'asc')" title="點擊升序排序">▲</span> <span class="sort-icon sort-down" [class]="'sort-icon sort-down ' + getSortIconState('emp_code', 'desc')" title="點擊降序排序">▼</span>
+```
+
+### 🎨 使用者介面改進
+
+#### 視覺設計最佳化
+
+- **色彩系統**：統一的灰階色彩系統提供清晰的狀態指示
+- **圖示設計**：上下三角形圖示直觀表示排序方向
+- **互動反饋**：滑鼠懸停時的顏色變化提供即時回饋
+- **狀態區分**：啟用與非啟用狀態的明顯視覺差異
+
+#### 操作流程優化
+
+1. **初始狀態**：所有欄位圖示為淺灰色，無排序
+2. **首次點擊**：啟用升序，上箭頭變深灰色
+3. **二次點擊**：切換降序，下箭頭變深灰色
+4. **三次點擊**：取消排序，恢復原始順序，所有圖示變淺灰色
+5. **循環重複**：繼續點擊重新開始循環
+
+### 🔧 技術實作重點
+
+#### Angular 20 最佳實踐
+
+- 使用 `signal()` 進行狀態管理
+- 實作完整的響應式設計
+- 遵循單一職責原則設計方法
+- 使用 TypeScript 嚴格類型檢查
+
+#### 效能最佳化
+
+- 淺拷貝機制保護原始資料
+- 最小化 DOM 更新的排序邏輯
+- 智慧的狀態重置策略
+
+#### 維護性考量
+
+- 清晰的方法命名和註解
+- 模組化的排序邏輯
+- 易於擴展的排序系統架構
+
+---
+
+## �📱 行動裝置響應式表格設計 (2025-08-08)
+
+### 🚀 新增功能
+
+#### 行動裝置響應式員工表格
+
+- **響應式斷點**：螢幕寬度小於 900px 時啟用水平滾動
+- **表格水平滾動**：使用 `overflow-x: auto` 支援左右滑動檢視所有欄位
+- **最小欄位寬度**：確保所有欄位在行動裝置上保持可讀性
+- **觸控滾動最佳化**：使用 `-webkit-overflow-scrolling: touch` 提升滑動體驗
+- **視覺提示**：在行動裝置上顯示滑動提示文字
+- **黏性表頭**：表格標題在滾動時保持可見
+
+#### 響應式設計特色
+
+- **桌面版**：正常顯示，無水平滾動
+- **平板版** (≤1024px)：調整間距和按鈕佈局
+- **行動版** (≤900px)：啟用水平滾動，欄位最小寬度保護
+- **小螢幕** (≤600px)：進一步最佳化按鈕和模態視窗
+
+#### 欄位寬度最佳化
+
+- 員工編號：最小 100px
+- 員工姓名：最小 120px
+- 連絡電話：最小 130px
+- 部門 ID：最小 80px
+- 職位：最小 120px
+- 狀態：最小 80px
+- 操作按鈕：最小 180px
+
+### 📝 程式碼變更
+
+#### 樣式改進 (employee-list.component.scss)
+
+**表格容器響應式設計**
+
+```scss
+.table-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+
+  @media (max-width: 900px) {
+    &::after {
+      content: "← 滑動查看更多 →";
+      // 滑動提示動畫
+    }
+  }
+}
+
+.table {
+  min-width: 800px;
+
+  th,
+  td {
+    white-space: nowrap;
+    min-width: 120px;
+
+    @media (max-width: 900px) {
+      font-size: 13px;
+      padding: 10px 12px;
+    }
+  }
+}
+```
+
+**響應式斷點設計**
+
+```scss
+@media (max-width: 900px) {
+  .table {
+    min-width: 900px;
+
+    .action-buttons {
+      flex-direction: column;
+      gap: 4px;
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .table {
+    min-width: 1000px;
+  }
+
+  .modal-content {
+    max-width: 95%;
+  }
+}
+```
+
+### 🎨 使用者體驗改進
+
+- **觸控友善**：支援觸控滑動瀏覽表格內容
+- **視覺提示**：首次載入時顯示滑動指引
+- **保持可讀性**：所有文字大小在行動裝置上最佳化
+- **無資料遺失**：確保所有欄位資訊都可以檢視
+- **側邊欄相容**：不影響既有的側邊欄功能
+
+---
+
+## 🔄 表格排序功能與身分驗證改進 (2025-08-08)
+
+### 🚀 新增功能
+
+#### 可排序員工表格
+
+- **表格排序**：為所有欄位添加升序(▲)和降序(▼)排序圖示 Employee Management - 變更日誌
+
+## � 表格排序功能與身分驗證改進 (2025-08-08 最新)
+
+### 🚀 新增功能
+
+#### 可排序員工表格
+
+- **表格排序**：為所有欄位添加升序(▲)和降序(▼)排序圖示
+- **視覺回饋**：當前排序欄位和方向會高亮顯示
+- **排序邏輯**：
+  - 點擊不同欄位：設為新排序欄位，預設升序
+  - 點擊相同欄位：切換升序/降序
+  - 支援數字和字串排序
+  - 正確處理空值(null)排序
+
+#### 支援排序的欄位
+
+- 員工編號 (emp_code)
+- 員工姓名 (emp_name)
+- 連絡電話 (emp_phone)
+- 部門 ID (dept_id)
+- 職位 (job_title)
+- 狀態 (is_active)
+
+#### 身分驗證安全改進
+
+- **移除自動登入**：不再使用 localStorage 持久化登入狀態
+- **強制重新登入**：頁面重載或瀏覽器重啟後必須重新登入
+- **安全考量**：所有登入資訊僅保存在記憶體中，確保會話安全
+
+### 📝 程式碼變更
+
+#### 前端變更
+
+**員工列表元件 (employee-list.component.ts)**
+
+```typescript
+// 新增排序狀態管理
+readonly sortColumn = signal<keyof Employee | null>(null);
+readonly sortDirection = signal<'asc' | 'desc'>('asc');
+
+// 排序方法
+onSort(column: keyof Employee): void {
+  // 智慧排序邏輯：同欄位切換方向，不同欄位重設為升序
+}
+
+private sortEmployees(): void {
+  // 支援數字和字串排序，正確處理空值
+}
+```
+
+**表格模板 (employee-list.component.html)**
+
+```html
+<th class="sortable-header" (click)="onSort('emp_code')">
+  <div class="header-content">
+    <span class="sort-icons">
+      <span class="sort-icon sort-up" [class.active]="...">▲</span>
+      <span class="sort-icon sort-down" [class.active]="...">▼</span>
+    </span>
+    <span class="header-text">員工編號</span>
+  </div>
+</th>
+```
+
+**身分驗證服務 (auth.service.ts)**
+
+```typescript
+// 移除建構子中的本地儲存檢查
+constructor(private router: Router) {
+  // 不再檢查本地儲存的登入狀態，每次頁面載入都需要重新登入
+}
+
+handleLoginSuccess(response: LoginResponse): void {
+  // 僅更新記憶體狀態，不儲存到本地儲存
+  this.currentUser.set(user);
+  this.isAuthenticated.set(true);
+  // 注意：不再儲存到本地儲存，以確保頁面重載後需要重新登入
+}
+```
+
+### 🎨 樣式改進
+
+**排序表格樣式 (employee-list.component.scss)**
+
+```scss
+.sortable-header {
+  cursor: pointer;
+  user-select: none;
+
+  .sort-icons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .sort-icon.active {
+    color: #007bff;
+    font-weight: bold;
+  }
+}
+```
+
+### 🔒 安全改進說明
+
+**「無自動登入」行為實作位置**：
+
+- `AuthService` 建構子：移除 `checkStoredAuth()` 呼叫
+- `handleLoginSuccess()` 方法：移除 localStorage 儲存邏輯
+- `logout()` 方法：移除 localStorage 清除邏輯
+
+這確保了使用者在頁面重新載入或瀏覽器重啟後，必須重新輸入認證資訊才能存取系統。
+
+---
+
+## �🔍 搜尋功能重大改進 (2025-08-06)
 
 ### 問題修復
 

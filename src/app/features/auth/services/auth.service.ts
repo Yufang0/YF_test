@@ -11,8 +11,7 @@ export class AuthService {
   private isAuthenticated = signal<boolean>(false);
 
   constructor(private router: Router) {
-    // 檢查本地儲存中的登入狀態
-    this.checkStoredAuth();
+    // 不再檢查本地儲存的登入狀態，每次頁面載入都需要重新登入
   }
 
   // 公開的信號，供組件訂閱
@@ -71,9 +70,7 @@ export class AuthService {
     this.currentUser.set(user);
     this.isAuthenticated.set(true);
 
-    // 儲存到本地儲存
-    localStorage.setItem('currentUser', JSON.stringify(user));
-    localStorage.setItem('isAuthenticated', 'true');
+    // 注意：不再儲存到本地儲存，以確保頁面重載後需要重新登入
 
     // 根據角色導向不同頁面
     if (response.role === 'manager') {
@@ -90,31 +87,10 @@ export class AuthService {
     this.currentUser.set(null);
     this.isAuthenticated.set(false);
     
-    // 清除本地儲存
-    localStorage.removeItem('currentUser');
-    localStorage.removeItem('isAuthenticated');
+    // 不需要清除本地儲存，因為我們不再使用本地儲存
     
     // 導向登入頁
     this.router.navigate(['/login']);
-  }
-
-  /**
-   * 檢查本地儲存的驗證狀態
-   */
-  private checkStoredAuth(): void {
-    const storedUser = localStorage.getItem('currentUser');
-    const storedAuth = localStorage.getItem('isAuthenticated');
-    
-    if (storedUser && storedAuth === 'true') {
-      try {
-        const user = JSON.parse(storedUser) as User;
-        this.currentUser.set(user);
-        this.isAuthenticated.set(true);
-      } catch (error) {
-        // 如果解析失敗，清除儲存
-        this.logout();
-      }
-    }
   }
 
   /**
