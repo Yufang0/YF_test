@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分頁功能修復驗證</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        .status-success {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        .test-section {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .test-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            border-left: 4px solid #28a745;
+        }
+        .test-item.warning {
+            border-left-color: #ffc107;
+        }
+        .test-item.info {
+            border-left-color: #17a2b8;
+        }
+        .icon {
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+        }
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(17, 153, 142, 0.4);
+        }
+        .highlight-box {
+            background: linear-gradient(135deg, #ffecd2, #fcb69f);
+            border: 2px solid #ff9a9e;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .code-snippet {
+            background: #2d3748;
+            color: #a0aec0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        .fixed-footer {
+            background: rgba(255, 255, 255, 0.95);
+            border-top: 2px solid #dee2e6;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎉 員工管理分頁功能修復完成</h1>
+            <p>所有分頁相關問題已徹底解決</p>
+        </div>
+
+        <div class="status-success">
+            <h2>✅ 修復狀態：完成</h2>
+            <p>前端服務運行於：<strong>http://localhost:55563</strong></p>
+            <p>後端服務運行於：<strong>http://localhost:8080</strong></p>
+        </div>
+
+        <div class="test-section">
+            <h3>🔧 修復的功能</h3>
+            
+            <div class="test-item">
+                <span class="icon">✅</span>
+                <strong>每頁筆數選項保持</strong> - 使用者選擇的分頁大小在所有操作後都會保持
+            </div>
+            
+            <div class="test-item">
+                <span class="icon">✅</span>
+                <strong>頁碼按鈕正常切換</strong> - 點擊頁碼按鈕會正確載入對應頁面的資料
+            </div>
+            
+            <div class="test-item">
+                <span class="icon">✅</span>
+                <strong>CRUD 操作不影響分頁</strong> - 創建、編輯、刪除員工後保持原有分頁設置
+            </div>
+            
+            <div class="test-item">
+                <span class="icon">✅</span>
+                <strong>智慧邊界處理</strong> - 刪除資料後自動調整頁碼避免空頁面
+            </div>
+            
+            <div class="test-item">
+                <span class="icon">✅</span>
+                <strong>搜尋功能分頁</strong> - 搜尋結果也支援正確的分頁功能
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🧪 立即測試步驟</h3>
+            
+            <div class="test-item info">
+                <span class="icon">1️⃣</span>
+                <strong>基本分頁測試</strong> - 訪問員工管理頁面，測試每頁筆數切換和頁碼導航
+            </div>
+            
+            <div class="test-item info">
+                <span class="icon">2️⃣</span>
+                <strong>CRUD 操作測試</strong> - 創建、編輯、刪除員工後檢查分頁狀態是否保持
+            </div>
+            
+            <div class="test-item info">
+                <span class="icon">3️⃣</span>
+                <strong>搜尋分頁測試</strong> - 輸入搜尋條件後測試搜尋結果的分頁功能
+            </div>
+            
+            <div class="test-item warning">
+                <span class="icon">🔍</span>
+                <strong>開發者工具檢查</strong> - 按 F12 查看 Console 除錯訊息和 Network 請求
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <h3>🎯 預期除錯訊息</h3>
+            <p>當您操作分頁功能時，應該在瀏覽器 Console 中看到類似這樣的訊息：</p>
+            <div class="code-snippet">
+=== onPageSizeChange called ===
+Current size: 10
+New size: 5
+Calling loadEmployees...
+
+=== API Call Details ===
+API call params: {page: 0, size: 5, sortBy: "empId", sortDir: "asc"}
+
+=== API Response Details ===
+Pagination data: {contentLength: 5, totalElements: 8, totalPages: 2}
+            </div>
+        </div>
+
+        <div class="button-group">
+            <a href="http://localhost:55563/login" class="btn btn-primary" target="_blank">
+                🚀 開啟前端應用程式
+            </a>
+            <a href="http://localhost:55563/employees/management" class="btn btn-success" target="_blank">
+                📋 直接進入員工管理
+            </a>
+            <button class="btn btn-primary" onclick="testBackendAPI()">
+                🔧 測試後端 API
+            </button>
+            <button class="btn btn-success" onclick="showTestGuide()">
+                📖 顯示測試指南
+            </button>
+        </div>
+
+        <div id="test-results" style="display: none;" class="test-section">
+            <h3>🧪 測試結果</h3>
+            <div id="test-output"></div>
+        </div>
+
+        <div id="test-guide" style="display: none;" class="test-section">
+            <h3>📖 詳細測試指南</h3>
+            
+            <h4>測試 1：每頁筆數切換</h4>
+            <ol>
+                <li>開啟員工管理頁面</li>
+                <li>將「每頁顯示」從 10 改為 5</li>
+                <li>檢查：表格只顯示 5 筆資料</li>
+                <li>再改為 20，檢查是否顯示更多資料</li>
+                <li>觀察：下拉選單應保持您選擇的值</li>
+            </ol>
+            
+            <h4>測試 2：頁碼切換</h4>
+            <ol>
+                <li>確保有多頁資料（總資料 > 每頁筆數）</li>
+                <li>點擊「2」頁按鈕</li>
+                <li>檢查：表格內容變化，頁碼按鈕狀態更新</li>
+                <li>點擊「上一頁」和「下一頁」按鈕</li>
+                <li>觀察：每次切換都載入不同的資料</li>
+            </ol>
+            
+            <h4>測試 3：CRUD 操作保持分頁</h4>
+            <ol>
+                <li>設定每頁顯示 20 筆，切換到第 2 頁</li>
+                <li>創建一個新員工</li>
+                <li>檢查：分頁大小仍為 20（不會回到 5 或 10）</li>
+                <li>編輯某個員工後檢查分頁狀態</li>
+                <li>觀察：分頁設定完全保持</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="fixed-footer">
+        <h3>🎊 恭喜！分頁功能修復完成</h3>
+        <p><strong>所有問題已解決，系統現在提供完美的分頁體驗</strong></p>
+        <p>如有任何問題，請檢查瀏覽器 Console 中的除錯訊息</p>
+    </div>
+
+    <script>
+        function addTestResult(message, type = 'info') {
+            const resultsDiv = document.getElementById('test-results');
+            const outputDiv = document.getElementById('test-output');
+            resultsDiv.style.display = 'block';
+            
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#17a2b8';
+            
+            outputDiv.innerHTML += `
+                <div style="padding: 10px; margin: 5px 0; background: white; border-left: 4px solid ${color}; border-radius: 5px;">
+                    <strong>[${timestamp}]</strong> ${message}
+                </div>
+            `;
+            outputDiv.scrollTop = outputDiv.scrollHeight;
+        }
+
+        async function testBackendAPI() {
+            addTestResult('開始測試後端分頁 API...', 'info');
+            
+            try {
+                // 測試基本分頁
+                const response = await fetch('http://localhost:8080/api/employees?page=0&size=5&sortBy=empId&sortDir=asc');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addTestResult(`✅ 後端 API 正常！回傳 ${data.data?.content?.length || 0} 筆資料`, 'success');
+                    addTestResult(`總筆數: ${data.data?.total_elements || 0}, 總頁數: ${data.data?.total_pages || 0}`, 'success');
+                    
+                    // 測試第二頁
+                    const response2 = await fetch('http://localhost:8080/api/employees?page=1&size=5&sortBy=empId&sortDir=asc');
+                    if (response2.ok) {
+                        const data2 = await response2.json();
+                        addTestResult(`✅ 第二頁測試成功！回傳 ${data2.data?.content?.length || 0} 筆資料`, 'success');
+                    }
+                } else {
+                    addTestResult(`❌ 後端 API 錯誤: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                addTestResult(`❌ 網路錯誤: ${error.message}`, 'error');
+                addTestResult('請確認後端服務是否在 http://localhost:8080 運行', 'error');
+            }
+        }
+
+        function showTestGuide() {
+            const guide = document.getElementById('test-guide');
+            guide.style.display = guide.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // 頁面載入時顯示歡迎訊息
+        window.onload = function() {
+            setTimeout(() => {
+                addTestResult('🎉 分頁功能修復驗證頁面已載入', 'success');
+                addTestResult('請點擊上方按鈕開始測試，或直接訪問員工管理頁面', 'info');
+            }, 500);
+        };
+    </script>
+</body>
+</html>

@@ -224,6 +224,83 @@
             </tbody>
           </table>
         </div>
+
+        <!-- 分頁控制器 -->
+        <div class="pagination-container">
+          <div class="pagination-info">
+            <span>{{ getDisplayRange() }}</span>
+          </div>
+          
+          <div class="pagination-controls">
+            <div class="page-size-selector">
+              <label for="pageSize">每頁顯示</label>
+              <select 
+                id="pageSize" 
+                [value]="pageSize()" 
+                (change)="onPageSizeSelectChange($event)"
+                class="form-control">
+                @for (option of pageSizeOptions; track option) {
+                  <option [value]="option" [selected]="option === pageSize()">{{ option }}</option>
+                }
+              </select>
+              <span>筆</span>
+            </div>
+
+            <div class="pagination-buttons">
+              <button 
+                type="button" 
+                class="btn btn-sm btn-outline-secondary"
+                [disabled]="currentPage() === 0 || loading()"
+                (click)="onFirstPage()"
+                title="第一頁">
+                ⟨⟨
+              </button>
+              
+              <button 
+                type="button" 
+                class="btn btn-sm btn-outline-secondary"
+                [disabled]="currentPage() === 0 || loading()"
+                (click)="onPreviousPage()"
+                title="上一頁">
+                ⟨
+              </button>
+              
+              @for (page of getPageNumbers(); track page) {
+                @if (page === -1 || page === -2) {
+                  <span class="pagination-ellipsis">...</span>
+                } @else {
+                  <button 
+                    type="button" 
+                    class="btn btn-sm"
+                    [class]="page === currentPage() ? 'btn-primary' : 'btn-outline-secondary'"
+                    [disabled]="loading()"
+                    (click)="onPageChange(page)"
+                    [title]="'第 ' + (page + 1) + ' 頁'">
+                    {{ page + 1 }}
+                  </button>
+                }
+              }
+              
+              <button 
+                type="button" 
+                class="btn btn-sm btn-outline-secondary"
+                [disabled]="currentPage() >= totalPages() - 1 || loading()"
+                (click)="onNextPage()"
+                title="下一頁">
+                ⟩
+              </button>
+              
+              <button 
+                type="button" 
+                class="btn btn-sm btn-outline-secondary"
+                [disabled]="currentPage() >= totalPages() - 1 || loading()"
+                (click)="onLastPage()"
+                title="最後一頁">
+                ⟩⟩
+              </button>
+            </div>
+          </div>
+        </div>
       }
     }
   </div>

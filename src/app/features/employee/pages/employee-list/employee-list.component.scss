@@ -1326,3 +1326,176 @@ section {
     border-radius: 4px !important;
   }
 }
+
+/* ====== 分頁控制器樣式 ====== */
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  padding: 15px 0;
+  border-top: 1px solid #e5e7eb;
+  background: #ffffff;
+}
+
+.pagination-info {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+  flex: 0 0 auto; // 固定寬度，不擴展
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  justify-content: flex-end; // 將控制區塊靠右對齊
+  flex: 1; // 佔用剩餘空間
+  margin-left: auto; // 確保推到右側
+}
+
+.page-size-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #374151;
+  
+  label {
+    margin: 0;
+    font-weight: 500;
+    width: 120%;
+  }
+  
+  select {
+    padding: 4px 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    font-size: 13px;
+    background: white;
+    min-width: 60px;
+    
+    &:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+  }
+  
+  span {
+    font-weight: 500;
+    font-size: 13px;
+  }
+}
+
+.pagination-buttons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  
+  .btn {
+    min-width: 32px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    
+    &.btn-primary {
+      background: #2563eb;
+      border-color: #2563eb;
+      color: white;
+      
+      &:hover:not(:disabled) {
+        background: #1d4ed8;
+        border-color: #1d4ed8;
+      }
+    }
+    
+    &.btn-outline-secondary {
+      background: white;
+      border-color: #d1d5db;
+      color: #374151;
+      
+      &:hover:not(:disabled) {
+        background: #f9fafb;
+        border-color: #9ca3af;
+        color: #111827;
+      }
+    }
+    
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      
+      &:hover {
+        background: inherit;
+        border-color: inherit;
+        color: inherit;
+      }
+    }
+    
+    &:focus-visible {
+      outline: 2px solid #2563eb !important;
+      outline-offset: 2px !important;
+      box-shadow: none !important;
+    }
+  }
+}
+
+.pagination-ellipsis {
+  padding: 0 8px;
+  color: #9ca3af;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .pagination-container {
+    flex-direction: column;
+    gap: 15px;
+    align-items: stretch;
+  }
+  
+  .pagination-info {
+    text-align: left; // 顯示筆數範圍保持靠左
+    order: 1; // 確保在最上方
+  }
+  
+  .pagination-controls {
+    flex-direction: column;
+    gap: 15px;
+    order: 2; // 控制區塊在下方
+    justify-content: center; // 小螢幕時居中顯示
+    margin-left: 0; // 重置 margin
+  }
+  
+  .pagination-buttons {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .page-size-selector {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .pagination-buttons {
+    .btn {
+      min-width: 28px;
+      height: 28px;
+      font-size: 12px;
+    }
+  }
+  
+  .pagination-ellipsis {
+    padding: 0 4px;
+    font-size: 12px;
+  }
+}

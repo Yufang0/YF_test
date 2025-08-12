@@ -16,8 +16,10 @@ export interface PageResponse<T> {
   size: number;
   total_elements: number;
   total_pages: number;
-  first: boolean;
-  last: boolean;
+  has_next: boolean;
+  has_previous: boolean;
+  is_first: boolean;
+  is_last: boolean;
 }
 
 /**

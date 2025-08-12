@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { RouterModule, Router } from '@angular/router';
 import { EmployeeService } from '../../services/employee.service';
 import { Employee, EmployeeCreateDto, EmployeeUpdateDto } from '../../models/employee.model';
+import { PageResponse } from '../../models/api.dto';
 
 /**
  * 員工列表頁面元件
@@ -29,6 +30,22 @@ export class EmployeeListComponent implements OnInit {
   readonly showViewModal = signal(false);
   readonly loading = this.employeeService.loading;
   readonly error = signal<string | null>(null);
+
+  // 分頁狀態
+  readonly currentPage = signal(0);
+  readonly pageSize = signal(10);
+  readonly totalElements = signal(0);
+  readonly totalPages = signal(0);
+  readonly pageSizeOptions = [5, 10, 20, 50];
+
+  // 搜尋狀態
+  readonly isSearching = signal(false);
+  readonly currentSearchCriteria = signal<{
+    empCode?: string;
+    empName?: string;
+    deptId?: number;
+    jobTitle?: string;
+  } | null>(null);
 
   // 排序狀態
   readonly sortColumn = signal<keyof Employee | null>(null);
@@ -74,22 +91,136 @@ export class EmployeeListComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    console.log('=== Component initialization ===');
+    console.log('Initial pageSize:', this.pageSize());
+    console.log('Initial currentPage:', this.currentPage());
+    console.log('PageSize options:', this.pageSizeOptions);
+    
     this.loadEmployees();
   }
 
   /**
-   * 載入員工列表
+   * 載入員工列表 - 使用分頁
    */
   loadEmployees(): void {
-    this.employeeService.getAllEmployees().subscribe({
-      next: (employees) => {
-        this.employees.set(employees);
-        this.originalEmployeeOrder.set([...employees]); // 儲存原始順序
+    // 檢查是否在搜尋模式
+    if (this.isSearching()) {
+      const criteria = this.currentSearchCriteria();
+      if (criteria) {
+        this.loadEmployeesWithSearch(criteria);
+        return;
+      }
+    }
+    
+    // 一般載入
+    this.loadAllEmployees();
+  }
+
+  /**
+   * 載入所有員工（不含搜尋條件）
+   */
+  private loadAllEmployees(): void {
+    console.log('=== loadAllEmployees called ===');
+    console.log('Current pagination state:', {
+      page: this.currentPage(),
+      size: this.pageSize(),
+      totalElements: this.totalElements(),
+      totalPages: this.totalPages()
+    });
+    
+    this.employeeService.getAllEmployeesWithPagination(
+      this.currentPage(), 
+      this.pageSize(),
+      'empId',
+      'asc'
+    ).subscribe({
+      next: (pageResponse: PageResponse<Employee>) => {
+        console.log('=== API Response received ===');
+        console.log('Full response:', pageResponse);
+        console.log('Content length:', pageResponse.content?.length || 0);
+        console.log('Total elements:', pageResponse.total_elements);
+        console.log('Total pages:', pageResponse.total_pages);
+        console.log('Current page:', pageResponse.page);
+        
+        this.employees.set(pageResponse.content || []);
+        this.originalEmployeeOrder.set([...pageResponse.content || []]); // 儲存原始順序
+        
+        // 更新分頁資訊並進行一致性檢查
+        const newTotalElements = pageResponse.total_elements || 0;
+        const newTotalPages = pageResponse.total_pages || 0;
+        
+        this.totalElements.set(newTotalElements);
+        this.totalPages.set(newTotalPages);
+        
+        // 檢查當前頁是否超出範圍
+        if (this.currentPage() >= newTotalPages && newTotalPages > 0) {
+          console.log('Current page exceeds total pages, adjusting...');
+          this.currentPage.set(Math.max(0, newTotalPages - 1));
+        }
+        
         this.error.set(null);
+        
+        console.log('=== State updated ===');
+        console.log('Employees count:', this.employees().length);
+        console.log('Total elements:', this.totalElements());
+        console.log('Total pages:', this.totalPages());
+        console.log('Current page:', this.currentPage());
+        console.log('Page size:', this.pageSize());
       },
       error: (error) => {
+        console.error('=== API Error ===');
+        console.error('Error details:', error);
         this.error.set(error.message || '載入員工列表失敗');
-        console.error('載入員工列表錯誤:', error);
+      }
+    });
+  }
+
+  /**
+   * 載入員工列表（含搜尋條件）
+   */
+  private loadEmployeesWithSearch(criteria: {
+    empCode?: string;
+    empName?: string;
+    deptId?: number;
+    jobTitle?: string;
+  }): void {
+    this.employeeService.searchEmployeesByCriteriaWithPagination(
+      criteria,
+      this.currentPage(),
+      this.pageSize(),
+      'createTime',
+      'desc'
+    ).subscribe({
+      next: (pageResponse: PageResponse<Employee>) => {
+        console.log('=== Search Results Received ===');
+        console.log('Search response:', pageResponse);
+        
+        this.employees.set(pageResponse.content || []);
+        this.originalEmployeeOrder.set([...pageResponse.content || []]); // 儲存原始順序
+        
+        // 更新分頁資訊
+        const newTotalElements = pageResponse.total_elements || 0;
+        const newTotalPages = pageResponse.total_pages || 0;
+        
+        this.totalElements.set(newTotalElements);
+        this.totalPages.set(newTotalPages);
+        
+        // 檢查當前頁是否超出範圍
+        if (this.currentPage() >= newTotalPages && newTotalPages > 0) {
+          console.log('Search: Current page exceeds total pages, adjusting...');
+          this.currentPage.set(Math.max(0, newTotalPages - 1));
+        }
+        
+        this.error.set(null);
+        
+        console.log('Search results - Total elements:', this.totalElements(), 'Total pages:', this.totalPages());
+      },
+      error: (error) => {
+        this.employees.set([]);
+        this.originalEmployeeOrder.set([]);
+        this.totalElements.set(0);
+        this.totalPages.set(0);
+        this.error.set(error.message || '搜尋員工失敗');
       }
     });
   }
@@ -107,7 +238,10 @@ export class EmployeeListComponent implements OnInit {
                              formValue.job_title?.trim();
     
     if (!hasSearchCriteria) {
-      // 沒有搜尋條件，載入所有員工
+      // 沒有搜尋條件，回到一般模式
+      this.isSearching.set(false);
+      this.currentSearchCriteria.set(null);
+      this.currentPage.set(0); // 重設到第一頁
       this.loadEmployees();
       return;
     }
@@ -117,7 +251,7 @@ export class EmployeeListComponent implements OnInit {
   }
 
   /**
-   * 根據條件搜尋員工
+   * 根據條件搜尋員工 - 使用分頁
    */
   private searchEmployees(searchCriteria: {
     emp_code?: string | null;
@@ -127,7 +261,7 @@ export class EmployeeListComponent implements OnInit {
   }): void {
     this.error.set(null);
     
-    // 使用新的綜合搜尋 API
+    // 準備搜尋條件
     const criteria = {
       empCode: searchCriteria.emp_code?.trim() || undefined,
       empName: searchCriteria.emp_name?.trim() || undefined,
@@ -135,25 +269,30 @@ export class EmployeeListComponent implements OnInit {
       jobTitle: searchCriteria.job_title?.trim() || undefined
     };
 
-    this.employeeService.searchEmployeesByCriteria(criteria).subscribe({
-      next: (employees) => {
-        this.employees.set(employees);
-        this.originalEmployeeOrder.set([...employees]); // 儲存原始順序
-        this.error.set(null);
-      },
-      error: (error) => {
-        this.employees.set([]);
-        this.originalEmployeeOrder.set([]); // 清空原始順序
-        this.error.set(error.message || '搜尋員工失敗');
-      }
-    });
+    // 設定搜尋狀態
+    this.isSearching.set(true);
+    this.currentSearchCriteria.set(criteria);
+    this.currentPage.set(0); // 重設為第一頁進行搜尋
+
+    // 載入搜尋結果
+    this.loadEmployeesWithSearch(criteria);
   }
 
   /**
    * 重設搜尋條件
    */
   onResetSearch(): void {
+    console.log('=== Resetting search ===');
+    console.log('Preserving pageSize:', this.pageSize());
+    
     this.searchForm.reset();
+    // 清除搜尋狀態
+    this.isSearching.set(false);
+    this.currentSearchCriteria.set(null);
+    // 重設分頁到第一頁（但保持頁面大小）
+    this.currentPage.set(0);
+    
+    console.log('After reset - page:', this.currentPage(), 'size:', this.pageSize());
     this.loadEmployees();
   }
 
@@ -190,12 +329,17 @@ export class EmployeeListComponent implements OnInit {
       
       this.employeeService.createEmployee(createDto).subscribe({
         next: (newEmployee) => {
-          // 重新載入員工列表
+          console.log('=== Employee created successfully ===');
+          console.log('Preserving pagination state - current page:', this.currentPage(), 'size:', this.pageSize());
+          
+          // 重新載入員工列表，但保持分頁狀態
           this.loadEmployees();
           this.showCreateForm.set(false);
           this.error.set(null);
-          // 重置排序狀態
+          
+          // 重置排序狀態（只影響排序，不影響分頁）
           this.resetSort();
+          
           console.log('員工建立成功:', newEmployee);
         },
         error: (error) => {
@@ -259,13 +403,18 @@ export class EmployeeListComponent implements OnInit {
       
       this.employeeService.updateEmployee(employee.emp_id, updateDto).subscribe({
         next: (updatedEmployee) => {
-          // 重新載入員工列表
+          console.log('=== Employee updated successfully ===');
+          console.log('Preserving pagination state - current page:', this.currentPage(), 'size:', this.pageSize());
+          
+          // 重新載入員工列表，但保持分頁狀態
           this.loadEmployees();
           this.showEditForm.set(false);
           this.selectedEmployee.set(null);
           this.error.set(null);
-          // 重置排序狀態
+          
+          // 重置排序狀態（只影響排序，不影響分頁）
           this.resetSort();
+          
           console.log('員工更新成功:', updatedEmployee);
         },
         error: (error) => {
@@ -294,11 +443,25 @@ export class EmployeeListComponent implements OnInit {
     if (confirm(`確定要刪除員工 ${employee.emp_name} 嗎？此操作無法復原。`)) {
       this.employeeService.deleteEmployee(employee.emp_id).subscribe({
         next: () => {
-          // 重新載入員工列表
+          console.log('=== Employee deleted successfully ===');
+          console.log('Preserving pagination state - current page:', this.currentPage(), 'size:', this.pageSize());
+          
+          // 檢查刪除後是否需要調整頁碼（如果當前頁沒有資料了）
+          const remainingItems = this.totalElements() - 1;
+          const maxPage = Math.max(0, Math.ceil(remainingItems / this.pageSize()) - 1);
+          
+          if (this.currentPage() > maxPage) {
+            console.log('Adjusting page due to deletion - from', this.currentPage(), 'to', maxPage);
+            this.currentPage.set(maxPage);
+          }
+          
+          // 重新載入員工列表，但保持分頁狀態
           this.loadEmployees();
           this.error.set(null);
-          // 重置排序狀態
+          
+          // 重置排序狀態（只影響排序，不影響分頁）
           this.resetSort();
+          
           console.log('員工刪除成功');
         },
         error: (error) => {
@@ -483,5 +646,157 @@ export class EmployeeListComponent implements OnInit {
       update_user: '更新使用者'
     };
     return fieldNames[fieldName] || fieldName;
+  }
+
+  // ====== 分頁相關方法 ======
+
+  /**
+   * 切換到指定頁面
+   */
+  onPageChange(page: number): void {
+    console.log('=== onPageChange called ===');
+    console.log('Target page:', page);
+    console.log('Current page:', this.currentPage());
+    console.log('Total pages:', this.totalPages());
+    console.log('Valid page check:', page >= 0 && page < this.totalPages() && page !== this.currentPage());
+    
+    if (page >= 0 && page < this.totalPages() && page !== this.currentPage()) {
+      console.log('Page change accepted, updating current page...');
+      this.currentPage.set(page);
+      console.log('New current page:', this.currentPage());
+      console.log('Calling loadEmployees...');
+      this.loadEmployees();
+    } else {
+      console.log('Page change rejected due to validation');
+    }
+  }
+
+  /**
+   * 變更每頁筆數
+   */
+  onPageSizeChange(size: number): void {
+    console.log('=== onPageSizeChange called ===');
+    console.log('Current size:', this.pageSize());
+    console.log('New size:', size);
+    console.log('Current page before reset:', this.currentPage());
+    
+    this.pageSize.set(size);
+    this.currentPage.set(0); // 重置到第一頁
+    
+    console.log('After size change:');
+    console.log('- Page size:', this.pageSize());
+    console.log('- Current page:', this.currentPage());
+    console.log('Calling loadEmployees...');
+    
+    this.loadEmployees();
+  }
+
+  /**
+   * 處理頁面大小變更事件
+   */
+  onPageSizeSelectChange(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    const size = parseInt(target.value, 10);
+    
+    console.log('=== onPageSizeSelectChange triggered ===');
+    console.log('Selected value:', target.value);
+    console.log('Parsed size:', size);
+    console.log('Current pageSize before change:', this.pageSize());
+    
+    if (size && size > 0 && size !== this.pageSize()) {
+      this.onPageSizeChange(size);
+    } else {
+      console.log('Page size change ignored - invalid size or same as current');
+    }
+  }
+
+  /**
+   * 上一頁
+   */
+  onPreviousPage(): void {
+    if (this.currentPage() > 0) {
+      this.onPageChange(this.currentPage() - 1);
+    }
+  }
+
+  /**
+   * 下一頁
+   */
+  onNextPage(): void {
+    if (this.currentPage() < this.totalPages() - 1) {
+      this.onPageChange(this.currentPage() + 1);
+    }
+  }
+
+  /**
+   * 跳到第一頁
+   */
+  onFirstPage(): void {
+    this.onPageChange(0);
+  }
+
+  /**
+   * 跳到最後一頁
+   */
+  onLastPage(): void {
+    this.onPageChange(this.totalPages() - 1);
+  }
+
+  /**
+   * 計算顯示的資料範圍
+   */
+  getDisplayRange(): string {
+    if (this.totalElements() === 0) {
+      return '沒有資料';
+    }
+    
+    const start = this.currentPage() * this.pageSize() + 1;
+    const end = Math.min((this.currentPage() + 1) * this.pageSize(), this.totalElements());
+    
+    return `第 ${start} - ${end} 筆，共 ${this.totalElements()} 筆`;
+  }
+
+  /**
+   * 生成分頁按鈕陣列
+   */
+  getPageNumbers(): number[] {
+    const current = this.currentPage();
+    const total = this.totalPages();
+    const pages: number[] = [];
+    
+    if (total <= 7) {
+      // 如果總頁數小於等於 7，顯示所有頁面
+      for (let i = 0; i < total; i++) {
+        pages.push(i);
+      }
+    } else {
+      // 總頁數大於 7 時，智慧顯示
+      if (current <= 3) {
+        // 前面幾頁
+        for (let i = 0; i < 5; i++) {
+          pages.push(i);
+        }
+        pages.push(-1); // 省略號
+        pages.push(total - 1);
+      } else if (current >= total - 4) {
+        // 後面幾頁
+        pages.push(0);
+        pages.push(-1); // 省略號
+        for (let i = total - 5; i < total; i++) {
+          pages.push(i);
+        }
+      } else {
+        // 中間頁面
+        pages.push(0);
+        pages.push(-1); // 省略號
+        for (let i = current - 1; i <= current + 1; i++) {
+          pages.push(i);
+        }
+        pages.push(-2); // 省略號
+        pages.push(total - 1);
+      }
+    }
+    
+    return pages;
   }
 }

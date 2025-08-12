@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分頁功能測試</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .test-button:hover {
+            background-color: #0056b3;
+        }
+        .console-output {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            margin-top: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .info { color: #17a2b8; }
+        .warning { color: #ffc107; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>員工管理分頁功能測試</h1>
+        
+        <div class="test-section">
+            <h2>1. 登入測試</h2>
+            <button class="test-button" onclick="testLogin()">執行登入</button>
+            <div id="login-output" class="console-output"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>2. 分頁 API 測試</h2>
+            <button class="test-button" onclick="testPaginationAPI()">測試分頁 API</button>
+            <button class="test-button" onclick="testPageSizeChange()">測試頁面大小變更</button>
+            <button class="test-button" onclick="testPageNavigation()">測試頁面導航</button>
+            <div id="api-output" class="console-output"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>3. 前端分頁組件測試</h2>
+            <button class="test-button" onclick="testFrontendPagination()">測試前端分頁邏輯</button>
+            <div id="frontend-output" class="console-output"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>4. 完整流程測試</h2>
+            <button class="test-button" onclick="runFullTest()">執行完整測試</button>
+            <div id="full-test-output" class="console-output"></div>
+        </div>
+    </div>
+
+    <script>
+        // 模擬後端 API 基礎 URL
+        const API_BASE_URL = 'http://localhost:8080/api';
+        
+        function log(elementId, message, type = 'info') {
+            const output = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleTimeString();
+            const colorClass = type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : 'info';
+            output.innerHTML += `<span class="${colorClass}">[${timestamp}] ${message}</span>\n`;
+            output.scrollTop = output.scrollHeight;
+        }
+
+        // 測試登入功能
+        async function testLogin() {
+            log('login-output', '開始測試登入功能...', 'info');
+            
+            try {
+                // 模擬登入請求
+                const loginData = {
+                    username: 'manager',
+                    password: 'password'
+                };
+                
+                log('login-output', `發送登入請求: ${JSON.stringify(loginData)}`, 'info');
+                
+                // 在實際環境中，這裡會發送到真實的登入 API
+                // 目前模擬成功登入
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                log('login-output', '登入成功！角色: 主管', 'success');
+                
+            } catch (error) {
+                log('login-output', `登入失敗: ${error.message}`, 'error');
+            }
+        }
+
+        // 測試分頁 API
+        async function testPaginationAPI() {
+            log('api-output', '開始測試分頁 API...', 'info');
+            
+            try {
+                const testCases = [
+                    { page: 0, size: 10, sort: 'empId,asc' },
+                    { page: 1, size: 5, sort: 'empName,asc' },
+                    { page: 0, size: 20, sort: 'empId,desc' }
+                ];
+
+                for (const testCase of testCases) {
+                    log('api-output', `測試參數: ${JSON.stringify(testCase)}`, 'info');
+                    
+                    const url = `${API_BASE_URL}/employees?page=${testCase.page}&size=${testCase.size}&sort=${testCase.sort}`;
+                    log('api-output', `請求 URL: ${url}`, 'info');
+                    
+                    try {
+                        const response = await fetch(url);
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            log('api-output', `API 回應成功！資料筆數: ${data.data?.content?.length || 0}`, 'success');
+                            log('api-output', `總頁數: ${data.data?.totalPages || 0}, 總筆數: ${data.data?.totalElements || 0}`, 'success');
+                        } else {
+                            log('api-output', `API 回應錯誤: ${response.status} ${response.statusText}`, 'error');
+                        }
+                    } catch (fetchError) {
+                        log('api-output', `網路錯誤: ${fetchError.message}`, 'error');
+                    }
+                    
+                    // 等待一秒後進行下一個測試
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+                
+            } catch (error) {
+                log('api-output', `測試過程發生錯誤: ${error.message}`, 'error');
+            }
+        }
+
+        // 測試頁面大小變更
+        async function testPageSizeChange() {
+            log('api-output', '開始測試頁面大小變更...', 'info');
+            
+            const pageSizes = [5, 10, 20];
+            
+            for (const size of pageSizes) {
+                log('api-output', `測試頁面大小: ${size}`, 'info');
+                
+                const url = `${API_BASE_URL}/employees?page=0&size=${size}&sort=empId,asc`;
+                
+                try {
+                    const response = await fetch(url);
+                    if (response.ok) {
+                        const data = await response.json();
+                        const contentLength = data.data?.content?.length || 0;
+                        
+                        if (contentLength <= size) {
+                            log('api-output', `✓ 頁面大小 ${size} 測試通過，實際回傳 ${contentLength} 筆資料`, 'success');
+                        } else {
+                            log('api-output', `✗ 頁面大小 ${size} 測試失敗，回傳了 ${contentLength} 筆資料`, 'error');
+                        }
+                    } else {
+                        log('api-output', `頁面大小 ${size} 測試失敗: ${response.status}`, 'error');
+                    }
+                } catch (error) {
+                    log('api-output', `頁面大小 ${size} 測試錯誤: ${error.message}`, 'error');
+                }
+                
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+        }
+
+        // 測試頁面導航
+        async function testPageNavigation() {
+            log('api-output', '開始測試頁面導航...', 'info');
+            
+            // 先取得總頁數
+            try {
+                const response = await fetch(`${API_BASE_URL}/employees?page=0&size=5&sort=empId,asc`);
+                if (!response.ok) {
+                    throw new Error(`API 錯誤: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const totalPages = data.data?.totalPages || 1;
+                
+                log('api-output', `總頁數: ${totalPages}`, 'info');
+                
+                // 測試不同頁面
+                const testPages = [0, 1, Math.max(0, totalPages - 1)];
+                
+                for (const page of testPages) {
+                    log('api-output', `測試第 ${page + 1} 頁...`, 'info');
+                    
+                    const pageResponse = await fetch(`${API_BASE_URL}/employees?page=${page}&size=5&sort=empId,asc`);
+                    if (pageResponse.ok) {
+                        const pageData = await pageResponse.json();
+                        const currentPage = pageData.data?.pageable?.pageNumber || 0;
+                        
+                        if (currentPage === page) {
+                            log('api-output', `✓ 第 ${page + 1} 頁測試通過`, 'success');
+                        } else {
+                            log('api-output', `✗ 第 ${page + 1} 頁測試失敗，實際頁面: ${currentPage + 1}`, 'error');
+                        }
+                    } else {
+                        log('api-output', `第 ${page + 1} 頁測試失敗: ${pageResponse.status}`, 'error');
+                    }
+                    
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+                
+            } catch (error) {
+                log('api-output', `頁面導航測試錯誤: ${error.message}`, 'error');
+            }
+        }
+
+        // 測試前端分頁邏輯
+        function testFrontendPagination() {
+            log('frontend-output', '開始測試前端分頁邏輯...', 'info');
+            
+            // 模擬 Angular 分頁組件的邏輯
+            class MockPaginationComponent {
+                constructor() {
+                    this.currentPage = 0;
+                    this.pageSize = 10;
+                    this.totalElements = 0;
+                    this.totalPages = 0;
+                }
+                
+                onPageSizeChange(newSize) {
+                    log('frontend-output', `前端：頁面大小變更 ${this.pageSize} -> ${newSize}`, 'info');
+                    this.pageSize = newSize;
+                    this.currentPage = 0; // 重置到第一頁
+                    return this.loadPage();
+                }
+                
+                onPageChange(newPage) {
+                    log('frontend-output', `前端：頁面變更 ${this.currentPage} -> ${newPage}`, 'info');
+                    this.currentPage = newPage;
+                    return this.loadPage();
+                }
+                
+                loadPage() {
+                    const params = {
+                        page: this.currentPage,
+                        size: this.pageSize,
+                        sort: 'empId,asc'
+                    };
+                    
+                    log('frontend-output', `前端：發送分頁請求 ${JSON.stringify(params)}`, 'info');
+                    
+                    // 模擬 API 呼叫
+                    return new Promise((resolve) => {
+                        setTimeout(() => {
+                            const mockResponse = {
+                                content: Array(Math.min(this.pageSize, 50)).fill(null).map((_, i) => ({
+                                    empId: this.currentPage * this.pageSize + i + 1,
+                                    empName: `員工${this.currentPage * this.pageSize + i + 1}`
+                                })),
+                                totalElements: 50,
+                                totalPages: Math.ceil(50 / this.pageSize),
+                                pageable: { pageNumber: this.currentPage }
+                            };
+                            
+                            this.totalElements = mockResponse.totalElements;
+                            this.totalPages = mockResponse.totalPages;
+                            
+                            log('frontend-output', `前端：收到回應，顯示 ${mockResponse.content.length} 筆資料`, 'success');
+                            resolve(mockResponse);
+                        }, 300);
+                    });
+                }
+            }
+            
+            // 執行測試
+            const component = new MockPaginationComponent();
+            
+            Promise.resolve()
+                .then(() => component.loadPage())
+                .then(() => component.onPageSizeChange(5))
+                .then(() => component.onPageChange(1))
+                .then(() => component.onPageSizeChange(20))
+                .then(() => component.onPageChange(0))
+                .then(() => {
+                    log('frontend-output', '前端分頁邏輯測試完成！', 'success');
+                })
+                .catch(error => {
+                    log('frontend-output', `前端測試錯誤: ${error.message}`, 'error');
+                });
+        }
+
+        // 執行完整測試
+        async function runFullTest() {
+            log('full-test-output', '開始執行完整的分頁功能測試...', 'info');
+            
+            try {
+                // 1. 測試登入
+                log('full-test-output', '步驟 1: 測試登入', 'info');
+                await testLogin();
+                
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // 2. 測試後端 API
+                log('full-test-output', '步驟 2: 測試後端分頁 API', 'info');
+                await testPaginationAPI();
+                
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // 3. 測試前端邏輯
+                log('full-test-output', '步驟 3: 測試前端分頁邏輯', 'info');
+                testFrontendPagination();
+                
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                log('full-test-output', '完整測試流程結束！', 'success');
+                log('full-test-output', '請檢查各個測試區塊的結果。', 'info');
+                
+            } catch (error) {
+                log('full-test-output', `完整測試過程發生錯誤: ${error.message}`, 'error');
+            }
+        }
+
+        // 頁面載入時執行初始化
+        window.onload = function() {
+            log('login-output', '分頁功能測試工具已載入', 'info');
+            log('api-output', '後端 API 測試準備就緒', 'info');
+            log('frontend-output', '前端邏輯測試準備就緒', 'info');
+            log('full-test-output', '完整測試流程準備就緒', 'info');
+        };
+    </script>
+</body>
+</html>

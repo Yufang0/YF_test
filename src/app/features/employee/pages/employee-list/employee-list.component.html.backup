@@ -1,52 +1,69 @@
 <div class="employee-list-container">
   <!-- 頁面標題 -->
-  <div class="page-header">
+  <!--<div class="page-header">
     <h1>員工管理</h1>
-    <div class="header-actions">
-      <a routerLink="/employees/new" class="btn btn-primary">
-        <i class="icon-plus"></i>
-        新增員工
-      </a>
+  </div> -->
+
+  <!-- 錯誤訊息 -->
+  @if (error()) {
+    <div class="alert alert-danger" role="alert">
+      {{ error() }}
+      <button type="button" class="btn-close" (click)="onClearError()" aria-label="關閉錯誤訊息">×</button>
     </div>
-  </div>
+  }
 
   <!-- 搜尋區域 -->
   <div class="search-section">
-    <form [formGroup]="searchForm" (ngSubmit)="searchEmployees()" class="search-form">
+    <form [formGroup]="searchForm" class="search-form">
       <div class="form-row">
         <div class="form-group">
-          <label for="name">員工姓名</label>
+          <label for="emp_code">員工編號</label>
           <input 
             type="text" 
-            id="name" 
-            formControlName="name" 
+            id="emp_code" 
+            formControlName="emp_code" 
+            placeholder="請輸入員工編號"
+            class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="emp_name">員工姓名</label>
+          <input 
+            type="text" 
+            id="emp_name" 
+            formControlName="emp_name" 
             placeholder="請輸入員工姓名"
-            class="form-control"
-          >
+            class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="dept_id">部門 ID</label>
+          <input 
+            type="number" 
+            id="dept_id" 
+            formControlName="dept_id" 
+            placeholder="請輸入部門 ID"
+            class="form-control">
         </div>
         
         <div class="form-group">
-          <label for="departmentId">部門</label>
-          <select 
-            id="departmentId" 
-            formControlName="departmentId" 
-            class="form-control"
-          >
-            <option value="">請選擇部門</option>
-            @for (department of departments(); track department.id) {
-              <option [value]="department.id">{{ department.name }}</option>
-            }
-          </select>
+          <label for="job_title">職位</label>
+          <input 
+            type="text" 
+            id="job_title" 
+            formControlName="job_title" 
+            placeholder="請輸入職位名稱"
+            class="form-control">
         </div>
         
         <div class="form-actions">
-          <button type="submit" class="btn btn-primary" [disabled]="loading()">
+          <button type="button" class="btn btn-primary" (click)="onSearch()" [disabled]="loading()">
             @if (loading()) {
               <span class="loading-spinner"></span>
             }
             搜尋
           </button>
-          <button type="button" class="btn btn-secondary" (click)="resetSearch()">
+          <button type="button" class="btn btn-secondary" (click)="onResetSearch()">
             重設
           </button>
         </div>
@@ -54,70 +71,150 @@
     </form>
   </div>
 
-  <!-- 載入狀態 -->
-  @if (loading()) {
-    <div class="loading-overlay">
-      <div class="loading-spinner-large"></div>
-      <p>載入中...</p>
-    </div>
-  } @else {
-    <!-- 員工列表 -->
-    <div class="results-section">
-      <div class="results-header">
-        <span class="results-count">
-          共找到 {{ totalRecords() }} 筆資料
-        </span>
+  <!-- 員工列表 -->
+  <div class="employee-list">
+    @if (loading()) {
+      <div class="loading-container">
+        <div class="loading-spinner-large"></div>
+        <p>載入中...</p>
       </div>
-
+    } @else {
       @if (employees().length === 0) {
         <div class="empty-state">
-          <div class="empty-icon">👥</div>
-          <h3>沒有找到員工資料</h3>
-          <p>請調整搜尋條件或新增員工</p>
-          <a routerLink="/employees/new" class="btn btn-primary">
-            新增第一個員工
-          </a>
+          <p>目前沒有員工資料</p>
         </div>
       } @else {
-        <div class="employee-table-container">
-          <table class="employee-table">
+        <div class="table-container">
+          <table class="table table-striped">
             <thead>
               <tr>
-                <th>員工編號</th>
-                <th>姓名</th>
-                <th>部門</th>
-                <th class="actions-column">操作</th>
+                <th class="sortable-header" (click)="onSort('emp_code')">
+                  <div class="header-content">
+                    <span class="sort-icons">
+                      <span 
+                        class="sort-icon sort-up" 
+                        [class]="'sort-icon sort-up ' + getSortIconState('emp_code', 'asc')"
+                        title="點擊升序排序">▲</span>
+                      <span 
+                        class="sort-icon sort-down" 
+                        [class]="'sort-icon sort-down ' + getSortIconState('emp_code', 'desc')"
+                        title="點擊降序排序">▼</span>
+                    </span>
+                    <span class="header-text">員工編號</span>
+                  </div>
+                </th>
+                <th class="sortable-header" (click)="onSort('emp_name')">
+                  <div class="header-content">
+                    <span class="sort-icons">
+                      <span 
+                        class="sort-icon sort-up" 
+                        [class]="'sort-icon sort-up ' + getSortIconState('emp_name', 'asc')"
+                        title="點擊升序排序">▲</span>
+                      <span 
+                        class="sort-icon sort-down" 
+                        [class]="'sort-icon sort-down ' + getSortIconState('emp_name', 'desc')"
+                        title="點擊降序排序">▼</span>
+                    </span>
+                    <span class="header-text">員工姓名</span>
+                  </div>
+                </th>
+                <th class="sortable-header" (click)="onSort('emp_phone')">
+                  <div class="header-content">
+                    <span class="sort-icons">
+                      <span 
+                        class="sort-icon sort-up" 
+                        [class]="'sort-icon sort-up ' + getSortIconState('emp_phone', 'asc')"
+                        title="點擊升序排序">▲</span>
+                      <span 
+                        class="sort-icon sort-down" 
+                        [class]="'sort-icon sort-down ' + getSortIconState('emp_phone', 'desc')"
+                        title="點擊降序排序">▼</span>
+                    </span>
+                    <span class="header-text">連絡電話</span>
+                  </div>
+                </th>
+                <th class="sortable-header" (click)="onSort('dept_id')">
+                  <div class="header-content">
+                    <span class="sort-icons">
+                      <span 
+                        class="sort-icon sort-up" 
+                        [class]="'sort-icon sort-up ' + getSortIconState('dept_id', 'asc')"
+                        title="點擊升序排序">▲</span>
+                      <span 
+                        class="sort-icon sort-down" 
+                        [class]="'sort-icon sort-down ' + getSortIconState('dept_id', 'desc')"
+                        title="點擊降序排序">▼</span>
+                    </span>
+                    <span class="header-text">部門 ID</span>
+                  </div>
+                </th>
+                <th class="sortable-header" (click)="onSort('job_title')">
+                  <div class="header-content">
+                    <span class="sort-icons">
+                      <span 
+                        class="sort-icon sort-up" 
+                        [class]="'sort-icon sort-up ' + getSortIconState('job_title', 'asc')"
+                        title="點擊升序排序">▲</span>
+                      <span 
+                        class="sort-icon sort-down" 
+                        [class]="'sort-icon sort-down ' + getSortIconState('job_title', 'desc')"
+                        title="點擊降序排序">▼</span>
+                    </span>
+                    <span class="header-text">職位</span>
+                  </div>
+                </th>
+                <th class="sortable-header" (click)="onSort('is_active')">
+                  <div class="header-content">
+                    <span class="sort-icons">
+                      <span 
+                        class="sort-icon sort-up" 
+                        [class]="'sort-icon sort-up ' + getSortIconState('is_active', 'asc')"
+                        title="點擊升序排序">▲</span>
+                      <span 
+                        class="sort-icon sort-down" 
+                        [class]="'sort-icon sort-down ' + getSortIconState('is_active', 'desc')"
+                        title="點擊降序排序">▼</span>
+                    </span>
+                    <span class="header-text">狀態</span>
+                  </div>
+                </th>
+                <th>操作</th>
               </tr>
             </thead>
             <tbody>
-              @for (employee of employees(); track employee.id) {
+              @for (employee of employees(); track employee.emp_id) {
                 <tr>
-                  <td>{{ employee.id }}</td>
-                  <td>{{ employee.name }}</td>
-                  <td>{{ getDepartmentName(employee.departmentId) }}</td>
-                  <td class="actions-cell">
+                  <td>{{ employee.emp_code }}</td>
+                  <td>{{ employee.emp_name }}</td>
+                  <td>{{ employee.emp_phone || '-' }}</td>
+                  <td>{{ employee.dept_id || '-' }}</td>
+                  <td>{{ employee.job_title || '-' }}</td>
+                  <td>
+                    <span [class]="employee.is_active ? 'status-active' : 'status-inactive'">
+                      {{ employee.is_active ? '在職' : '離職' }}
+                    </span>
+                  </td>
+                  <td>
                     <div class="action-buttons">
-                      <a 
-                        [routerLink]="['/employees', employee.id]" 
-                        class="btn btn-sm btn-outline"
-                        title="檢視詳細資訊"
-                      >
-                        檢視
-                      </a>
-                      <a 
-                        [routerLink]="['/employees', employee.id, 'edit']" 
-                        class="btn btn-sm btn-outline"
-                        title="編輯員工資訊"
-                      >
-                        編輯
-                      </a>
                       <button 
-                        type="button"
-                        class="btn btn-sm btn-danger"
-                        (click)="deleteEmployee(employee)"
-                        title="刪除員工"
-                        [disabled]="loading()"
-                      >
+                        type="button" 
+                        class="btn btn-sm btn-outline-primary" 
+                        (click)="onViewEmployee(employee)"
+                        title="檢視">
+                        檢視
+                      </button>
+                      <button 
+                        type="button" 
+                        class="btn btn-sm btn-outline-secondary" 
+                        (click)="onEditEmployee(employee)"
+                        title="編輯">
+                        編輯
+                      </button>
+                      <button 
+                        type="button" 
+                        class="btn btn-sm btn-outline-danger" 
+                        (click)="onDeleteEmployee(employee)"
+                        title="刪除">
                         刪除
                       </button>
                     </div>
@@ -128,47 +225,506 @@
           </table>
         </div>
 
-        <!-- 分頁控制項 -->
-        @if (totalPages() > 1) {
-          <div class="pagination-container">
-            <div class="pagination-info">
-              第 {{ currentPage() }} 頁，共 {{ totalPages() }} 頁
+        <!-- 分頁控制器 -->
+        <div class="pagination-container">
+          <div class="pagination-info">
+            <span>{{ getDisplayRange() }}</span>
+          </div>
+          
+          <div class="pagination-controls">
+            <div class="page-size-selector">
+              <label for="pageSize">每頁顯示：</label>
+              <select 
+                id="pageSize" 
+                [value]="pageSize()" 
+                (change)="onPageSizeSelectChange($event)"
+                class="form-control">
+                @for (option of pageSizeOptions; track option) {
+                  <option [value]="option">{{ option }}</option>
+                }
+              </select>
+              <span>筆</span>
             </div>
-            <div class="pagination-controls">
+
+            <div class="pagination-buttons">
               <button 
-                type="button"
-                class="btn btn-sm btn-outline"
-                [disabled]="!hasPreviousPage() || loading()"
-                (click)="previousPage()"
-              >
-                上一頁
+                type="button" 
+                class="btn btn-sm btn-outline-secondary"
+                [disabled]="currentPage() === 0 || loading()"
+                (click)="onFirstPage()"
+                title="第一頁">
+                ⟨⟨
               </button>
               
-              @for (pageNum of visiblePages(); track pageNum) {
-                <button 
-                  type="button"
-                  class="btn btn-sm"
-                  [class.btn-primary]="pageNum === currentPage()"
-                  [class.btn-outline]="pageNum !== currentPage()"
-                  [disabled]="loading()"
-                  (click)="goToPage(pageNum)"
-                >
-                  {{ pageNum }}
-                </button>
+              <button 
+                type="button" 
+                class="btn btn-sm btn-outline-secondary"
+                [disabled]="currentPage() === 0 || loading()"
+                (click)="onPreviousPage()"
+                title="上一頁">
+                ⟨
+              </button>
+              
+              @for (page of getPageNumbers(); track page) {
+                @if (page === -1 || page === -2) {
+                  <span class="pagination-ellipsis">...</span>
+                } @else {
+                  <button 
+                    type="button" 
+                    class="btn btn-sm"
+                    [class]="page === currentPage() ? 'btn-primary' : 'btn-outline-secondary'"
+                    [disabled]="loading()"
+                    (click)="onPageChange(page)"
+                    [title]="'第 ' + (page + 1) + ' 頁'">
+                    {{ page + 1 }}
+                  </button>
+                }
               }
               
               <button 
-                type="button"
-                class="btn btn-sm btn-outline"
-                [disabled]="!hasNextPage() || loading()"
-                (click)="nextPage()"
-              >
-                下一頁
+                type="button" 
+                class="btn btn-sm btn-outline-secondary"
+                [disabled]="currentPage() >= totalPages() - 1 || loading()"
+                (click)="onNextPage()"
+                title="下一頁">
+                ⟩
+              </button>
+              
+              <button 
+                type="button" 
+                class="btn btn-sm btn-outline-secondary"
+                [disabled]="currentPage() >= totalPages() - 1 || loading()"
+                (click)="onLastPage()"
+                title="最後一頁">
+                ⟩⟩
               </button>
             </div>
           </div>
-        }
+        </div>
       }
+    }
+  </div>
+
+  <!-- 建立員工表單 -->
+  @if (showCreateForm()) {
+    <div class="modal-overlay" 
+         (click)="onCancelCreate()" 
+         (keydown.escape)="onCancelCreate()" 
+         tabindex="-1" 
+         role="dialog" 
+         aria-modal="true">
+      <div class="modal-content" 
+           (click)="$event.stopPropagation()" 
+           (keydown)="$event.stopPropagation()"
+           tabindex="0">
+        <div class="modal-header">
+          <h3>新增員工</h3>
+          <button type="button" 
+                  class="btn-close" 
+                  (click)="onCancelCreate()" 
+                  aria-label="關閉對話框">×</button>
+        </div>
+        <form [formGroup]="createForm" (ngSubmit)="onCreateEmployee()" class="modal-body">
+          <div class="form-group">
+            <label for="create-emp-code">員工編號 *</label>
+            <input 
+              type="text" 
+              id="create-emp-code" 
+              formControlName="emp_code" 
+              class="form-control"
+              [class.error]="hasError(createForm, 'emp_code')"
+              placeholder="請輸入員工編號">
+            @if (getErrorMessage(createForm, 'emp_code')) {
+              <div class="error-message">{{ getErrorMessage(createForm, 'emp_code') }}</div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="create-emp-name">員工姓名 *</label>
+            <input 
+              type="text" 
+              id="create-emp-name" 
+              formControlName="emp_name" 
+              class="form-control"
+              [class.error]="hasError(createForm, 'emp_name')"
+              placeholder="請輸入員工姓名">
+            @if (getErrorMessage(createForm, 'emp_name')) {
+              <div class="error-message">{{ getErrorMessage(createForm, 'emp_name') }}</div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="create-dept-id">部門 ID *</label>
+            <input 
+              type="number" 
+              id="create-dept-id" 
+              formControlName="dept_id" 
+              class="form-control"
+              [class.error]="hasError(createForm, 'dept_id')"
+              placeholder="請輸入部門 ID">
+            @if (getErrorMessage(createForm, 'dept_id')) {
+              <div class="error-message">{{ getErrorMessage(createForm, 'dept_id') }}</div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="create-job-title">職位</label>
+            <input 
+              type="text" 
+              id="create-job-title" 
+              formControlName="job_title" 
+              class="form-control"
+              [class.error]="hasError(createForm, 'job_title')"
+              placeholder="請輸入職位名稱">
+            @if (getErrorMessage(createForm, 'job_title')) {
+              <div class="error-message">{{ getErrorMessage(createForm, 'job_title') }}</div>
+            }
+          </div>
+
+          <div class="form-group full-width">
+            <label for="create-emp-email">電子郵件</label>
+            <input 
+              type="email" 
+              id="create-emp-email" 
+              formControlName="emp_email" 
+              class="form-control"
+              [class.error]="hasError(createForm, 'emp_email')"
+              placeholder="請輸入電子郵件">
+            @if (getErrorMessage(createForm, 'emp_email')) {
+              <div class="error-message">{{ getErrorMessage(createForm, 'emp_email') }}</div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="create-emp-phone">連絡電話</label>
+            <input 
+              type="tel" 
+              id="create-emp-phone" 
+              formControlName="emp_phone" 
+              class="form-control"
+              [class.error]="hasError(createForm, 'emp_phone')"
+              placeholder="請輸入連絡電話">
+            @if (getErrorMessage(createForm, 'emp_phone')) {
+              <div class="error-message">{{ getErrorMessage(createForm, 'emp_phone') }}</div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="create-hire-date">入職日期</label>
+            <input 
+              type="date" 
+              id="create-hire-date" 
+              formControlName="hire_date" 
+              class="form-control"
+              >
+              
+          </div>
+
+          <div class="form-group">
+            <label for="create-resign-date">離職日期</label>
+            <input 
+              type="date" 
+              id="create-resign-date" 
+              formControlName="resign_date" 
+              class="form-control"
+              lang="en">
+          </div>
+
+          <div class="form-group">
+            <label for="create-is-active">狀態 *</label>
+            <select 
+              id="create-is-active" 
+              formControlName="is_active" 
+              class="form-control"
+              [class.error]="hasError(createForm, 'is_active')">
+              <option [ngValue]="true">在職</option>
+              <option [ngValue]="false">離職</option>
+            </select>
+            @if (getErrorMessage(createForm, 'is_active')) {
+              <div class="error-message">{{ getErrorMessage(createForm, 'is_active') }}</div>
+            }
+          </div>
+
+          <div class="form-group full-width">
+            <label for="create-user">建立者 *</label>
+            <input 
+              type="text" 
+              id="create-user" 
+              formControlName="create_user" 
+              class="form-control"
+              [class.error]="hasError(createForm, 'create_user')"
+              placeholder="請輸入建立者">
+            @if (getErrorMessage(createForm, 'create_user')) {
+              <div class="error-message">{{ getErrorMessage(createForm, 'create_user') }}</div>
+            }
+          </div>
+
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary" [disabled]="loading()">
+              @if (loading()) {
+                <span class="loading-spinner"></span>
+              }
+              建立
+            </button>
+            <button type="button" class="btn btn-secondary" (click)="onCancelCreate()">取消</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- 編輯員工表單 -->
+  @if (showEditForm()) {
+    <div class="modal-overlay" 
+         (click)="onCancelEdit()" 
+         (keydown.escape)="onCancelEdit()" 
+         tabindex="-1" 
+         role="dialog" 
+         aria-modal="true">
+      <div class="modal-content" 
+           (click)="$event.stopPropagation()" 
+           (keydown)="$event.stopPropagation()"
+           tabindex="0">
+        <div class="modal-header">
+          <h3>編輯員工</h3>
+          <button type="button" 
+                  class="btn-close" 
+                  (click)="onCancelEdit()" 
+                  aria-label="關閉對話框">×</button>
+        </div>
+        <form [formGroup]="editForm" (ngSubmit)="onUpdateEmployee()" class="modal-body">
+          <div class="form-group">
+            <label for="edit-emp-code">員工編號 *</label>
+            <input 
+              type="text" 
+              id="edit-emp-code" 
+              formControlName="emp_code"
+              readonly
+              class="form-control readonly">
+          </div>
+
+          <div class="form-group">
+            <label for="edit-emp-name">員工姓名 *</label>
+            <input 
+              type="text" 
+              id="edit-emp-name" 
+              formControlName="emp_name" 
+              class="form-control"
+              [class.error]="hasError(editForm, 'emp_name')"
+              placeholder="請輸入員工姓名">
+            @if (getErrorMessage(editForm, 'emp_name')) {
+              <div class="error-message">{{ getErrorMessage(editForm, 'emp_name') }}</div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="edit-dept-id">部門 ID *</label>
+            <input 
+              type="number" 
+              id="edit-dept-id" 
+              formControlName="dept_id" 
+              class="form-control"
+              [class.error]="hasError(editForm, 'dept_id')"
+              placeholder="請輸入部門 ID">
+            @if (getErrorMessage(editForm, 'dept_id')) {
+              <div class="error-message">{{ getErrorMessage(editForm, 'dept_id') }}</div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="edit-job-title">職位</label>
+            <input 
+              type="text" 
+              id="edit-job-title" 
+              formControlName="job_title" 
+              class="form-control"
+              [class.error]="hasError(editForm, 'job_title')"
+              placeholder="請輸入職位名稱">
+            @if (getErrorMessage(editForm, 'job_title')) {
+              <div class="error-message">{{ getErrorMessage(editForm, 'job_title') }}</div>
+            }
+          </div>
+
+          <div class="form-group full-width">
+            <label for="edit-emp-email">電子郵件</label>
+            <input 
+              type="email" 
+              id="edit-emp-email" 
+              formControlName="emp_email" 
+              class="form-control"
+              [class.error]="hasError(editForm, 'emp_email')"
+              placeholder="請輸入電子郵件">
+            @if (getErrorMessage(editForm, 'emp_email')) {
+              <div class="error-message">{{ getErrorMessage(editForm, 'emp_email') }}</div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="edit-emp-phone">連絡電話</label>
+            <input 
+              type="tel" 
+              id="edit-emp-phone" 
+              formControlName="emp_phone" 
+              class="form-control"
+              [class.error]="hasError(editForm, 'emp_phone')"
+              placeholder="請輸入連絡電話">
+            @if (getErrorMessage(editForm, 'emp_phone')) {
+              <div class="error-message">{{ getErrorMessage(editForm, 'emp_phone') }}</div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="edit-hire-date">入職日期</label>
+            <input 
+              type="date" 
+              id="edit-hire-date" 
+              formControlName="hire_date" 
+              class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label for="edit-resign-date">離職日期</label>
+            <input 
+              type="date" 
+              id="edit-resign-date" 
+              formControlName="resign_date" 
+              class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label for="edit-is-active">狀態 *</label>
+            <select 
+              id="edit-is-active" 
+              formControlName="is_active" 
+              class="form-control"
+              [class.error]="hasError(editForm, 'is_active')">
+              <option [ngValue]="true">在職</option>
+              <option [ngValue]="false">離職</option>
+            </select>
+            @if (getErrorMessage(editForm, 'is_active')) {
+              <div class="error-message">{{ getErrorMessage(editForm, 'is_active') }}</div>
+            }
+          </div>
+
+          <div class="form-group full-width">
+            <label for="edit-update-user">更新使用者 *</label>
+            <input 
+              type="text" 
+              id="edit-update-user" 
+              formControlName="update_user" 
+              class="form-control"
+              [class.error]="hasError(editForm, 'update_user')"
+              placeholder="請輸入更新使用者名稱">
+            @if (getErrorMessage(editForm, 'update_user')) {
+              <div class="error-message">{{ getErrorMessage(editForm, 'update_user') }}</div>
+            }
+          </div>
+
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary" [disabled]="loading()">
+              @if (loading()) {
+                <span class="loading-spinner"></span>
+              }
+              更新
+            </button>
+            <button type="button" class="btn btn-secondary" (click)="onCancelEdit()">取消</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- 檢視員工詳情彈窗 -->
+  @if (showViewModal()) {
+    <div class="modal-overlay" 
+         (click)="onCloseViewModal()" 
+         (keydown.escape)="onCloseViewModal()" 
+         tabindex="-1" 
+         role="dialog" 
+         aria-modal="true">
+      <div class="modal-content view-modal" 
+           (click)="$event.stopPropagation()" 
+           (keydown)="$event.stopPropagation()"
+           tabindex="0">
+        <div class="modal-header">
+          <h3>員工詳細資料</h3>
+          <button type="button" 
+                  class="btn-close" 
+                  (click)="onCloseViewModal()" 
+                  aria-label="關閉對話框">×</button>
+        </div>
+        <div class="modal-body view-content">
+          @if (selectedEmployee()) {
+            <div class="employee-details">
+              <div class="detail-row">
+                <strong>員工 ID：</strong>
+                <span>{{ selectedEmployee()!.emp_id || '-' }}</span>
+              </div>
+              <div class="detail-row">
+                <strong>員工編號：</strong>
+                <span>{{ selectedEmployee()!.emp_code }}</span>
+              </div>
+              <div class="detail-row">
+                <strong>員工姓名：</strong>
+                <span>{{ selectedEmployee()!.emp_name }}</span>
+              </div>
+              <div class="detail-row">
+                <strong>電子郵件：</strong>
+                <span>{{ selectedEmployee()!.emp_email || '-' }}</span>
+              </div>
+              <div class="detail-row">
+                <strong>連絡電話：</strong>
+                <span>{{ selectedEmployee()!.emp_phone || '-' }}</span>
+              </div>
+              <div class="detail-row">
+                <strong>部門 ID：</strong>
+                <span>{{ selectedEmployee()!.dept_id || '-' }}</span>
+              </div>
+              <div class="detail-row">
+                <strong>職位：</strong>
+                <span>{{ selectedEmployee()!.job_title || '-' }}</span>
+              </div>
+              <div class="detail-row">
+                <strong>入職日期：</strong>
+                <span>{{ selectedEmployee()!.hire_date || '-' }}</span>
+              </div>
+              <div class="detail-row">
+                <strong>離職日期：</strong>
+                <span>{{ selectedEmployee()!.resign_date || '-' }}</span>
+              </div>
+              <div class="detail-row">
+                <strong>員工狀態：</strong>
+                <span [class]="selectedEmployee()!.is_active ? 'status-active' : 'status-inactive'">
+                  {{ selectedEmployee()!.is_active ? '在職' : '離職' }}
+                </span>
+              </div>
+              <div class="detail-row">
+                <strong>建立時間：</strong>
+                <span>{{ selectedEmployee()!.create_time || '-' }}</span>
+              </div>
+              <div class="detail-row">
+                <strong>建立使用者：</strong>
+                <span>{{ selectedEmployee()!.create_user || '-' }}</span>
+              </div>
+              <div class="detail-row">
+                <strong>更新時間：</strong>
+                <span>{{ selectedEmployee()!.update_time || '-' }}</span>
+              </div>
+              <div class="detail-row">
+                <strong>更新使用者：</strong>
+                <span>{{ selectedEmployee()!.update_user || '-' }}</span>
+              </div>
+              <div class="detail-row">
+                <strong>工作天數：</strong>
+                <span>{{ selectedEmployee()!.working_days || '-' }}</span>
+              </div>
+            </div>
+          }
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="onCloseViewModal()">關閉</button>
+        </div>
+      </div>
     </div>
   }
 </div>

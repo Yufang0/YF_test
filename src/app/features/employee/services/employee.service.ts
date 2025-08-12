@@ -94,7 +94,54 @@ export class EmployeeService {
   }
 
   /**
-   * 分頁查詢所有員工
+   * 分頁查詢所有員工 - 返回完整分頁資訊
+   */
+  getAllEmployeesWithPagination(page = 0, size = 10, sortBy = 'createTime', sortDir = 'desc'): Observable<PageResponse<Employee>> {
+    this.loadingSignal.set(true);
+    
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString())
+      .set('sortBy', sortBy)
+      .set('sortDir', sortDir);
+    
+    console.log('=== API Call Details ===');
+    console.log('API call params:', { page, size, sortBy, sortDir });
+    console.log('API URL:', this.apiUrl);
+    console.log('Full URL with params:', `${this.apiUrl}?${params.toString()}`);
+    
+    return this.http.get<ApiResponse<PageResponse<Employee>>>(this.apiUrl, { params })
+      .pipe(
+        map(response => {
+          this.loadingSignal.set(false);
+          console.log('=== API Response Details ===');
+          console.log('Raw API response:', response);
+          
+          if (response.code === 1000 && response.data) {
+            console.log('Pagination data:', {
+              contentLength: response.data.content?.length || 0,
+              page: response.data.page,
+              size: response.data.size,
+              totalElements: response.data.total_elements,
+              totalPages: response.data.total_pages,
+              hasNext: response.data.has_next,
+              hasPrevious: response.data.has_previous
+            });
+            return response.data;
+          }
+          throw new Error(response.message || '查詢員工列表失敗');
+        }),
+        catchError(error => {
+          this.loadingSignal.set(false);
+          console.error('=== API Error Details ===');
+          console.error('API error:', error);
+          return this.errorHandler.handleError('查詢員工列表', error);
+        })
+      );
+  }
+
+  /**
+   * 分頁查詢所有員工 - 保留原有方法以保持向後相容
    */
   getAllEmployees(page = 0, size = 10): Observable<Employee[]> {
     this.loadingSignal.set(true);
@@ -121,7 +168,35 @@ export class EmployeeService {
   }
 
   /**
-   * 根據員工狀態分頁查詢員工
+   * 根據員工狀態分頁查詢員工 - 返回完整分頁資訊
+   */
+  getEmployeesByStatusWithPagination(isActive: boolean, page = 0, size = 10, sortBy = 'createTime', sortDir = 'desc'): Observable<PageResponse<Employee>> {
+    this.loadingSignal.set(true);
+    
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString())
+      .set('sortBy', sortBy)
+      .set('sortDir', sortDir);
+    
+    return this.http.get<ApiResponse<PageResponse<Employee>>>(`${this.apiUrl}/status/${isActive}`, { params })
+      .pipe(
+        map(response => {
+          this.loadingSignal.set(false);
+          if (response.code === 1000 && response.data) {
+            return response.data;
+          }
+          throw new Error(response.message || '查詢員工列表失敗');
+        }),
+        catchError(error => {
+          this.loadingSignal.set(false);
+          return this.errorHandler.handleError('查詢員工列表', error);
+        })
+      );
+  }
+
+  /**
+   * 根據員工狀態分頁查詢員工 - 保留原有方法以保持向後相容
    */
   getEmployeesByStatus(isActive: boolean, page = 0, size = 10): Observable<Employee[]> {
     this.loadingSignal.set(true);
@@ -331,7 +406,54 @@ export class EmployeeService {
   }
 
   /**
-   * 根據綜合條件搜尋員工
+   * 根據綜合條件搜尋員工 - 分頁版本
+   */
+  searchEmployeesByCriteriaWithPagination(criteria: {
+    empCode?: string;
+    empName?: string;
+    deptId?: number;
+    jobTitle?: string;
+  }, page = 0, size = 10, sortBy = 'createTime', sortDir = 'desc'): Observable<PageResponse<Employee>> {
+    this.loadingSignal.set(true);
+    
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString())
+      .set('sortBy', sortBy)
+      .set('sortDir', sortDir);
+    
+    // 只加入非空的搜尋條件
+    if (criteria.empCode?.trim()) {
+      params = params.set('empCode', criteria.empCode.trim());
+    }
+    if (criteria.empName?.trim()) {
+      params = params.set('empName', criteria.empName.trim());
+    }
+    if (criteria.deptId) {
+      params = params.set('deptId', criteria.deptId.toString());
+    }
+    if (criteria.jobTitle?.trim()) {
+      params = params.set('jobTitle', criteria.jobTitle.trim());
+    }
+    
+    return this.http.get<ApiResponse<PageResponse<Employee>>>(`${this.apiUrl}/search`, { params })
+      .pipe(
+        map(response => {
+          this.loadingSignal.set(false);
+          if (response.code === 1000 && response.data) {
+            return response.data;
+          }
+          throw new Error(response.message || '搜尋員工失敗');
+        }),
+        catchError(error => {
+          this.loadingSignal.set(false);
+          return this.errorHandler.handleError('搜尋員工', error);
+        })
+      );
+  }
+
+  /**
+   * 根據綜合條件搜尋員工 - 保留原有方法以保持向後相容
    */
   searchEmployeesByCriteria(criteria: {
     empCode?: string;

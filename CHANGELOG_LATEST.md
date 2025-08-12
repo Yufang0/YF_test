@@ -1,6 +1,194 @@
 # Angular Employee Management - 變更日誌
 
-## � 三態排序功能增強 (2025-08-08 最新)
+## 🔄 分頁功能完整實作 (2025-08-08 最新)
+
+### 🚀 新增功能
+
+#### 完整分頁系統
+
+- **前端分頁組件**：完整的分頁控制器，包括頁面導航、頁面大小選擇
+- **後端分頁支援**：Spring Boot + JPA 分頁查詢支援
+- **搜尋分頁**：搜尋結果也支援完整的分頁功能
+- **響應式設計**：適用於各種螢幕尺寸的分頁控制界面
+
+#### 分頁控制功能
+
+- **頁面導航**：上一頁、下一頁、首頁、末頁按鈕
+- **頁面跳轉**：直接點擊頁碼進行快速跳轉
+- **頁面大小**：可選擇每頁顯示 5、10、20、50 筆資料
+- **智慧省略號**：大於 7 頁時自動顯示省略號以節省空間
+- **分頁資訊**：顯示當前頁面、總頁數、總筆數資訊
+
+#### 狀態管理增強
+
+- **搜尋狀態保持**：切換頁面時保持搜尋條件
+- **分頁狀態同步**：搜尋、重設時自動重置分頁狀態
+- **資料完整性**：CRUD 操作後自動重新載入當前頁面
+
+### 📝 程式碼變更
+
+#### 前端分頁實作
+
+**Service Layer 增強 (employee.service.ts)**
+
+```typescript
+// 新增分頁方法
+getAllEmployeesWithPagination(page = 0, size = 10, sortBy = 'createTime', sortDir = 'desc'): Observable<PageResponse<Employee>>
+
+getEmployeesByStatusWithPagination(isActive: boolean, page = 0, size = 10, sortBy = 'createTime', sortDir = 'desc'): Observable<PageResponse<Employee>>
+
+searchEmployeesByCriteriaWithPagination(criteria: SearchCriteria, page = 0, size = 10, sortBy = 'createTime', sortDir = 'desc'): Observable<PageResponse<Employee>>
+```
+
+**Component 分頁狀態 (employee-list.component.ts)**
+
+```typescript
+// 分頁狀態管理
+readonly currentPage = signal(0);
+readonly pageSize = signal(10);
+readonly totalElements = signal(0);
+readonly totalPages = signal(0);
+
+// 搜尋狀態管理
+readonly isSearching = signal(false);
+readonly currentSearchCriteria = signal<SearchCriteria | null>(null);
+
+// 分頁操作方法
+onPageChange(page: number): void
+onPageSizeChange(size: number): void
+goToFirstPage(): void
+goToLastPage(): void
+```
+
+**HTML 分頁模板 (employee-list.component.html)**
+
+```html
+<!-- 分頁控制器 -->
+<div class="pagination-container">
+  <div class="pagination-info">顯示第 {{(currentPage() * pageSize()) + 1}} - {{Math.min((currentPage() + 1) * pageSize(), totalElements())}} 筆， 共 {{totalElements()}} 筆資料 (第 {{currentPage() + 1}} / {{totalPages()}} 頁)</div>
+
+  <div class="pagination-controls">
+    <!-- 頁面大小選擇器 -->
+    <select (change)="onPageSizeSelectChange($event)" [value]="pageSize()">
+      @for (size of pageSizeOptions; track size) {
+      <option [value]="size">{{size}} 筆/頁</option>
+      }
+    </select>
+
+    <!-- 分頁按鈕 -->
+    <div class="pagination-buttons">
+      <!-- 首頁、上一頁、頁碼、下一頁、末頁 -->
+    </div>
+  </div>
+</div>
+```
+
+#### 後端分頁實作
+
+**Controller 分頁端點 (EmployeeController.java)**
+
+```java
+@GetMapping("/search")
+public ResponseEntity<ApiResponse<PageResponse<EmployeeDto>>> searchEmployeesByCriteriaWithPagination(
+    @RequestParam(required = false) String empCode,
+    @RequestParam(required = false) String empName,
+    @RequestParam(required = false) Integer deptId,
+    @RequestParam(required = false) String jobTitle,
+    @RequestParam(defaultValue = "0") int page,
+    @RequestParam(defaultValue = "10") int size,
+    @RequestParam(defaultValue = "createTime") String sortBy,
+    @RequestParam(defaultValue = "desc") String sortDir) {
+
+    Page<EmployeeDto> result = employeeService.searchEmployeesByCriteriaWithPagination(
+        empCode, empName, deptId, jobTitle, page, size, sortBy, sortDir);
+
+    return ResponseEntity.ok(ApiResponse.success(PageResponse.from(result)));
+}
+```
+
+**Service 分頁邏輯 (EmployeeService.java)**
+
+```java
+public Page<EmployeeDto> searchEmployeesByCriteriaWithPagination(
+    String empCode, String empName, Integer deptId, String jobTitle,
+    int page, int size, String sortBy, String sortDir) {
+
+    Sort sort = createSort(sortBy, sortDir);
+    Pageable pageable = PageRequest.of(page, size, sort);
+
+    Page<EmployeeEntity> entityPage = employeeRepository.findByCriteriaWithPagination(
+        empCode, empName, deptId, jobTitle, pageable);
+
+    List<EmployeeDto> dtoList = entityPage.getContent().stream()
+        .map(employeeMapper::entityToDto)
+        .collect(Collectors.toList());
+
+    return new PageImpl<>(dtoList, pageable, entityPage.getTotalElements());
+}
+```
+
+**Repository 分頁查詢 (EmployeeRepository.java)**
+
+```java
+@Query("SELECT e FROM EmployeeEntity e WHERE " +
+       "(:empCode IS NULL OR e.empCode LIKE %:empCode%) AND " +
+       "(:empName IS NULL OR e.empName LIKE %:empName%) AND " +
+       "(:deptId IS NULL OR e.deptId = :deptId) AND " +
+       "(:jobTitle IS NULL OR e.jobTitle LIKE %:jobTitle%)")
+Page<EmployeeEntity> findByCriteriaWithPagination(
+    @Param("empCode") String empCode,
+    @Param("empName") String empName,
+    @Param("deptId") Integer deptId,
+    @Param("jobTitle") String jobTitle,
+    Pageable pageable);
+```
+
+### 💡 技術亮點
+
+#### 前端架構設計
+
+- **Signal 狀態管理**：使用 Angular 18+ signals 進行響應式狀態管理
+- **向後相容性**：保持原有 API 方法不變，新增分頁版本
+- **Type Safety**：完整的 TypeScript 型別定義和編譯時檢查
+- **模組化設計**：分離搜尋邏輯和分頁邏輯，易於維護
+
+#### 後端架構設計
+
+- **JPA 分頁**：充分利用 Spring Data JPA 的分頁和排序功能
+- **動態查詢**：支援可選搜尋條件的靈活組合
+- **DTO 轉換**：完整的實體到 DTO 轉換，保持資料封裝
+- **RESTful API**：遵循 REST 設計原則的分頁端點
+
+#### 使用者體驗優化
+
+- **智慧導航**：根據總頁數自動調整分頁按鈕顯示
+- **狀態保持**：搜尋和分頁狀態的正確同步
+- **載入回饋**：分頁切換時的適當載入指示
+- **響應式設計**：適配各種螢幕尺寸的分頁控制
+
+### 🔧 受影響的檔案
+
+#### 前端檔案
+
+- `src/app/features/employee/services/employee.service.ts` - 新增分頁服務方法
+- `src/app/features/employee/pages/employee-list/employee-list.component.ts` - 分頁狀態和邏輯
+- `src/app/features/employee/pages/employee-list/employee-list.component.html` - 分頁 UI 組件
+- `src/app/features/employee/pages/employee-list/employee-list.component.scss` - 分頁樣式
+
+#### 後端檔案
+
+- `src/main/java/com/example/demo/controller/EmployeeController.java` - 分頁端點
+- `src/main/java/com/example/demo/service/EmployeeService.java` - 分頁服務邏輯
+- `src/main/java/com/example/demo/repo/EmployeeRepository.java` - 分頁查詢方法
+
+#### 共用檔案
+
+- `src/app/shared/types/page-response.interface.ts` - 分頁回應型別定義
+- 後端 PageResponse 和 ApiResponse DTO 類別
+
+---
+
+## � 三態排序功能增強 (2025-08-08)
 
 ### 🚀 新增功能
 
